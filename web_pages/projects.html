@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | SteelFlex Structures</title>
+    <meta name="description" content="Explore our portfolio of completed and ongoing industrial projects.">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="about-us.html">Steel<span>Flex</span></a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="about-us.html">About Us</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="capabilities.html">Capabilities</a></li>
+                    <li><a href="machineries.html">Machineries</a></li>
+                    <li><a href="projects.html" class="active">Projects</a></li>
+                    <li><a href="contact-us.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <header>
+                <h1>Our Portfolio</h1>
+                <p class="subheading">Delivering Industrial Landmarks Since 2005.</p>
+            </header>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Filter Tabs -->
+        <nav class="project-filters container">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="manufacturing">Manufacturing</button>
+            <button class="filter-btn" data-filter="industrial">Industrial</button>
+            <button class="filter-btn" data-filter="automation">Automation</button>
+            <button class="filter-btn" data-filter="infrastructure">Infrastructure</button>
+            <button class="filter-btn" data-filter="ongoing">Ongoing</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+        </nav>
+
+        <!-- Featured Projects -->
+        <section class="featured-projects container">
+            <div class="card" style="border-left: 5px solid var(--primary-color);">
+                <h2>Featured Landmark</h2>
+                <article class="featured-card">
+                    <div class="featured-content">
+                        <span class="category-tag">Infrastructure</span>
+                        <h3>National Logistics Hub, Delhi</h3>
+                        <p>A flagship 500,000 sq. ft. automated logistics park featuring 30m clear spans.</p>
+                        <a href="project-detail.html" style="color: var(--primary-color); font-weight: 600;">View Case
+                            Study &rarr;</a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Project Cards Grid -->
+        <section class="project-grid container" style="margin-top: 40px;">
+            <!-- Project 1 -->
+            <article class="project-card card" data-category="manufacturing completed">
+                <div class="card-body">
+                    <span class="category-tag">Manufacturing</span>
+                    <h3>Automotive Assembly Plant</h3>
+                    <p><strong>Client:</strong> AutoCorp International</p>
+                    <p><strong>Status:</strong> Completed</p>
+                    <p class="description">Turnkey fabrication of main assembly line housings.</p>
+                    <a href="project-detail.html" class="btn btn-secondary" style="margin-top: 10px;">View Details</a>
+                </div>
+            </article>
+
+            <!-- Project 2 -->
+            <article class="project-card card" data-category="industrial completed">
+                <div class="card-body">
+                    <span class="category-tag">Industrial</span>
+                    <h3>Heavy Chemical Processing Unit</h3>
+                    <p><strong>Client:</strong> ChemFlow Industries</p>
+                    <p><strong>Status:</strong> Completed</p>
+                    <p class="description">Corrosion-resistant structural framework for chemical processing.</p>
+                    <a href="project-detail.html" class="btn btn-secondary" style="margin-top: 10px;">View Details</a>
+                </div>
+            </article>
+
+            <!-- Project 3 -->
+            <article class="project-card card" data-category="automation ongoing">
+                <div class="card-body">
+                    <span class="category-tag">Automation</span>
+                    <h3>Robotic Warehousing Facility</h3>
+                    <p><strong>Client:</strong> TechLogistics</p>
+                    <p><strong>Status:</strong> Ongoing</p>
+                    <p class="description">High-precision framing for automated storage and retrieval systems.</p>
+                    <a href="project-detail.html" class="btn btn-secondary" style="margin-top: 10px;">View Details</a>
+                </div>
+            </article>
+
+            <!-- Project 4 -->
+            <article class="project-card card" data-category="infrastructure completed">
+                <div class="card-body">
+                    <span class="category-tag">Infrastructure</span>
+                    <h3>Regional Power Grid Substation</h3>
+                    <p><strong>Client:</strong> State Power Corp</p>
+                    <p><strong>Status:</strong> Completed</p>
+                    <p class="description">Gantry structures and transmission towers.</p>
+                    <a href="project-detail.html" class="btn btn-secondary" style="margin-top: 10px;">View Details</a>
+                </div>
+            </article>
+        </section>
+
+        <!-- Bottom CTA -->
+        <section class="cta-section container" style="text-align: center; margin-top: 40px;">
+            <div class="card">
+                <h2>Have a Project in Mind?</h2>
+                <p>Let's discuss how we can bring your vision to life with precision engineering.</p>
+                <button class="btn" onclick="window.location.href='contact-us.html'">Discuss Your Project</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>SteelFlex Structures</h3>
+                    <p>Your trusted partner in heavy industrial engineering and turnkey steel construction solutions.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="capabilities.html">Capabilities</a></li>
+                        <li><a href="projects.html">Projects</a></li>
+                        <li><a href="contact-us.html">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>+91 98765 43210</p>
+                    <p>info@steelflexstructures.com</p>
+                </div>
+            </div>
+            <div class="copyright">
+                &copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
+            document.querySelector('.main-nav').classList.toggle('active');
+        });
+    </script>
+</body>
+
+</html>
