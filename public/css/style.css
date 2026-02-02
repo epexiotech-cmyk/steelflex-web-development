@@ -1,0 +1,528 @@
+:root {
+    /* Color Palette */
+    --primary: #264796;
+    /* Enterprise Blue */
+    --primary-dark: #1a3370;
+    /* Darker shade for active states/sidebar */
+    --primary-light: #3b5fa8;
+    /* Lighter shade for gradients/hover */
+
+    --secondary: #898989;
+    /* Gray for secondary text */
+
+    --btn-color: #0097D3;
+    /* Bright Blue Actions */
+    --btn-hover: #007bb0;
+    --btn-active: #006da0;
+
+    --text-main: #000000;
+    /* Black text */
+    --text-light: #ffffff;
+    /* White text (for dark backgrounds) */
+    --text-muted: #64748b;
+
+    /* Backgrounds - Light Theme Base */
+    --bg-body: #f8fafc;
+    /* Light Gray Background */
+    --bg-card: #ffffff;
+    /* White Content Cards */
+    --bg-sidebar: #264796;
+    /* Dark Sidebar */
+
+    --border: #e2e8f0;
+    /* Light Borders */
+
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    overflow-x: hidden;
+}
+
+/* Authentication */
+.auth-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+.auth-box {
+    background: var(--bg-card);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    border: 1px solid var(--border);
+}
+
+.auth-box h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    color: var(--text-main);
+    transition: all 0.2s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--btn-color);
+    box-shadow: 0 0 0 3px rgba(0, 151, 211, 0.1);
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    color: white;
+}
+
+.btn-primary {
+    background: var(--btn-color);
+}
+
+.btn-primary:hover {
+    background: var(--btn-hover);
+    transform: translateY(-1px);
+}
+
+.btn-primary:active {
+    background: var(--btn-active);
+    transform: translateY(0);
+}
+
+/* Filter Buttons */
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.filter-btn {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--secondary);
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background: #f1f5f9;
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.filter-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Dashboard Layout */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    background: var(--bg-sidebar);
+    color: var(--text-light);
+    /* Forced white text for dark sidebar */
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+}
+
+.logo {
+    margin-bottom: 2.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo span {
+    color: var(--btn-color);
+    /* Accent in logo */
+}
+
+#nav-menu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item {
+    padding: 0.85rem 1rem;
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s;
+}
+
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-item.active {
+    background: rgba(255, 255, 255, 0.15);
+    /* Subtle highlight */
+    color: white;
+    border-left: 4px solid var(--btn-color);
+    padding-left: calc(1rem - 4px);
+    /* Valid CSS adjustment for border */
+}
+
+.user-profile {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-info span {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.user-info small {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+}
+
+#logout-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: color 0.3s;
+}
+
+#logout-btn:hover {
+    color: white;
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-body);
+}
+
+.top-bar {
+    height: 70px;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    background: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.top-bar h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    position: relative;
+}
+
+/* Cards & Tables */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    /* Soft light shadow */
+}
+
+/* Dashboard Grid & Summary Cards */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.summary-card {
+    background: var(--primary);
+    /* Dark Card Requirement */
+    color: white;
+    /* White Text for Dashboard Cards */
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(38, 71, 150, 0.3);
+}
+
+.summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(38, 71, 150, 0.4);
+}
+
+.summary-content h3 {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.summary-content .count {
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+}
+
+.summary-content .sub-text {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: 0.2rem;
+}
+
+.summary-icon {
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.notification-dot {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 12px;
+    height: 12px;
+    background-color: var(--btn-color);
+    /* Button Color for Dot */
+    border-radius: 50%;
+    border: 2px solid var(--primary);
+}
+
+/* Tables */
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1rem;
+}
+
+.data-table th,
+.data-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+
+.data-table th {
+    background-color: #f8fafc;
+    color: var(--secondary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-table tr:hover td {
+    background-color: #f1f5f9;
+    /* Light primary tint hover could be rgba(38,71,150, 0.05) */
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Action Buttons */
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 0.3rem;
+    margin-right: 0.5rem;
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.2s;
+}
+
+.btn-sm:hover {
+    opacity: 0.85;
+}
+
+.btn-edit {
+    background-color: var(--btn-color);
+}
+
+.btn-delete {
+    background-color: var(--danger);
+}
+
+.btn-success {
+    background-color: var(--success);
+}
+
+/* Modal */
+#modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    /* Lighter backdrop */
+    backdrop-filter: blur(2px);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1rem;
+}
+
+.modal-header h3 {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: var(--secondary);
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Toast */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 2000;
+}
+
+.toast {
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    background: white;
+    border-left: 4px solid var(--btn-color);
+    color: var(--text-main);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    animation: slideIn 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast.success {
+    border-color: var(--success);
+}
+
+.toast.error {
+    border-color: var(--danger);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
