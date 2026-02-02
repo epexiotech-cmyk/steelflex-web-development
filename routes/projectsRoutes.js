@@ -21,8 +21,8 @@ const upload = multer({ storage: storage });
 router.get('/', controller.getAllProjects); // Public view
 
 // Admin routes
-router.post('/', verifyToken, isAdmin, upload.single('image'), controller.createProject);
-router.put('/:id', verifyToken, isAdmin, upload.single('image'), controller.updateProject);
+router.post('/', verifyToken, isAdmin, upload.array('images', 27), controller.createProject);
+router.put('/:id', verifyToken, isAdmin, upload.array('images', 27), controller.updateProject);
 router.delete('/:id', verifyToken, isAdmin, controller.deleteProject);
 
 module.exports = router;

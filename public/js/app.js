@@ -177,10 +177,11 @@ async function loadModule(moduleId) {
                 ]);
 
                 // Calculate counts
-                const newReviews = reviews.filter(r => r.status === 'Hidden').length;
-                const newQueries = queries.filter(q => !q.isRead).length;
+                const newReviews = reviews.filter(r => r.status === 'new').length;
+                const newQueries = queries.filter(q => q.status === 'new').length;
                 const totalProjects = projects.length;
                 const totalApps = careers.length;
+                const newApps = careers.filter(c => c.status === 'new').length;
 
                 content.innerHTML = `
                     <div style="margin-bottom: 2rem;">
@@ -196,40 +197,103 @@ async function loadModule(moduleId) {
                                 <div class="count">${totalProjects}</div>
                                 <div class="sub-text">Total Projects</div>
                            </div>
-                           <div class="summary-icon"><i class="fas fa-building"></i></div>
+                           <div class="summary-icon" style="color: var(--primary); background: rgba(38, 71, 150, 0.1);"><i class="fas fa-building"></i></div>
                         </div>
 
                         <!-- Reviews Card -->
                         <div class="summary-card" onclick="loadModule('reviews')">
                            <div class="summary-content">
                                 <h3>Client Reviews</h3>
-                                <div class="count">${newReviews > 0 ? newReviews : reviews.length}</div>
-                                <div class="sub-text">${newReviews > 0 ? 'New / Hidden Reviews' : 'Total Reviews'}</div>
+                                <div class="count">${newReviews > 0 ? newReviews + ' New' : '0 New'}</div>
+                                <div class="sub-text">
+                                    <span style="display:block; margin-top: 5px; font-size: 0.75rem; color: var(--secondary); font-weight: 600;">TOTAL REVIEWS</span>
+                                    <strong style="font-size: 1rem; color: var(--text-main);">${reviews.length}</strong>
+                                </div>
                            </div>
-                           <div class="summary-icon"><i class="fas fa-star"></i></div>
-                           ${newReviews > 0 ? '<div class="notification-dot"></div>' : ''}
+                           <div class="summary-right-panel">
+                               <div class="summary-icon" style="color: var(--warning); background: rgba(245, 158, 11, 0.1);"><i class="fas fa-star"></i></div>
+                               <div class="total-stats">
+                                   <span>Avg Rating</span>
+                                   <strong>${(() => {
+                        const totalRating = reviews.reduce((sum, r) => sum + parseInt(r.rating || 0), 0);
+                        return reviews.length ? (totalRating / reviews.length).toFixed(1) + ' / 5' : 'N/A';
+                    })()}</strong>
+                               </div>
+                           </div>
+                           ${newReviews > 0 ? '<div class="notification-dot">' + newReviews + '</div>' : ''}
                         </div>
 
                         <!-- Queries Card -->
                         <div class="summary-card" onclick="loadModule('queries')">
                            <div class="summary-content">
                                 <h3>Contact Queries</h3>
-                                <div class="count">${newQueries}</div>
-                                <div class="sub-text">New Queries</div>
+                                <div class="count">${newQueries > 0 ? newQueries + ' New' : '0 New'}</div>
+                                <div class="sub-text">Unread Messages</div>
                            </div>
-                           <div class="summary-icon"><i class="fas fa-envelope"></i></div>
-                           ${newQueries > 0 ? '<div class="notification-dot"></div>' : ''}
+                           <div class="summary-icon" style="color: var(--success); background: rgba(34, 197, 94, 0.1);"><i class="fas fa-envelope"></i></div>
+                           ${newQueries > 0 ? '<div class="notification-dot">' + newQueries + '</div>' : ''}
                         </div>
 
                         <!-- Careers Card -->
                         <div class="summary-card" onclick="loadModule('careers')">
                            <div class="summary-content">
                                 <h3>Careers</h3>
-                                <div class="count">${totalApps}</div>
+                                <div class="count">${newApps} New</div>
                                 <div class="sub-text">Received Applications</div>
                            </div>
-                           <div class="summary-icon"><i class="fas fa-briefcase"></i></div>
-                           ${totalApps > 0 ? '<div class="notification-dot"></div>' : ''}
+                           <div class="summary-icon" style="color: var(--btn-color); background: rgba(0, 151, 211, 0.1);"><i class="fas fa-briefcase"></i></div>
+                           ${newApps > 0 ? '<div class="notification-dot">' + newApps + '</div>' : ''}
+                        </div>
+                    </div>
+
+                    <!-- Lower Content Section -->
+                    <div class="content-grid">
+                        <!-- Recent Reviews -->
+                        <div class="content-block">
+                            <h3>Recent Reviews <button class="btn-sm btn-edit" onclick="loadModule('reviews')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
+                            <div class="recent-list">
+                                ${reviews.slice(0, 3).map(r => `
+                                    <div class="recent-item ${r.status === 'new' ? 'unread' : ''}" onclick="loadModule('reviews')">
+                                        <div class="avatar">${r.clientName.charAt(0)}</div>
+                                        <div class="info">
+                                            <h4>${r.clientName}</h4>
+                                            <p>${r.reviewText.substring(0, 60)}...</p>
+                                        </div>
+                                    </div>
+                                `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No reviews yet.</p>'}
+                            </div>
+                        </div>
+
+                        <!-- Recent Queries -->
+                        <div class="content-block">
+                            <h3>Recent Queries <button class="btn-sm btn-edit" onclick="loadModule('queries')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
+                            <div class="recent-list">
+                                ${queries.slice(0, 3).map(q => `
+                                    <div class="recent-item ${q.status === 'new' ? 'unread' : ''}" onclick="loadModule('queries')">
+                                        <div class="avatar" style="color: var(--success); background: rgba(34, 197, 94, 0.1);">${q.name.charAt(0)}</div>
+                                        <div class="info">
+                                            <h4>${q.name}</h4>
+                                            <p>${q.message.substring(0, 60)}...</p>
+                                        </div>
+                                    </div>
+                                `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No queries yet.</p>'}
+                            </div>
+                        </div>
+
+                        <!-- Recent Applications -->
+                        <div class="content-block">
+                            <h3>New Applications <button class="btn-sm btn-edit" onclick="loadModule('careers')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
+                            <div class="recent-list">
+                                ${careers.slice(0, 3).map(a => `
+                                    <div class="recent-item ${a.status === 'new' ? 'unread' : ''}" onclick="loadModule('careers')">
+                                        <div class="avatar" style="color: var(--btn-color); background: rgba(0, 151, 211, 0.1);">${a.name.charAt(0)}</div>
+                                        <div class="info">
+                                            <h4>${a.name}</h4>
+                                            <p>Applied for: <strong>${a.appliedRole}</strong></p>
+                                        </div>
+                                    </div>
+                                `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No applications yet.</p>'}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -492,44 +556,159 @@ function renderProjectTable(projects) {
     noMsg.style.display = 'none';
     tbody.innerHTML = projects.map(p => `
         <tr>
-            <td>${p.image ? `<img src="${p.image}" style="height: 40px; border-radius: 4px;">` : 'No Img'}</td>
+            <td>
+                ${(p.images && p.images.length > 0) ? `<img src="${p.images[0]}" style="height: 40px; border-radius: 4px;">` :
+            (p.image ? `<img src="${p.image}" style="height: 40px; border-radius: 4px;">` : 'No Img')}
+            </td>
             <td>${p.title}</td>
             <td>${p.location}</td>
             <td><span style="color: ${p.status === 'Completed' ? 'var(--success)' : 'var(--warning)'}">${p.status}</span></td>
             <td>
+                <button class="btn-sm btn-edit" onclick="openEditProject('${p.id}')"><i class="fas fa-edit"></i></button>
                 <button class="btn-sm btn-delete" onclick="deleteProject('${p.id}')"><i class="fas fa-trash"></i></button>
             </td>
         </tr>
     `).join('');
 }
 
-window.showProjectModal = () => {
+// Helper to open edit modal
+window.openEditProject = (id) => {
+    const project = cachedProjects.find(p => p.id === id);
+    if (project) showProjectModal(project);
+};
+
+window.showProjectModal = (project = null) => {
+    // State for this modal instance
+    let existingImages = project ? (project.images || (project.image ? [project.image] : [])) : [];
+    let newFiles = [];
+    const MAX_IMAGES = 27;
+
+    const renderPreviews = () => {
+        const container = document.getElementById('preview-container');
+        const countSpan = document.getElementById('image-count');
+        const uploadBtn = document.getElementById('upload-trigger-btn');
+
+        const total = existingImages.length + newFiles.length;
+        countSpan.textContent = `${total} / ${MAX_IMAGES}`;
+        uploadBtn.disabled = total >= MAX_IMAGES;
+
+        container.innerHTML = '';
+
+        // Existing
+        existingImages.forEach((src, idx) => {
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            div.innerHTML = `<img src="${src}"> <button type="button" class="remove-btn" onclick="removeExisting(${idx})">&times;</button>`;
+            container.appendChild(div);
+        });
+
+        // New
+        newFiles.forEach((file, idx) => {
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            // Create object URL
+            const url = URL.createObjectURL(file);
+            div.innerHTML = `<img src="${url}"> <button type="button" class="remove-btn" onclick="removeNew(${idx})">&times;</button>`;
+            container.appendChild(div);
+        });
+    };
+
+    // Global handlers for the modal context (temporary window Attachments)
+    window.removeExisting = (idx) => {
+        existingImages.splice(idx, 1);
+        renderPreviews();
+    };
+    window.removeNew = (idx) => {
+        newFiles.splice(idx, 1);
+        renderPreviews();
+    };
+
+    // File Handler
+    window.handleFiles = (input) => {
+        const files = Array.from(input.files);
+        const currentTotal = existingImages.length + newFiles.length;
+        const allowed = MAX_IMAGES - currentTotal;
+
+        if (files.length > allowed) {
+            alert(`Limit exceeded. You can only add ${allowed} more images.`);
+            return;
+        }
+
+        for (let f of files) {
+            // Validate type
+            if (!['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(f.type)) {
+                alert('Invalid format: ' + f.name);
+                continue;
+            }
+            newFiles.push(f);
+        }
+        renderPreviews();
+        input.value = ''; // Reset
+    };
+
     showModal(`
-        <h3>Add Project</h3>
-        <form id="add-project-form">
-            <div class="form-group"><label>Title</label><input type="text" name="title" class="form-control" required></div>
-            <div class="form-group"><label>Location</label><input type="text" name="location" class="form-control" required></div>
-            <div class="form-group"><label>Area (SqFt)</label><input type="text" name="area" class="form-control"></div>
+        <h3>${project ? 'Edit Project' : 'Add Project'}</h3>
+        <form id="project-form">
+            <div class="form-group"><label>Title</label><input type="text" name="title" class="form-control" value="${project ? project.title : ''}" required></div>
+            <div class="form-group"><label>Location</label><input type="text" name="location" class="form-control" value="${project ? project.location : ''}" required></div>
+            <div class="form-group"><label>Area (SqFt)</label><input type="text" name="area" class="form-control" value="${project ? project.area || '' : ''}"></div>
             <div class="form-group"><label>Status</label>
                 <select name="status" class="form-control">
-                    <option value="Ongoing">Ongoing</option>
-                    <option value="Completed">Completed</option>
+                    <option value="Ongoing" ${project && project.status === 'Ongoing' ? 'selected' : ''}>Ongoing</option>
+                    <option value="Completed" ${project && project.status === 'Completed' ? 'selected' : ''}>Completed</option>
                 </select>
             </div>
-            <div class="form-group"><label>Description</label><textarea name="description" class="form-control"></textarea></div>
-            <div class="form-group"><label>Image</label><input type="file" name="image" class="form-control" accept="image/*"></div>
-            <button type="submit" class="btn btn-primary">Save Project</button>
+            <div class="form-group"><label>YouTube Video URL</label><input type="url" name="youtubeUrl" class="form-control" placeholder="https://youtube.com/..." value="${project ? project.youtubeUrl || '' : ''}"></div>
+            <div class="form-group"><label>Description</label><textarea name="description" class="form-control">${project ? project.description || '' : ''}</textarea></div>
+            
+            <div class="form-group">
+                <label>Images (<span id="image-count">0 / ${MAX_IMAGES}</span>)</label>
+                <button type="button" id="upload-trigger-btn" class="btn-sm btn-edit" onclick="document.getElementById('file-input').click()">+ Add Images</button>
+                <input type="file" id="file-input" hidden multiple accept="image/*" onchange="handleFiles(this)">
+                <div id="preview-container" class="image-preview-container"></div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">${project ? 'Update Project' : 'Save Project'}</button>
         </form>
-    `, async () => {
-        document.getElementById('add-project-form').onsubmit = async (e) => {
+    `, () => {
+        renderPreviews();
+
+        document.getElementById('project-form').onsubmit = async (e) => {
             e.preventDefault();
+
+            // YouTube Validation
+            const ytInput = e.target.youtubeUrl.value;
+            const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+            if (ytInput && !ytRegex.test(ytInput)) {
+                alert('Invalid YouTube URL');
+                return;
+            }
+
             const formData = new FormData(e.target);
+
+            // Append Images
+            // 1. Existing paths as strings
+            existingImages.forEach(path => formData.append('existingImages', path));
+            // 2. New Files
+            newFiles.forEach(file => formData.append('images', file));
+
+            // Clean up FormData (remove 'image' from file input if it exists or duplicate names)
+            // Note: FormData(e.target) automatically grabs named inputs. 
+            // My file input has id='file-input' but NO name attribute, so it won't double add.
+            // But I have text inputs.
+
             try {
-                await apiCall('/projects', 'POST', formData, true); // multipart
+                const url = project ? `/projects/${project.id}` : '/projects';
+                const method = project ? 'PUT' : 'POST';
+
+                await apiCall(url, method, formData, true); // multipart
                 closeModal();
-                showToast('Project saved');
+                showToast(project ? 'Project updated' : 'Project saved');
                 loadModule('projects');
-            } catch (err) { }
+            } catch (err) {
+                console.error(err);
+                alert('Error processing request');
+            }
         };
     });
 };
