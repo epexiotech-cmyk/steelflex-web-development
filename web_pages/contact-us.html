@@ -7,6 +7,92 @@
     <title>Contact Us | SteelFlex Structures</title>
     <meta name="description" content="Get in touch with SteelFlex Structures for your industrial engineering needs.">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Contact Specific Styles */
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 80px;
+            margin-bottom: 80px;
+        }
+
+        .contact-details {
+            padding-right: 40px;
+            border-right: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .info-group {
+            margin-bottom: 40px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            display: block;
+            font-weight: 700;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        /* Clean Form Styles */
+        .modern-form .form-group {
+            margin-bottom: 25px;
+        }
+
+        .modern-form label {
+            display: block;
+            font-size: 0.95rem;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .modern-form input,
+        .modern-form textarea {
+            width: 100%;
+            padding: 15px;
+            background: #F6F8FB;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            color: #000;
+            transition: all 0.3s ease;
+        }
+
+        .modern-form input:focus,
+        .modern-form textarea:focus {
+            background: #fff;
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(38, 71, 150, 0.1);
+        }
+
+        .modern-form button {
+            width: 100%;
+        }
+
+        @media (max-width: 900px) {
+            .contact-layout {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .contact-details {
+                border-right: none;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                padding-bottom: 40px;
+                padding-right: 0;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -21,7 +107,7 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="about-us.html">About Us</a></li>
-                    <li><a href="products.html">Products</a></li>
+                    <li><a href="products-structures.html">Products</a></li>
                     <li><a href="capabilities.html">Capabilities</a></li>
                     <li><a href="machineries.html">Machineries</a></li>
                     <li><a href="projects.html">Projects</a></li>
@@ -31,126 +117,139 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Page Hero -->
+    <section class="hero-section" style="padding: 120px 0 60px; text-align: center; background: #fff;">
         <div class="container">
-            <header>
-                <h1>Get In Touch</h1>
-                <p class="subheading">Ready to start your project? Our team is here to assist you.</p>
-            </header>
+            <h1 style="color: var(--primary-color); font-size: 3rem; margin-bottom: 20px;">Start Your Project</h1>
+            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto; color: var(--secondary-color);">Connect with
+                our engineering team for a consultation or quote.</p>
         </div>
     </section>
 
     <!-- Main Content -->
     <main>
-        <!-- Contact Information & Form Container -->
-        <div class="contact-container"
-            style="background: var(--background-white); box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-radius: 8px; margin-top: -40px; position: relative; z-index: 10;">
+        <div class="container">
+            <div class="contact-layout">
 
-            <!-- Contact Information -->
-            <section class="contact-info">
-                <h2>Contact Information</h2>
+                <!-- Contact Info Side -->
+                <div class="contact-details">
+                    <div class="info-group">
+                        <span class="info-label">Corporate Office</span>
+                        <div class="info-value">
+                            SteelFlex Tower, Sector 62,<br>NOIDA, Uttar Pradesh - 201301
+                        </div>
+                    </div>
 
-                <div class="info-item" style="margin-bottom: 30px;">
-                    <h3>Corporate Office</h3>
-                    <p>SteelFlex Tower, Sector 62,<br>NOIDA, Uttar Pradesh - 201301</p>
+                    <div class="info-group">
+                        <span class="info-label">Manufacturing Plant</span>
+                        <div class="info-value">
+                            Plot No. 45, Industrial Area,<br>Bhiwadi, Rajasthan - 301019
+                        </div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Direct Lines</span>
+                        <div class="info-value">
+                            +91 98765 43210<br>
+                            <span style="font-size: 1rem; color: #666;">info@steelflexstructures.com</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="info-item" style="margin-bottom: 30px;">
-                    <h3>Manufacturing Plant</h3>
-                    <p>Plot No. 45, Industrial Area,<br>Bhiwadi, Rajasthan - 301019</p>
+                <!-- Contact Form Side -->
+                <div class="contact-form-wrapper">
+                    <form action="#" method="POST" class="modern-form">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" placeholder="Enter your business email"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="project">Project Type</label>
+                            <input type="text" id="project" name="project"
+                                placeholder="e.g., Warehouse, Factory, Structure">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Project Details</label>
+                            <textarea id="message" name="message" rows="5"
+                                placeholder="Briefly describe your requirements..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn">Send Request</button>
+                    </form>
                 </div>
 
-                <div class="info-item" style="margin-bottom: 30px;">
-                    <h3>Phone & Email</h3>
-                    <p>Phone: +91 98765 43210</p>
-                    <p>Email: info@steelflexstructures.com</p>
-                    <p>Sales: sales@steelflexstructures.com</p>
-                </div>
-
-                <div class="info-item">
-                    <h3>Business Hours</h3>
-                    <p>Monday - Saturday: 9:00 AM - 6:00 PM</p>
-                    <p>Sunday: Closed</p>
-                </div>
-            </section>
-
-            <!-- Contact Form -->
-            <section class="contact-form-section">
-                <h2>Send Us a Message</h2>
-                <form action="#" method="POST" class="contact-form">
-
-                    <div class="form-group">
-                        <label for="name">Full Name <span class="required" style="color: red;">*</span></label>
-                        <input type="text" id="name" name="name" required placeholder="John Doe">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="company">Company Name</label>
-                        <input type="text" id="company" name="company" placeholder="Your Company Ltd.">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">Email Address <span class="required" style="color: red;">*</span></label>
-                        <input type="email" id="email" name="email" required placeholder="john@example.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" placeholder="+91 12345 67890">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="message">Your Message <span class="required" style="color: red;">*</span></label>
-                        <textarea id="message" name="message" rows="5" required
-                            placeholder="Tell us about your project requirements..."></textarea>
-                    </div>
-
-                    <button type="submit" class="submit-btn btn">Send Message</button>
-                </form>
-            </section>
+            </div>
         </div>
 
-        <!-- Google Map Embed Placeholder -->
-        <section class="map-section container" style="margin-top: 40px;">
-            <div class="card">
-                <h2>Find Us</h2>
-                <div class="map-placeholder">
-                    <!-- Embedding Google Maps would go here. -->
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14008.11285527264!2d77.3649!3d28.6280!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDM3JzQwLjgiTiA3N8KwMjEnNTMuNiJF!5e0!3m2!1sen!2sin!4v1633000000000!5m2!1sen!2sin"
-                        width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                </div>
-            </div>
+        <!-- Google Map (Styled) -->
+        <section class="map-section" style="height: 400px; width: 100%; filter: grayscale(100%);">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14008.11285527264!2d77.3649!3d28.6280!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjjCsDM3JzQwLjgiTiA3N8KwMjEnNTMuNiJF!5e0!3m2!1sen!2sin!4v1633000000000!5m2!1sen!2sin"
+                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
         </section>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>SteelFlex Structures</h3>
-                    <p>Your trusted partner in heavy industrial engineering and turnkey steel construction solutions.
-                    </p>
-                </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="products.html">Products</a></li>
-                        <li><a href="capabilities.html">Capabilities</a></li>
-                        <li><a href="projects.html">Projects</a></li>
-                        <li><a href="contact-us.html">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact</h3>
-                    <p>+91 98765 43210</p>
-                    <p>info@steelflexstructures.com</p>
+    <!-- MODERN FOOTER (Modified CTA for Contact Page) -->
+    <footer class="site-footer-redesign">
+        <!-- Part 1: CTA Bridge (Hidden on Contact Page to avoid redundancy) -->
+        <div class="footer-cta-bridge" style="display: none;"></div>
+
+        <!-- Part 2: Main Footer Content -->
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid-modern">
+                    <!-- Column 1: Brand -->
+                    <div class="footer-col">
+                        <span class="footer-brand-title">SteelFlex Structures</span>
+                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
+                            steel construction solutions.</p>
+                    </div>
+
+                    <!-- Column 2: Quick Links -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Quick Links</h4>
+                        <ul class="footer-links-list">
+                            <li><a href="about-us.html">About Us</a></li>
+                            <li><a href="products-structures.html">Products</a></li>
+                            <li><a href="capabilities.html">Capabilities</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="contact-us.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Contact Info -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Contact</h4>
+                        <div class="footer-contact-item">
+                            <span>Phone</span>
+                            +91 98765 43210
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Email</span>
+                            info@steelflexstructures.com
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Location</span>
+                            Mumbai, India
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="copyright">
-                &copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.
+        </div>
+
+        <!-- Part 3: Legal Strip -->
+        <div class="footer-legal">
+            <div class="container">
+                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
             </div>
         </div>
     </footer>

@@ -22,7 +22,7 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="about-us.html" class="active">About Us</a></li>
-                    <li><a href="products.html">Products</a></li>
+                    <li><a href="products-structures.html">Products</a></li>
                     <li><a href="capabilities.html">Capabilities</a></li>
                     <li><a href="machineries.html">Machineries</a></li>
                     <li><a href="projects.html">Projects</a></li>
@@ -32,110 +32,814 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Background Shapes -->
+    <div class="bg-shape-circle shape-top-right"></div>
+
+    <!-- SECTION 1: HERO + IMAGE GRID (FREE FLOW) -->
+    <section class="hero-section container">
+        <div class="hero-grid">
+            <div class="hero-content">
+                <h1>You can always count on <span>us</span> for excellence.</h1>
+                <p class="subheading">Delivering reliable, technology-driven engineering solutions backed by experience,
+                    precision, and trust.</p>
+                <div style="margin-top: 40px;">
+                    <button class="btn">Explore Capabilities</button>
+                    <!-- <button class="btn btn-secondary">Our Projects</button> -->
+                </div>
+            </div>
+
+            <!-- Asymmetric Collage (Custom Depth Carousel) -->
+            <!-- About Us hero depth carousel -->
+            <div class="collage-container" id="heroCarousel">
+                <!-- Image Pool (6 Images) -->
+                <!-- 1. Start Main -->
+                <div class="collage-img img-main">
+                    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&q=80"
+                        alt="Industrial Engineer" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                <!-- 2. Start Small (Front) -->
+                <div class="collage-img img-small-1">
+                    <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=400&q=80"
+                        alt="Steel Construction" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                <!-- 3. Start Back (Behind Main) -->
+                <div class="collage-img img-small-2">
+                    <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&q=80"
+                        alt="Factory Detail" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                <!-- 4. Hidden Pool -->
+                <div class="collage-img img-out">
+                    <img src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=800&q=80"
+                        alt="Steel Structure" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                <!-- 5. Hidden Pool -->
+                <div class="collage-img img-out">
+                    <img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80"
+                        alt="Rafters" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                <!-- 6. Hidden Pool -->
+                <div class="collage-img img-out">
+                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
+                        alt="Warehouse" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+            </div>
+
+            <script>
+                // Custom Depth Carousel Logic
+                document.addEventListener('DOMContentLoaded', function () {
+                    const container = document.getElementById('heroCarousel');
+                    const images = Array.from(container.querySelectorAll('.collage-img'));
+
+                    // State Definitions based on CSS classes
+                    // Order: Back -> Main -> Small -> Out -> Out -> Out
+                    // We rotate these states to the right to simulate forward flow?
+                    // Let's trace:
+                    // Current: [Main, Small1, Small2, Out, Out, Out] relative to indices provided in HTML
+                    // HTML Order: 0:Main, 1:Small1, 2:Small2, 3:Out, 4:Out, 5:Out
+
+                    // Desired Flow:
+                    // Small2 (Back) -> moves to Main
+                    // Main -> moves to Small1
+                    // Small1 -> moves to Out
+                    // Out -> moves to Small2 (Back)
+
+                    // So, if we list the classes in "flow order": 
+                    // [img-small-2, img-main, img-small-1, img-out, img-out, img-out]
+
+                    // At Step 0:
+                    // Image 2 has img-small-2
+                    // Image 0 has img-main
+                    // Image 1 has img-small-1
+                    // Images 3,4,5 have img-out
+
+                    // At Step 1:
+                    // Image 2 should have img-main
+                    // Image 0 should have img-small-1
+                    // Image 1 should have img-out
+
+                    // It seems the assignment of classes shifts to the "next image in logical queue".
+                    // But effectively, we can just maintain an array of state classes and shift it.
+
+                    // Initial Map corresponding to DOM order [0, 1, 2, 3, 4, 5]:
+                    let stateClasses = [
+                        'img-main',     // DOM 0
+                        'img-small-1',  // DOM 1
+                        'img-small-2',  // DOM 2
+                        'img-out',      // DOM 3
+                        'img-out',      // DOM 4
+                        'img-out'       // DOM 5
+                    ];
+
+                    let interval;
+                    const DURATION = 4500;
+
+                    function rotateCarousel() {
+                        // We want 
+                        // DOM 0 (Main) -> becomes Small-1
+                        // DOM 1 (Small-1) -> becomes Out
+                        // DOM 2 (Small-2/Back) -> becomes Main
+                        // DOM 3 (Out) -> becomes Small-2/Back ?? (If it was next in line)
+
+                        // We need to define the "Predecessor" chain.
+                        // Main comes from Back.
+                        // Back comes from Out.
+                        // Small comes from Main.
+                        // Out comes from Small.
+
+                        // Let's shift the array of classes.
+                        // If we shift the assignment:
+                        // 'img-main' goes to the element that WAS 'img-small-2'.
+                        // 'img-small-1' goes to the element that WAS 'img-main'.
+                        // 'img-out' goes to the element that WAS 'img-small-1'.
+                        // 'img-small-2' goes to the element that WAS 'img-out'.
+
+                        // This means the class `img-main` moves to a specific target.
+                        // But simpler: just cycle the array of classes relative to the DOM elements.
+                        // If we Unshift (add to front) and Pop (remove from end)?
+                        // Let's test:
+                        // Current: [Main, Small1, Small2, Out, Out, Out]
+                        // Pop -> Out. Unshift -> [Out, Main, Small1, Small2, Out, Out]
+                        // DOM 0 gets Out. (Main -> Out). Wait, Main should go to Small1.
+
+                        // Let's try Shift (remove first) and Push (add to end)?
+                        // Remove Main. Shifted: [Small1, Small2, Out, Out, Out]. Push Main -> [Small1, Small2, Out, Out, Out, Main].
+                        // DOM 0 gets Small1. (Main -> Small1). YES.
+                        // DOM 1 gets Small2. (Small1 -> Small2). NO. Small1 should go to Out.
+
+                        // Okay, the array shouldn't be mapped 1:1 to DOM index if the sequence isn't linear in DOM.
+                        // But we can just enforce the sequence via the array.
+                        // Sequence of lifecycle: Back -> Main -> Front -> Out -> Out -> Out...
+                        // Cycle: img-small-2 -> img-main -> img-small-1 -> img-out -> img-out -> img-out
+
+                        // We want the element that HAS `img-small-2` to GET `img-main`.
+                        // The element that HAS `img-main` to GET `img-small-1`.
+
+                        // So the state transforms:
+                        // img-small-2 => img-main
+                        // img-main => img-small-1
+                        // img-small-1 => img-out
+                        // img-out (last) => img-small-2
+
+                        // Update the array `stateClasses`.
+                        // We need to find the index of each class type and swap them? No.
+                        // We have 6 elements. Each currently holds a state.
+                        // Let's compute next state for each element.
+
+                        // Transformation Map:
+                        // 'img-main' -> 'img-small-1'
+                        // 'img-small-1' -> 'img-out'
+                        // 'img-small-2' -> 'img-main'
+                        // 'img-out' -> 'img-out' (stay out) until... queue?
+
+                        // This implies a queue.
+                        // Images in pool: [0, 1, 2, 3, 4, 5]
+                        // Slots: [Back, Main, Front, Out1, Out2, Out3]
+                        // Slot 0 (Back): Holds Image X
+                        // Slot 1 (Main): Holds Image Y
+                        // Slot 2 (Front): Holds Image Z
+                        // ...
+
+                        // Rotation:
+                        // Slot 1 (Main) content moves to Slot 2 (Front).
+                        // Slot 2 (Front) content moves to Slot 3 (Out).
+                        // Slot 0 (Back) content moves to Slot 1 (Main).
+                        // Slot 5 (Last Out) content moves to Slot 0 (Back).
+
+                        // So we rotate the CONTENT of the slots.
+                        // `slots` array holds the Images (DOM Elements).
+                        // `[ImgAtBack, ImgAtMain, ImgAtFront, ImgOut1, ImgOut2, ImgOut3]`
+
+                        // Initial Slots based on HTML:
+                        // ImgAtBack = DOM 2
+                        // ImgAtMain = DOM 0
+                        // ImgAtFront = DOM 1
+                        // ImgOut... = DOM 3, 4, 5
+
+                        let slots = [
+                            images[2], // Back
+                            images[0], // Main
+                            images[1], // Front (Small-1)
+                            images[3], // Out
+                            images[4], // Out
+                            images[5]  // Out
+                        ];
+
+                        // Rotate slots array: Shift right?
+                        // New Back = Old Last Out (Slot 5)
+                        // New Main = Old Back (Slot 0)
+                        // New Front = Old Main (Slot 1)
+                        // ...
+
+                        // So: [5, 0, 1, 2, 3, 4]
+                        // Pop last element, Unshift to front.
+                        const last = slots.pop();
+                        slots.unshift(last);
+
+                        // Now Apply Classes based on new Slot Roles
+                        // Slot 0: 'img-small-2' (Back)
+                        // Slot 1: 'img-main'
+                        // Slot 2: 'img-small-1' (Front)
+                        // Slot 3+: 'img-out'
+
+                        slots.forEach((img, index) => {
+                            // Reset classes
+                            img.className = 'collage-img';
+
+                            if (index === 0) img.classList.add('img-small-2');
+                            else if (index === 1) img.classList.add('img-main');
+                            else if (index === 2) img.classList.add('img-small-1');
+                            else img.classList.add('img-out');
+                        });
+                    }
+
+                    function startRotation() {
+                        interval = setInterval(rotateCarousel, DURATION);
+                    }
+
+                    function stopRotation() {
+                        clearInterval(interval);
+                    }
+
+                    // Start
+                    startRotation();
+
+                    // Hover Events
+                    container.addEventListener('mouseenter', stopRotation);
+                    container.addEventListener('mouseleave', startRotation);
+
+                    // Initial Setup (to sync our logic var with reality)
+                    // We constructed `slots` manually above.
+                    // But `rotateCarousel` relies on the `slots` variable being persistent.
+                    // So we must hoist `slots` to outer scope.
+
+                    // Let's redefine `slots` in the outer scope.
+                    // RE-INIT SLOTS Correctly:
+                    // DOM: 0=Main, 1=Front, 2=Back.
+                    // Slots desired: [Back, Main, Front, Out, Out, Out]
+                    // So: [images[2], images[0], images[1], images[3], images[4], images[5]]
+
+                    // We need to store this persistent array.
+                    container.slots = [
+                        images[2],
+                        images[0],
+                        images[1],
+                        images[3],
+                        images[4],
+                        images[5]
+                    ];
+
+                    // Overwrite local function to use container.slots
+                    container.rotateFn = function () {
+                        const s = container.slots;
+                        const last = s.pop();
+                        s.unshift(last);
+
+                        s.forEach((img, index) => {
+                            img.className = 'collage-img'; // reset base
+                            if (index === 0) img.classList.add('img-small-2');
+                            else if (index === 1) img.classList.add('img-main');
+                            else if (index === 2) img.classList.add('img-small-1');
+                            else img.classList.add('img-out');
+                        });
+                    };
+
+                    interval = setInterval(container.rotateFn, DURATION);
+
+                    container.addEventListener('mouseenter', () => clearInterval(interval));
+                    container.addEventListener('mouseleave', () => interval = setInterval(container.rotateFn, DURATION));
+                });
+            </script>
+        </div>
+    </section>
+    </div>
+    </section>
+
+    <!-- SECTION 2: TRUSTED BY PARTNERS (CAROUSEL) -->
+    <section class="partners-section">
         <div class="container">
-            <header>
-                <h1>Engineering Excellence in Steel Construction</h1>
-                <p class="subheading">Building the Foundation of Modern Industry with Precision and Integrity.</p>
-            </header>
+            <h3 class="partners-title">Trusted by partners across industries</h3>
+
+            <div class="logo-carousel">
+                <div class="logo-track">
+                    <!-- Original Set -->
+                    <!-- Replace with actual partner logo -->
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=AeroDynamics" alt="AeroDynamics"
+                        class="partner-logo">
+                    <!-- Replace with actual partner logo -->
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=BuildCorp" alt="BuildCorp"
+                        class="partner-logo">
+                    <!-- Replace with actual partner logo -->
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=SteelWorks" alt="SteelWorks"
+                        class="partner-logo">
+                    <!-- Replace with actual partner logo -->
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=InfraTech" alt="InfraTech"
+                        class="partner-logo">
+                    <!-- Replace with actual partner logo -->
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=MegaConstruct" alt="MegaConstruct"
+                        class="partner-logo">
+                    <!-- Replace with actual partner logo -->
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=GlobalGrid" alt="GlobalGrid"
+                        class="partner-logo">
+                    <!-- Replace with actual partner logo -->
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=UrbanForge" alt="UrbanForge"
+                        class="partner-logo">
+
+                    <!-- Duplicated Set for Infinite Loop -->
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=AeroDynamics" alt="AeroDynamics"
+                        class="partner-logo">
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=BuildCorp" alt="BuildCorp"
+                        class="partner-logo">
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=SteelWorks" alt="SteelWorks"
+                        class="partner-logo">
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=InfraTech" alt="InfraTech"
+                        class="partner-logo">
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=MegaConstruct" alt="MegaConstruct"
+                        class="partner-logo">
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=GlobalGrid" alt="GlobalGrid"
+                        class="partner-logo">
+                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=UrbanForge" alt="UrbanForge"
+                        class="partner-logo">
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Main Content -->
-    <main>
-        <!-- Who We Are -->
-        <section class="who-we-are container">
+    <!-- SECTION 3: COMPANY SNAPSHOT / STATS (FLOATING LINE) -->
+    <!-- SECTION 3: COMPANY SNAPSHOT / ARC METRICS (STORY) -->
+    <section class="arc-section">
+        <div class="container arc-container">
+            <!-- The Dotted Semi-Circle Track -->
+            <div class="arc-track"></div>
+
+            <!-- Center Anchor -->
+            <div class="arc-center-anchor">
+                <!-- Visual Anchor -->
+                <div class="arc-center-image">
+                    <img id="arcCenterImg"
+                        src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=400&q=80"
+                        alt="Engineering Excellence">
+                </div>
+                <h3 id="arcCenterTitle">Engineering Excellence</h3>
+                <p id="arcCenterDesc">Experience, execution, and expertise.</p>
+            </div>
+
+            <!-- Item 1: 20+ Years -->
+            <div class="arc-item pos-1 scroll-hidden" data-center-title="Built on Experience"
+                data-center-desc="Over two decades of hands-on industrial engineering, project execution, and continuous learning."
+                data-center-img="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=400&q=80">
+                <span class="arc-emoji">🕰️</span>
+                <span class="arc-num">20+</span>
+                <span class="arc-label">Years of Exp.</span>
+                <!-- Kept small story for local context if needed, but Center is now main -->
+                <p class="arc-story">Decades of industrial expertise.</p>
+            </div>
+
+            <!-- Item 2: 500+ Projects -->
+            <div class="arc-item pos-2 scroll-hidden" data-center-title="Proven at Scale"
+                data-center-desc="Successfully delivered 500+ projects across diverse industrial and infrastructure environments."
+                data-center-img="https://images.unsplash.com/photo-1541976544383-304bd921d429?auto=format&fit=crop&w=400&q=80">
+                <span class="arc-emoji">🏗️</span>
+                <span class="arc-num">500+</span>
+                <span class="arc-label">Projects</span>
+                <p class="arc-story">Executed across diverse sectors.</p>
+            </div>
+
+            <!-- Item 3: 12 Industries -->
+            <div class="arc-item pos-3 scroll-hidden" data-center-title="Industry Versatility"
+                data-center-desc="Engineering solutions tailored for manufacturing, infrastructure, energy, logistics, and more."
+                data-center-img="https://images.unsplash.com/photo-1581091226825-c6a89e7e4801?auto=format&fit=crop&w=400&q=80">
+                <span class="arc-emoji">🏭</span>
+                <span class="arc-num">12</span>
+                <span class="arc-label">Industries</span>
+                <p class="arc-story">Manufacturing to infrastructure.</p>
+            </div>
+
+            <!-- Item 4: 50+ Experts -->
+            <div class="arc-item pos-4 scroll-hidden" data-center-title="People Who Engineer"
+                data-center-desc="A multidisciplinary team of engineers, designers, and specialists driving precision."
+                data-center-img="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&q=80">
+                <span class="arc-emoji">👷</span>
+                <span class="arc-num">50+</span>
+                <span class="arc-label">Experts</span>
+                <p class="arc-story">Multidisciplinary precision team.</p>
+            </div>
+
+            <!-- Item 5: 1000+ MT Monthly Capacity -->
+            <div class="arc-item pos-5 scroll-hidden" data-center-title="Production Power"
+                data-center-desc="State-of-the-art manufacturing facility with a monthly capacity of over 1000 MT."
+                data-center-img="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=400&q=80">
+                <span class="arc-emoji">⚙️</span>
+                <span class="arc-num">1000+ MT</span>
+                <span class="arc-label">Monthly Capacity</span>
+                <p class="arc-story">High-volume monthly production.</p>
+            </div>
+
+            <!-- Item 6: Pan India Presence -->
+            <div class="arc-item pos-6 scroll-hidden" data-center-title="Nationwide Reach"
+                data-center-desc="Delivering excellence across the country with a robust pan-India logistics and support network."
+                data-center-img="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=400&q=80">
+                <span class="arc-emoji">🇮🇳</span>
+                <span class="arc-num">Pan India</span>
+                <span class="arc-label">Presence</span>
+                <p class="arc-story">Serving clients nationwide.</p>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const centerTitle = document.getElementById('arcCenterTitle');
+                const centerDesc = document.getElementById('arcCenterDesc');
+                const centerImg = document.getElementById('arcCenterImg');
+                const arcItems = document.querySelectorAll('.arc-item');
+
+                // Store defaults
+                const defaultTitle = centerTitle.innerText;
+                const defaultDesc = centerDesc.innerText;
+                const defaultImgSrc = centerImg.src;
+
+                function updateCenter(title, desc, imgSrc) {
+                    // Mobile check: No interaction on small screens
+                    if (window.innerWidth < 900) return;
+
+                    // Fade Out Elements
+                    centerTitle.style.opacity = '0';
+                    centerDesc.style.opacity = '0';
+                    centerImg.style.opacity = '0.5'; // Don't full hide image, just dim
+
+                    centerTitle.style.transform = 'translateY(5px)';
+                    centerDesc.style.transform = 'translateY(5px)';
+
+                    setTimeout(() => {
+                        // Update Content
+                        centerTitle.innerText = title;
+                        centerDesc.innerText = desc;
+                        if (imgSrc) centerImg.src = imgSrc;
+
+                        // Fade In
+                        centerTitle.style.opacity = '1';
+                        centerDesc.style.opacity = '1';
+                        centerImg.style.opacity = '1';
+
+                        centerTitle.style.transform = 'translateY(0)';
+                        centerDesc.style.transform = 'translateY(0)';
+                    }, 250); // Wait for transition
+                }
+
+                // Hover Events
+                arcItems.forEach(item => {
+                    item.addEventListener('mouseenter', () => {
+                        const newTitle = item.getAttribute('data-center-title');
+                        const newDesc = item.getAttribute('data-center-desc');
+                        const newImg = item.getAttribute('data-center-img');
+                        if (newTitle && newDesc) {
+                            updateCenter(newTitle, newDesc, newImg);
+                        }
+                    });
+
+                    item.addEventListener('mouseleave', () => {
+                        // Revert to default
+                        updateCenter(defaultTitle, defaultDesc, defaultImgSrc);
+                    });
+                });
+
+                // Scroll Animation (IntersectionObserver)
+                // Respect Reduced Motion
+                const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+                if (!prefersReducedMotion) {
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach((entry, index) => {
+                            if (entry.isIntersecting) {
+                                // Add staggered delay based on DOM order for mobile flow
+                                setTimeout(() => {
+                                    entry.target.classList.add('scroll-active');
+                                }, index * 100);
+                                observer.unobserve(entry.target);
+                            }
+                        });
+                    }, { threshold: 0.2 });
+
+                    document.querySelectorAll('.scroll-hidden').forEach(el => observer.observe(el));
+
+                    // Also animate center anchor
+                    const centerAnchor = document.querySelector('.arc-center-anchor');
+                    if (centerAnchor) {
+                        observer.observe(centerAnchor);
+                        centerAnchor.classList.add('scroll-hidden'); // Add initial class
+                    }
+                } else {
+                    // Immediate show if reduced motion
+                    document.querySelectorAll('.scroll-hidden').forEach(el => el.classList.remove('scroll-hidden'));
+                }
+            });
+        </script>
+    </section>
+
+    <!-- SECTION 4: WHO WE ARE (TECH REDESIGN) -->
+    <section class="container who-section-tech">
+        <!-- Section Header -->
+        <div class="who-header">
             <h2>Who We Are</h2>
-            <p>SteelFlex Structures is a premier industrial engineering firm specializing in high-performance steel
-                infrastructure. With decades of collective experience, we deliver end-to-end solutions ranging from
-                pre-engineered buildings (PEBs) to complex heavy structural fabrication. Our tailored approach ensures
-                that
-                every project meets the rigorous demands of modern industry.</p>
-        </section>
+            <p>Redefining industrial construction through precision, speed, and innovation.</p>
+        </div>
 
-        <!-- Our Vision -->
-        <section class="vision container">
-            <div class="card">
-                <h2>Our Vision</h2>
-                <p>To be the global benchmark for quality and innovation in steel structural engineering, driving
-                    sustainable
-                    industrial growth through superior infrastructure.</p>
+        <!-- Main Tech Layout (60/40) -->
+        <div class="tech-grid">
+            <!-- Left: Content -->
+            <div class="tech-content">
+                <h3>Engineering the future of steel infrastructure.</h3>
+
+                <div class="value-pillars">
+                    <!-- Pillar 1 -->
+                    <div class="pillar-item">
+                        <h4>Technology-Driven Design</h4>
+                        <p>Leveraging advanced BIM modeling and automated fabrication for zero-error execution.</p>
+                    </div>
+                    <!-- Pillar 2 -->
+                    <div class="pillar-item">
+                        <h4>End-to-End Execution</h4>
+                        <p>A seamless ecosystem from structural conceptualization to final site erection.</p>
+                    </div>
+                    <!-- Pillar 3 -->
+                    <div class="pillar-item">
+                        <h4>Industrial-Grade Reliability</h4>
+                        <p>Structures engineered to withstand the most demanding operational environments.</p>
+                    </div>
+                </div>
+
+                <a href="capabilities.html" class="btn">Learn More</a>
             </div>
-        </section>
 
-        <!-- Our Mission -->
-        <section class="mission container">
-            <div class="card">
-                <h2>Our Mission</h2>
-                <ul>
-                    <li>✓ To deliver defect-free, high-quality steel structures on time, every time.</li>
-                    <li>✓ To innovate continuously, adopting the latest fabrication technologies and safety standards.
-                    </li>
-                    <li>✓ To foster long-term partnerships with clients through transparency and operational excellence.
-                    </li>
-                    <li>✓ To ensure the highest standards of safety and sustainability in all our construction
-                        practices.</li>
-                </ul>
+            <!-- Right: Visual -->
+            <div class="tech-visual">
+                <div class="tech-overlay"></div>
+                <!-- Stock Tech-Focused Image -->
+                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80"
+                    alt="Advanced Steel Fabrication" style="height: 400px; object-fit: cover;">
             </div>
-        </section>
+        </div>
 
-        <!-- Why Choose Us -->
-        <section class="why-choose-us container">
-            <h2>Why Choose Us</h2>
-            <div class="highlight-grid">
-                <div class="highlight-item">
-                    <h3>Unmatched Expertise</h3>
-                    <p>Over 20 years of specialized experience in heavy industrial fabrication and turnkey project
-                        management.</p>
-                </div>
-                <div class="highlight-item">
-                    <h3>Precision Engineering</h3>
-                    <p>State-of-the-art manufacturing facilities ensuring millimeter-perfect accuracy in every
-                        component.
-                    </p>
-                </div>
-                <div class="highlight-item">
-                    <h3>Timely Delivery</h3>
-                    <p>A proven track record of adhering to strict timelines without compromising on quality or safety.
-                    </p>
-                </div>
-                <div class="highlight-item">
-                    <h3>Comprehensive Support</h3>
-                    <p>From initial design and consultation to erection and final handover, we are with you every step
-                        of
-                        the way.</p>
-                </div>
-            </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <!-- Footer -->
-    <footer class="main-footer">
+    <!-- SECTION 5: WHAT POWERS US (NEW SECTION) -->
+    <section class="powers-section">
         <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>SteelFlex Structures</h3>
-                    <p>Your trusted partner in heavy industrial engineering and turnkey steel construction solutions.
-                    </p>
+            <div class="powers-header">
+                <h2>What Powers Us</h2>
+            </div>
+
+            <div class="powers-grid">
+                <!-- Power 1 -->
+                <div class="power-block">
+                    <span class="power-icon">🤖</span>
+                    <span class="power-title">Advanced Robotics</span>
+                    <span class="power-desc">Automated precision fabrication for zero-error components.</span>
                 </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="products.html">Products</a></li>
-                        <li><a href="capabilities.html">Capabilities</a></li>
-                        <li><a href="projects.html">Projects</a></li>
-                        <li><a href="contact-us.html">Contact Us</a></li>
-                    </ul>
+                <!-- Power 2 -->
+                <div class="power-block">
+                    <span class="power-icon">🧩</span>
+                    <span class="power-title">4D Simulation</span>
+                    <span class="power-desc">Virtual construction planning to optimize erection timelines.</span>
                 </div>
-                <div class="footer-section">
-                    <h3>Contact</h3>
-                    <p>+91 98765 43210</p>
-                    <p>info@steelflexstructures.com</p>
+                <!-- Power 3 -->
+                <div class="power-block">
+                    <span class="power-icon">♻️</span>
+                    <span class="power-title">Sustainable Steel</span>
+                    <span class="power-desc">Commitment to 100% recyclable materials and green processes.</span>
+                </div>
+                <!-- Power 4 -->
+                <div class="power-block">
+                    <span class="power-icon">🦺</span>
+                    <span class="power-title">Global Safety Standards</span>
+                    <span class="power-desc">A zero-accident philosophy woven into every operation.</span>
                 </div>
             </div>
-            <div class="copyright">
-                &copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.
+        </div>
+    </section>
+
+    <!-- SECTION 5: STRATEGIC BLOCK (VISION, MISSION, GOALS) -->
+    <section class="container strategic-section">
+
+        <!-- VISION: Visual Left, Content Right -->
+        <div class="vm-block">
+            <div class="vm-visual">
+                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
+                    alt="Future Vision">
+            </div>
+            <div class="vm-content">
+                <h3>🚀 Our Vision</h3>
+                <p>To be the global benchmark for quality and innovation in steel structural engineering.</p>
+                <p class="vm-subtext">Driving sustainable industrial growth through superior infrastructure.</p>
+            </div>
+        </div>
+
+        <!-- MISSION: Content Left, Visual Right -->
+        <div class="vm-block reversed">
+            <div class="vm-content">
+                <h3>🎯 Our Mission</h3>
+                <div class="mission-list">
+                    <div class="mission-item">
+                        <span>🛠️</span> Deliver defect-free, high-quality steel structures.
+                    </div>
+                    <div class="mission-item">
+                        <span>⚙️</span> Innovate continuously with advanced fabrication technologies.
+                    </div>
+                    <div class="mission-item">
+                        <span>🤝</span> Build transparent, long-term partnerships.
+                    </div>
+                    <div class="mission-item">
+                        <span>🦺</span> Maintain highest standards of safety and sustainability.
+                    </div>
+                </div>
+            </div>
+            <div class="vm-visual">
+                <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80"
+                    alt="Mission Execution">
+            </div>
+        </div>
+
+        <!-- GOALS: New Horizontal Block -->
+        <div class="goals-block">
+            <div class="goals-header">
+                <h3>Our Goals</h3>
+            </div>
+            <div class="goals-grid">
+                <!-- Goal 1 -->
+                <div class="goal-card">
+                    <span class="goal-emoji">📈</span>
+                    <span class="goal-title">Sustainable Growth</span>
+                    <span class="goal-desc">Expand capacity while maintaining quality and efficiency.</span>
+                </div>
+                <!-- Goal 2 -->
+                <div class="goal-card">
+                    <span class="goal-emoji">🧠</span>
+                    <span class="goal-title">Technology Leadership</span>
+                    <span class="goal-desc">Adopt smarter tools, automation, and data-driven processes.</span>
+                </div>
+                <!-- Goal 3 -->
+                <div class="goal-card">
+                    <span class="goal-emoji">🌍</span>
+                    <span class="goal-title">Industry Impact</span>
+                    <span class="goal-desc">Deliver infrastructure that supports long-term development.</span>
+                </div>
+                <!-- Goal 4 -->
+                <div class="goal-card">
+                    <span class="goal-emoji">🤝</span>
+                    <span class="goal-title">Client Success</span>
+                    <span class="goal-desc">Become a trusted long-term engineering partner.</span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- SECTION 6: WHY CHOOSE US (REDESIGN) -->
+    <section class="why-section-redesign">
+        <div class="container">
+            <div class="why-header">
+                <h2>Why Choose Us</h2>
+                <p class="why-subtext">What sets Steelflex apart in industrial engineering.</p>
+            </div>
+
+            <div class="why-grid-new">
+                <!-- Differentiator 1 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">🏆</span>
+                    <span class="why-title-new">Unmatched Expertise</span>
+                    <span class="why-desc-new">Over 20 years of specialized experience in heavy industrial fabrication
+                        and turnkey project management.</span>
+                </div>
+                <!-- Differentiator 2 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">📐</span>
+                    <span class="why-title-new">Precision Engineering</span>
+                    <span class="why-desc-new">State-of-the-art manufacturing facilities ensuring millimeter-perfect
+                        accuracy in every component.</span>
+                </div>
+                <!-- Differentiator 3 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">⏱️</span>
+                    <span class="why-title-new">Timely Delivery</span>
+                    <span class="why-desc-new">A proven track record of adhering to strict timelines without
+                        compromising on quality or safety.</span>
+                </div>
+                <!-- Differentiator 4 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">🤝</span>
+                    <span class="why-title-new">Comprehensive Support</span>
+                    <span class="why-desc-new">From initial design and consultation to erection and final handover, we
+                        are with you every step of the way.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 7: LEADERSHIP / PEOPLE SECTION -->
+    <section class="container people-section">
+        <h2>Driven by People. Powered by Engineering.</h2>
+        <p class="people-description">Experienced professionals committed to quality, safety, and execution.</p>
+
+        <div class="leadership-grid">
+            <!-- Person 1 -->
+            <div class="person-card">
+                <!-- Replace with actual Steelflex team member -->
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80"
+                    alt="Arjun Mehta" class="person-img">
+                <span class="person-name">Arjun Mehta</span>
+                <span class="person-role">Head of Engineering</span>
+                <p class="person-quote">"Ensuring engineering excellence across every project."</p>
+            </div>
+
+            <!-- Person 2 -->
+            <div class="person-card">
+                <!-- Replace with actual Steelflex team member -->
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80"
+                    alt="Priya Sharma" class="person-img">
+                <span class="person-name">Priya Sharma</span>
+                <span class="person-role">Project Manager</span>
+                <p class="person-quote">"Delivering timelines without compromising safety."</p>
+            </div>
+
+            <!-- Person 3 -->
+            <div class="person-card">
+                <!-- Replace with actual Steelflex team member -->
+                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80"
+                    alt="Vikram Singh" class="person-img">
+                <span class="person-name">Vikram Singh</span>
+                <span class="person-role">Lead Architect</span>
+                <p class="person-quote">"Designing structures that stand the test of time."</p>
+            </div>
+
+            <!-- Person 4 -->
+            <div class="person-card">
+                <!-- Replace with actual Steelflex team member -->
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+                    alt="Rohan Das" class="person-img">
+                <span class="person-name">Rohan Das</span>
+                <span class="person-role">Safety Officer</span>
+                <p class="person-quote">"Zero compromises on operational safety standards."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- MODERN FOOTER (3 PARTS) -->
+    <footer class="site-footer-redesign">
+        <!-- Part 1: CTA Bridge -->
+        <div class="footer-cta-bridge">
+            <div class="container">
+                <h2 class="footer-cta-title">Let’s build reliable engineering solutions together.</h2>
+                <a href="contact-us.html" class="btn-footer-cta">Contact Our Team</a>
+            </div>
+        </div>
+
+        <!-- Part 2: Main Footer Content -->
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid-modern">
+                    <!-- Column 1: Brand -->
+                    <div class="footer-col">
+                        <span class="footer-brand-title">SteelFlex Structures</span>
+                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
+                            steel construction solutions.</p>
+                    </div>
+
+                    <!-- Column 2: Quick Links -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Quick Links</h4>
+                        <ul class="footer-links-list">
+                            <li><a href="about-us.html">About Us</a></li>
+                            <li><a href="products-structures.html">Products</a></li>
+                            <li><a href="capabilities.html">Capabilities</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="contact-us.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Contact Info -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Contact</h4>
+                        <div class="footer-contact-item">
+                            <span>Phone</span>
+                            +91 98765 43210
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Email</span>
+                            info@steelflexstructures.com
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Location</span>
+                            Mumbai, India
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part 3: Legal Strip -->
+        <div class="footer-legal">
+            <div class="container">
+                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
             </div>
         </div>
     </footer>

@@ -7,6 +7,128 @@
     <title>Projects | SteelFlex Structures</title>
     <meta name="description" content="Explore our portfolio of completed and ongoing industrial projects.">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Projects Specific Styles */
+        .project-filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+
+        .filter-btn {
+            background: #F6F8FB;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            /* Pill shape */
+            font-size: 0.95rem;
+            color: var(--secondary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .project-card {
+            background: #fff;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            /* Minimal styling as per "free flow" */
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-card-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: var(--border-radius-lg);
+            margin-bottom: 20px;
+        }
+
+        .project-tag {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .project-title {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .project-meta {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .project-link {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Large Feature Card */
+        .featured-project {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 50px;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+
+        .featured-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 900px) {
+            .projects-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .featured-project {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -21,7 +143,7 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="about-us.html">About Us</a></li>
-                    <li><a href="products.html">Products</a></li>
+                    <li><a href="products-structures.html">Products</a></li>
                     <li><a href="capabilities.html">Capabilities</a></li>
                     <li><a href="machineries.html">Machineries</a></li>
                     <li><a href="projects.html" class="active">Projects</a></li>
@@ -31,132 +153,179 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Page Hero -->
+    <section class="hero-section" style="padding: 120px 0 60px; text-align: center; background: #fff;">
         <div class="container">
-            <header>
-                <h1>Our Portfolio</h1>
-                <p class="subheading">Delivering Industrial Landmarks Since 2005.</p>
-            </header>
+            <h1 style="color: var(--primary-color); font-size: 3rem; margin-bottom: 20px;">Our Portfolio</h1>
+            <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto; color: var(--secondary-color);">Building
+                industrial landmarks across the nation since 2005.</p>
         </div>
     </section>
 
     <!-- Main Content -->
-    <main>
-        <!-- Filter Tabs -->
-        <nav class="project-filters container">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="manufacturing">Manufacturing</button>
-            <button class="filter-btn" data-filter="industrial">Industrial</button>
-            <button class="filter-btn" data-filter="automation">Automation</button>
-            <button class="filter-btn" data-filter="infrastructure">Infrastructure</button>
-            <button class="filter-btn" data-filter="ongoing">Ongoing</button>
-            <button class="filter-btn" data-filter="completed">Completed</button>
-        </nav>
+    <main style="padding-bottom: 80px;">
+        <div class="container">
 
-        <!-- Featured Projects -->
-        <section class="featured-projects container">
-            <div class="card" style="border-left: 5px solid var(--primary-color);">
-                <h2>Featured Landmark</h2>
-                <article class="featured-card">
-                    <div class="featured-content">
-                        <span class="category-tag">Infrastructure</span>
-                        <h3>National Logistics Hub, Delhi</h3>
-                        <p>A flagship 500,000 sq. ft. automated logistics park featuring 30m clear spans.</p>
-                        <a href="project-detail.html" style="color: var(--primary-color); font-weight: 600;">View Case
-                            Study &rarr;</a>
+            <!-- Filters -->
+            <nav class="project-filters">
+                <button class="filter-btn active">All Projects</button>
+                <button class="filter-btn">Manufacturing</button>
+                <button class="filter-btn">Industrial</button>
+                <button class="filter-btn">Infrastructure</button>
+            </nav>
+
+            <!-- Featured Project (Layout Shift: Editorial) -->
+            <section class="featured-project">
+                <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1200&q=80"
+                    alt="Logistics Hub" style="width: 100%; border-radius: var(--border-radius-lg);">
+                <div class="featured-content">
+                    <span class="project-tag">Featured Infrastructure</span>
+                    <h2>National Logistics Hub, Delhi</h2>
+                    <p style="font-size: 1.1rem; line-height: 1.6; color: #555; margin-bottom: 30px;">
+                        A flagship 500,000 sq. ft. automated logistics park featuring 30m clear spans to accommodate
+                        next-gen warehousing robotics.
+                    </p>
+                    <a href="project-detail.html" class="btn">View Case Study</a>
+                </div>
+            </section>
+
+            <!-- Regular Grid -->
+            <div class="projects-grid">
+
+                <!-- Project 1 -->
+                <article class="project-card">
+                    <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
+                        alt="Assembly Plant" class="project-card-image">
+                    <div class="project-content">
+                        <span class="project-tag">Manufacturing</span>
+                        <h3 class="project-title">Automotive Assembly Plant</h3>
+                        <p class="project-meta">Client: AutoCorp International</p>
+                        <a href="project-detail.html" class="project-link">View Details &rarr;</a>
                     </div>
                 </article>
+
+                <!-- Project 2 -->
+                <article class="project-card">
+                    <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80"
+                        alt="Chemical Plant" class="project-card-image">
+                    <div class="project-content">
+                        <span class="project-tag">Industrial</span>
+                        <h3 class="project-title">Heavy Chemical Processing</h3>
+                        <p class="project-meta">Client: ChemFlow Industries</p>
+                        <a href="project-detail.html" class="project-link">View Details &rarr;</a>
+                    </div>
+                </article>
+
+                <!-- Project 3 -->
+                <article class="project-card">
+                    <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=600&q=80"
+                        alt="Warehouse" class="project-card-image">
+                    <div class="project-content">
+                        <span class="project-tag">Automation</span>
+                        <h3 class="project-title">Robotic Warehousing</h3>
+                        <p class="project-meta">Client: TechLogistics</p>
+                        <a href="project-detail.html" class="project-link">View Details &rarr;</a>
+                    </div>
+                </article>
+
+                <!-- Project 4 -->
+                <article class="project-card">
+                    <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=600&q=80"
+                        alt="Power Grid" class="project-card-image">
+                    <div class="project-content">
+                        <span class="project-tag">Infrastructure</span>
+                        <h3 class="project-title">Regional Power Substations</h3>
+                        <p class="project-meta">Client: State Power Corp</p>
+                        <a href="project-detail.html" class="project-link">View Details &rarr;</a>
+                    </div>
+                </article>
+
+                <!-- Project 5 -->
+                <article class="project-card">
+                    <img src="https://images.unsplash.com/photo-1590486803833-1c5dc8ce2ac6?auto=format&fit=crop&w=600&q=80"
+                        alt="Steel Fabricator" class="project-card-image">
+                    <div class="project-content">
+                        <span class="project-tag">Industrial</span>
+                        <h3 class="project-title">Steel Smelting Unit</h3>
+                        <p class="project-meta">Client: MetalWorks Ltd</p>
+                        <a href="project-detail.html" class="project-link">View Details &rarr;</a>
+                    </div>
+                </article>
+
+                <!-- Project 6 -->
+                <article class="project-card">
+                    <img src="https://images.unsplash.com/photo-1565610261709-5c569e32a688?auto=format&fit=crop&w=600&q=80"
+                        alt="Solar Farm" class="project-card-image">
+                    <div class="project-content">
+                        <span class="project-tag">Infrastructure</span>
+                        <h3 class="project-title">Solar Farm Structures</h3>
+                        <p class="project-meta">Client: GreenEnergy Corp</p>
+                        <a href="project-detail.html" class="project-link">View Details &rarr;</a>
+                    </div>
+                </article>
+
             </div>
-        </section>
 
-        <!-- Project Cards Grid -->
-        <section class="project-grid container" style="margin-top: 40px;">
-            <!-- Project 1 -->
-            <article class="project-card card" data-category="manufacturing completed">
-                <div class="card-body">
-                    <span class="category-tag">Manufacturing</span>
-                    <h3>Automotive Assembly Plant</h3>
-                    <p><strong>Client:</strong> AutoCorp International</p>
-                    <p><strong>Status:</strong> Completed</p>
-                    <p class="description">Turnkey fabrication of main assembly line housings.</p>
-                    <a href="project-detail.html" class="btn btn-secondary" style="margin-top: 10px;">View Details</a>
-                </div>
-            </article>
-
-            <!-- Project 2 -->
-            <article class="project-card card" data-category="industrial completed">
-                <div class="card-body">
-                    <span class="category-tag">Industrial</span>
-                    <h3>Heavy Chemical Processing Unit</h3>
-                    <p><strong>Client:</strong> ChemFlow Industries</p>
-                    <p><strong>Status:</strong> Completed</p>
-                    <p class="description">Corrosion-resistant structural framework for chemical processing.</p>
-                    <a href="project-detail.html" class="btn btn-secondary" style="margin-top: 10px;">View Details</a>
-                </div>
-            </article>
-
-            <!-- Project 3 -->
-            <article class="project-card card" data-category="automation ongoing">
-                <div class="card-body">
-                    <span class="category-tag">Automation</span>
-                    <h3>Robotic Warehousing Facility</h3>
-                    <p><strong>Client:</strong> TechLogistics</p>
-                    <p><strong>Status:</strong> Ongoing</p>
-                    <p class="description">High-precision framing for automated storage and retrieval systems.</p>
-                    <a href="project-detail.html" class="btn btn-secondary" style="margin-top: 10px;">View Details</a>
-                </div>
-            </article>
-
-            <!-- Project 4 -->
-            <article class="project-card card" data-category="infrastructure completed">
-                <div class="card-body">
-                    <span class="category-tag">Infrastructure</span>
-                    <h3>Regional Power Grid Substation</h3>
-                    <p><strong>Client:</strong> State Power Corp</p>
-                    <p><strong>Status:</strong> Completed</p>
-                    <p class="description">Gantry structures and transmission towers.</p>
-                    <a href="project-detail.html" class="btn btn-secondary" style="margin-top: 10px;">View Details</a>
-                </div>
-            </article>
-        </section>
-
-        <!-- Bottom CTA -->
-        <section class="cta-section container" style="text-align: center; margin-top: 40px;">
-            <div class="card">
-                <h2>Have a Project in Mind?</h2>
-                <p>Let's discuss how we can bring your vision to life with precision engineering.</p>
-                <button class="btn" onclick="window.location.href='contact-us.html'">Discuss Your Project</button>
-            </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>SteelFlex Structures</h3>
-                    <p>Your trusted partner in heavy industrial engineering and turnkey steel construction solutions.
-                    </p>
-                </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="products.html">Products</a></li>
-                        <li><a href="capabilities.html">Capabilities</a></li>
-                        <li><a href="projects.html">Projects</a></li>
-                        <li><a href="contact-us.html">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact</h3>
-                    <p>+91 98765 43210</p>
-                    <p>info@steelflexstructures.com</p>
+    <!-- MODERN FOOTER (3 PARTS) -->
+    <footer class="site-footer-redesign">
+        <!-- Part 1: CTA Bridge -->
+        <div class="footer-cta-bridge">
+            <div class="container">
+                <h2 class="footer-cta-title">Have a project in mind?</h2>
+                <a href="contact-us.html" class="btn-footer-cta">Start a Conversation</a>
+            </div>
+        </div>
+
+        <!-- Part 2: Main Footer Content -->
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid-modern">
+                    <!-- Column 1: Brand -->
+                    <div class="footer-col">
+                        <span class="footer-brand-title">SteelFlex Structures</span>
+                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
+                            steel construction solutions.</p>
+                    </div>
+
+                    <!-- Column 2: Quick Links -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Quick Links</h4>
+                        <ul class="footer-links-list">
+                            <li><a href="about-us.html">About Us</a></li>
+                            <li><a href="products-structures.html">Products</a></li>
+                            <li><a href="capabilities.html">Capabilities</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="contact-us.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Contact Info -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Contact</h4>
+                        <div class="footer-contact-item">
+                            <span>Phone</span>
+                            +91 98765 43210
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Email</span>
+                            info@steelflexstructures.com
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Location</span>
+                            Mumbai, India
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="copyright">
-                &copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.
+        </div>
+
+        <!-- Part 3: Legal Strip -->
+        <div class="footer-legal">
+            <div class="container">
+                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -164,6 +333,15 @@
     <script>
         document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
             document.querySelector('.main-nav').classList.toggle('active');
+        });
+
+        // Simple filter interactions for demo
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelector('.filter-btn.active').classList.remove('active');
+                btn.classList.add('active');
+            });
         });
     </script>
 </body>

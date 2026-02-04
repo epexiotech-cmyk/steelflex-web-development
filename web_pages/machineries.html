@@ -7,6 +7,71 @@
     <title>Machinery & Infrastructure | SteelFlex Structures</title>
     <meta name="description" content="Explore our state-of-the-art machinery and manufacturing infrastructure.">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .machines-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .machine-card {
+            background: #fff;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            /* Border provided by container bg if needed, or subtle border */
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .machine-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .machine-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .machine-content {
+            padding: 25px;
+        }
+
+        .machine-name {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .machine-specs {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            display: block;
+            font-weight: 500;
+        }
+
+        .machine-desc {
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 900px) {
+            .machines-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .machines-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -21,7 +86,7 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="about-us.html">About Us</a></li>
-                    <li><a href="products.html">Products</a></li>
+                    <li><a href="products-structures.html">Products</a></li>
                     <li><a href="capabilities.html">Capabilities</a></li>
                     <li><a href="machineries.html" class="active">Machineries</a></li>
                     <li><a href="projects.html">Projects</a></li>
@@ -31,107 +96,155 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Page Hero -->
+    <section class="hero-section" style="padding: 120px 0 80px; text-align: center; background: #fff;">
         <div class="container">
-            <header>
-                <h1>Manufacturing Infrastructure</h1>
-                <p class="subheading">Advanced Technology Driving Industrial Precision.</p>
-            </header>
+            <h1 style="color: var(--primary-color); font-size: 3rem; margin-bottom: 20px;">Infrastructure & Technology
+            </h1>
+            <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto; color: var(--secondary-color);">Our facility
+                houses advanced machinery to ensure precision fabrication and high-volume output.</p>
         </div>
     </section>
 
     <!-- Main Content -->
-    <main>
-        <!-- Machinery Listing -->
-        <section class="machinery-list container">
-            <h2>Our Fleet</h2>
+    <main style="background-color: var(--background-section); padding: 80px 0;">
+        <div class="container">
+            <!-- Machine Fleet Grid -->
+            <div class="machines-grid">
 
-            <div class="card">
-                <div class="machinery-table-wrapper">
-                    <table class="machinery-table">
-                        <thead>
-                            <tr>
-                                <th>Machine Name</th>
-                                <th>Capacity</th>
-                                <th>Application</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>CNC Plasma Cutting Machine</td>
-                                <td>Thickness up to 50mm</td>
-                                <td>High-precision profile cutting of steel plates.</td>
-                            </tr>
-                            <tr>
-                                <td>Heavy Duty H-Beam Welding Line</td>
-                                <td>Web height 2500mm</td>
-                                <td>Automated submerged arc welding (SAW) for beam fabrication.</td>
-                            </tr>
-                            <tr>
-                                <td>Hydraulic Shearing Machine</td>
-                                <td>Length 4000mm, 16mm thk</td>
-                                <td>Precision shearing of plates and sheets.</td>
-                            </tr>
-                            <tr>
-                                <td>Radial Drilling Machine</td>
-                                <td>50mm drill capacity</td>
-                                <td>Heavy-duty drilling for connection plates and flanges.</td>
-                            </tr>
-                            <tr>
-                                <td>Shot Blasting Machine</td>
-                                <td>Opening 2000mm x 1500mm</td>
-                                <td>Surface preparation to Sa 2.5 standard for painting.</td>
-                            </tr>
-                            <tr>
-                                <td>Mobile Cranes</td>
-                                <td>Up to 100 MT</td>
-                                <td>On-site material handling and erection support.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
+                <!-- Machine 1 -->
+                <article class="machine-card">
+                    <img src="https://images.unsplash.com/photo-1565043666747-69f6646db940?auto=format&fit=crop&w=600&q=80"
+                        alt="CNC Plasma" class="machine-img">
+                    <div class="machine-content">
+                        <h3 class="machine-name">CNC Plasma Cutting</h3>
+                        <span class="machine-specs">Max Thickness: 50mm</span>
+                        <p class="machine-desc">High-precision profile cutting of steel plates with minimized material
+                            wastage.</p>
+                    </div>
+                </article>
 
-        <!-- Maintenance & Safety -->
-        <section class="maintenance-safety container">
-            <div class="card" style="margin-top: 20px;">
-                <h2>Maintenance & Operational Readiness</h2>
-                <p>Operational reliability is the backbone of our delivery promise. Our in-house maintenance division
-                    ensures 99% uptime through predictive maintenance schedules. All operators are certified and undergo
-                    regular safety training to handle heavy industrial equipment, ensuring precision operation without
-                    compromising safety.</p>
+                <!-- Machine 2 -->
+                <article class="machine-card">
+                    <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
+                        alt="H-Beam Welding" class="machine-img">
+                    <div class="machine-content">
+                        <h3 class="machine-name">H-Beam Welding Line</h3>
+                        <span class="machine-specs">Web Height: 2500mm</span>
+                        <p class="machine-desc">Automated submerged arc welding (SAW) specifically for heavy beam
+                            fabrication.</p>
+                    </div>
+                </article>
+
+                <!-- Machine 3 -->
+                <article class="machine-card">
+                    <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80"
+                        alt="Hydraulic Shearing" class="machine-img">
+                    <div class="machine-content">
+                        <h3 class="machine-name">Hydraulic Shearing</h3>
+                        <span class="machine-specs">4000mm x 16mm</span>
+                        <p class="machine-desc">Precision shearing of plates and sheets ensuring clean edges for fit-up.
+                        </p>
+                    </div>
+                </article>
+
+                <!-- Machine 4 -->
+                <article class="machine-card">
+                    <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=600&q=80"
+                        alt="Radial Drilling" class="machine-img">
+                    <div class="machine-content">
+                        <h3 class="machine-name">Radial Drilling</h3>
+                        <span class="machine-specs">50mm Drill Capacity</span>
+                        <p class="machine-desc">Heavy-duty drilling operations for thick connection plates and flanges.
+                        </p>
+                    </div>
+                </article>
+
+                <!-- Machine 5 -->
+                <article class="machine-card">
+                    <img src="https://images.unsplash.com/photo-1618585474320-f57bb810f63b?auto=format&fit=crop&w=600&q=80"
+                        alt="Shot Blasting" class="machine-img">
+                    <div class="machine-content">
+                        <h3 class="machine-name">Shot Blasting</h3>
+                        <span class="machine-specs">2000mm x 1500mm</span>
+                        <p class="machine-desc">Surface preparation to Sa 2.5 standards ensuring superior paint
+                            adhesion.</p>
+                    </div>
+                </article>
+
+                <!-- Machine 6 -->
+                <article class="machine-card">
+                    <img src="https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=600&q=80"
+                        alt="Mobile Cranes" class="machine-img">
+                    <div class="machine-content">
+                        <h3 class="machine-name">Mobile Cranes</h3>
+                        <span class="machine-specs">Up to 100 MT</span>
+                        <p class="machine-desc">Dedicated certified fleet for safe onsite material handling and
+                            erection.</p>
+                    </div>
+                </article>
+
             </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>SteelFlex Structures</h3>
-                    <p>Your trusted partner in heavy industrial engineering and turnkey steel construction solutions.
-                    </p>
-                </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="products.html">Products</a></li>
-                        <li><a href="capabilities.html">Capabilities</a></li>
-                        <li><a href="projects.html">Projects</a></li>
-                        <li><a href="contact-us.html">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact</h3>
-                    <p>+91 98765 43210</p>
-                    <p>info@steelflexstructures.com</p>
+    <!-- MODERN FOOTER (3 PARTS) -->
+    <footer class="site-footer-redesign">
+        <!-- Part 1: CTA Bridge -->
+        <div class="footer-cta-bridge">
+            <div class="container">
+                <h2 class="footer-cta-title">See our facility in action.</h2>
+                <a href="contact-us.html" class="btn-footer-cta">Schedule a Visit</a>
+            </div>
+        </div>
+
+        <!-- Part 2: Main Footer Content -->
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid-modern">
+                    <!-- Column 1: Brand -->
+                    <div class="footer-col">
+                        <span class="footer-brand-title">SteelFlex Structures</span>
+                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
+                            steel construction solutions.</p>
+                    </div>
+
+                    <!-- Column 2: Quick Links -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Quick Links</h4>
+                        <ul class="footer-links-list">
+                            <li><a href="about-us.html">About Us</a></li>
+                            <li><a href="products-structures.html">Products</a></li>
+                            <li><a href="capabilities.html">Capabilities</a></li>
+                            <li><a href="machineries.html">Machineries</a></li>
+                            <li><a href="contact-us.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Contact Info -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Contact</h4>
+                        <div class="footer-contact-item">
+                            <span>Phone</span>
+                            +91 98765 43210
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Email</span>
+                            info@steelflexstructures.com
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Location</span>
+                            Mumbai, India
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="copyright">
-                &copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.
+        </div>
+
+        <!-- Part 3: Legal Strip -->
+        <div class="footer-legal">
+            <div class="container">
+                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
             </div>
         </div>
     </footer>

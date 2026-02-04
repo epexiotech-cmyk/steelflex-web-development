@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products & Structures | SteelFlex Structures</title>
+    <meta name="description"
+        content="Explore our range of industrial steel products including PEBs, heavy structures, custom fabrication, and building accessories.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Reusing About Us styles for consistency */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0 60px;
+        }
+
+        .toggle-wrapper {
+            background: #fff;
+            border: 2px solid var(--primary-color);
+            border-radius: 50px;
+            display: flex;
+            padding: 5px;
+            gap: 10px;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 40px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
+        /* View Containers */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Structures Grid (Diagram Style) */
+        .structure-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .structure-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .structure-img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            /* Placeholder styling */
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        .structure-title {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .structure-label {
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* New section divider */
+        .section-divider-title {
+            text-align: center;
+            margin-top: 80px;
+            padding-top: 80px;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header (Consistent) -->
+    <header class="main-header">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="about-us.html">Steel<span>Flex</span></a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="about-us.html">About Us</a></li>
+                    <li><a href="products-structures.html" class="active">Products & Structures</a></li>
+                    <li><a href="capabilities.html">Capabilities</a></li>
+                    <li><a href="machineries.html">Machineries</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="contact-us.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- SECTION 1: CORE PRODUCTS (Old Content Restored) -->
+    <section class="hero-section" style="padding: 120px 0 80px; text-align: center; background: #fff;">
+        <div class="container">
+            <h1 style="color: var(--primary-color); font-size: 3rem; margin-bottom: 20px;">Industrial Steel Solutions
+            </h1>
+            <p style="font-size: 1.2rem; max-width: 600px; margin: 0 auto; color: var(--secondary-color);">Engineered
+                for durability. Fabrication for the future.</p>
+        </div>
+    </section>
+
+    <!-- Products Grid (Using 'Why Choose Us' Visual Style) -->
+    <section class="products-section" style="padding-bottom: 40px;">
+        <div class="container">
+            <div class="product-grid">
+                <!-- Product 1 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">🏭</span>
+                    <span class="why-title-new">Pre-Engineered Buildings (PEB)</span>
+                    <span class="why-desc-new">Versatile, cost-effective, and rapid-deployment building solutions for
+                        warehouses, factories, and commercial hubs. Designed for diverse load requirements.</span>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">🏗️</span>
+                    <span class="why-title-new">Heavy Structural Steel</span>
+                    <span class="why-desc-new">Robust frameworks for high-rise manufacturing plants and power stations.
+                        Fabricated to withstand extreme industrial loads and environmental conditions.</span>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">🏢</span>
+                    <span class="why-title-new">Industrial Sheds & Roofing</span>
+                    <span class="why-desc-new">High-span roofing systems and customized industrial sheds providing
+                        superior weather protection, ventilation, and natural lighting.</span>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">🪜</span>
+                    <span class="why-title-new">Mezzanine Floors</span>
+                    <span class="why-desc-new">Space-optimizing steel mezzanine systems designed to double your
+                        operational floor area without new construction. Ideal for storage optimization.</span>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">🏗️</span>
+                    <span class="why-title-new">Crane Support Systems</span>
+                    <span class="why-desc-new">Heavy-duty crane girders and support structures engineered for EOT
+                        cranes, ensuring safe and efficient material handling operations.</span>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="why-card-new">
+                    <span class="why-emoji">⚙️</span>
+                    <span class="why-title-new">Custom Metal Fabrication</span>
+                    <span class="why-desc-new">Tailored fabrication services for specialized industrial components,
+                        walkways, staircases, and safety railings built to your specs.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- SECTION 2: ACCESSORIES & STRUCTURES (New Toggle Section) -->
+    <section class="section-divider-title container">
+        <h2 style="color: var(--primary-color); font-size: 2.5rem; margin-bottom: 10px;">Products & Structures</h2>
+        <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto; color: var(--secondary-color);">Complete building
+            accessories and proven structural frame systems.</p>
+
+        <!-- Toggle Switch -->
+        <div class="toggle-container">
+            <div class="toggle-wrapper">
+                <button class="toggle-btn active" onclick="switchView('products')">Products</button>
+                <button class="toggle-btn" onclick="switchView('structures')">Structures</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Area for Toggle Views -->
+    <main style="padding-bottom: 80px; min-height: 600px;">
+        <div class="container">
+
+            <!-- VIEW 1: PRODUCTS (ACCESSORIES) -->
+            <section id="products-view" class="view-section active">
+                <div class="product-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <!-- Explicit 3-col for accessories to differ from main products if desired, or keep 2-col -->
+                    <!-- The user asked for 3 cols desktop for this section previously -->
+
+                    <!-- Accessory 1 -->
+                    <div class="why-card-new">
+                        <img src="https://images.unsplash.com/photo-1615818443906-8c4d29188336?auto=format&fit=crop&w=600&q=80"
+                            alt="Turbo Ventilators"
+                            style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                        <span class="why-title-new">Turbo Ventilators</span>
+                        <span class="why-desc-new">Wind-driven roof ventilators for zero-energy air circulation.</span>
+                    </div>
+
+                    <!-- Accessory 2 -->
+                    <div class="why-card-new">
+                        <img src="https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=600&q=80"
+                            alt="Skylights"
+                            style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                        <span class="why-title-new">Skylights & Roof Monitors</span>
+                        <span class="why-desc-new">Polycarbonate sheets and monitors for natural daylight
+                            optimization.</span>
+                    </div>
+
+                    <!-- Accessory 3 -->
+                    <div class="why-card-new">
+                        <img src="https://images.unsplash.com/photo-1541123437860-bb9699413ec0?auto=format&fit=crop&w=600&q=80"
+                            alt="Shutters"
+                            style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                        <span class="why-title-new">Sliding & Rolling Shutters</span>
+                        <span class="why-desc-new">Heavy-duty motorized and manual shutters for industrial bays.</span>
+                    </div>
+
+                    <!-- Accessory 4 -->
+                    <div class="why-card-new">
+                        <img src="https://images.unsplash.com/photo-1599696803764-79af474ab427?auto=format&fit=crop&w=600&q=80"
+                            alt="Insulation"
+                            style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                        <span class="why-title-new">Insulation Solutions</span>
+                        <span class="why-desc-new">PUF panels and Rockwool insulation for superior thermal
+                            efficiency.</span>
+                    </div>
+
+                    <!-- Accessory 5 -->
+                    <div class="why-card-new">
+                        <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=600&q=80"
+                            alt="Louvers"
+                            style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                        <span class="why-title-new">Windows & Louvers</span>
+                        <span class="why-desc-new">Fixed and adjustable louvers engineered for cross-ventilation.</span>
+                    </div>
+
+                    <!-- Accessory 6 -->
+                    <div class="why-card-new">
+                        <img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?auto=format&fit=crop&w=600&q=80"
+                            alt="Fasteners"
+                            style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                        <span class="why-title-new">Fasteners & Sealants</span>
+                        <span class="why-desc-new">High-grade galvanized fasteners and weather-proof silicon
+                            sealants.</span>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- VIEW 2: STRUCTURES (FRAMES) -->
+            <section id="structures-view" class="view-section">
+                <!-- Using a 3-column grid for frames -->
+                <div class="product-grid" style="grid-template-columns: repeat(3, 1fr);">
+
+                    <!-- Frame 1 -->
+                    <div class="structure-card">
+                        <img src="https://images.unsplash.com/photo-1587293852726-70cdb56c2866?auto=format&fit=crop&w=600&q=80"
+                            alt="TCCS" class="structure-img" style="object-fit: cover;">
+                        <h3 class="structure-title">Tapered Column Clear Span</h3>
+                        <span class="structure-label">(TCCS)</span>
+                    </div>
+
+                    <!-- Frame 2 -->
+                    <div class="structure-card">
+                        <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=600&q=80"
+                            alt="MG" class="structure-img" style="object-fit: cover;">
+                        <h3 class="structure-title">Multi Gable (MG) I / II</h3>
+                        <span class="structure-label">Modular Width</span>
+                    </div>
+
+                    <!-- Frame 3 -->
+                    <div class="structure-card">
+                        <img src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=600&q=80"
+                            alt="Multi Span 1" class="structure-img" style="object-fit: cover;">
+                        <h3 class="structure-title">Multi Span I</h3>
+                        <span class="structure-label">Single Internal Column</span>
+                    </div>
+
+                    <!-- Frame 4 -->
+                    <div class="structure-card">
+                        <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
+                            alt="Multi Span 2" class="structure-img" style="object-fit: cover;">
+                        <h3 class="structure-title">Multi Span II</h3>
+                        <span class="structure-label">Double Internal Column</span>
+                    </div>
+
+                    <!-- Frame 5 -->
+                    <div class="structure-card">
+                        <img src="https://images.unsplash.com/photo-1513828583688-601bf1505d95?auto=format&fit=crop&w=600&q=80"
+                            alt="Multi Span 3" class="structure-img" style="object-fit: cover;">
+                        <h3 class="structure-title">Multi Span III</h3>
+                        <span class="structure-label">Triple Internal Column</span>
+                    </div>
+
+                    <!-- Frame 6 -->
+                    <div class="structure-card">
+                        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=600&q=80"
+                            alt="Mono Slope" class="structure-img" style="object-fit: cover;">
+                        <h3 class="structure-title">Mono Slope</h3>
+                        <span class="structure-label">Single Direction Pitch</span>
+                    </div>
+
+                    <!-- Frame 7 -->
+                    <div class="structure-card">
+                        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80"
+                            alt="Lean-To" class="structure-img" style="object-fit: cover;">
+                        <h3 class="structure-title">Lean-To</h3>
+                        <span class="structure-label">Extension Structure</span>
+                    </div>
+
+                    <!-- Frame 8 -->
+                    <div class="structure-card">
+                        <img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=600&q=80"
+                            alt="Rafter System" class="structure-img" style="object-fit: cover;">
+                        <h3 class="structure-title">Rafter System</h3>
+                        <span class="structure-label">Roof Only</span>
+                    </div>
+
+                    <!-- Frame 9 -->
+                    <div class="structure-card">
+                        <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80"
+                            alt="Crane System" class="structure-img" style="object-fit: cover;">
+                        <h3 class="structure-title">Multi Span with Crane</h3>
+                        <span class="structure-label">Crane & Mezzanine</span>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODERN FOOTER (3 PARTS) -->
+    <footer class="site-footer-redesign">
+        <!-- Part 1: CTA Bridge -->
+        <div class="footer-cta-bridge">
+            <div class="container">
+                <h2 class="footer-cta-title">Need a specific structural solution?</h2>
+                <a href="contact-us.html" class="btn-footer-cta">Request a Quote</a>
+            </div>
+        </div>
+
+        <!-- Part 2: Main Footer Content -->
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid-modern">
+                    <!-- Column 1: Brand -->
+                    <div class="footer-col">
+                        <span class="footer-brand-title">SteelFlex Structures</span>
+                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
+                            steel construction solutions.</p>
+                    </div>
+
+                    <!-- Column 2: Quick Links -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Quick Links</h4>
+                        <ul class="footer-links-list">
+                            <li><a href="about-us.html">About Us</a></li>
+                            <li><a href="products-structures.html">Products & Structures</a></li>
+                            <li><a href="capabilities.html">Capabilities</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="contact-us.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Contact Info -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Contact</h4>
+                        <div class="footer-contact-item">
+                            <span>Phone</span>
+                            +91 98765 43210
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Email</span>
+                            info@steelflexstructures.com
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Location</span>
+                            Mumbai, India
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part 3: Legal Strip -->
+        <div class="footer-legal">
+            <div class="container">
+                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
+            document.querySelector('.main-nav').classList.toggle('active');
+        });
+
+        // Toggle Logic
+        function switchView(viewName) {
+            const productsBtn = document.querySelectorAll('.toggle-btn')[0];
+            const structuresBtn = document.querySelectorAll('.toggle-btn')[1];
+            const productsView = document.getElementById('products-view');
+            const structuresView = document.getElementById('structures-view');
+
+            if (viewName === 'products') {
+                productsBtn.classList.add('active');
+                structuresBtn.classList.remove('active');
+                productsView.classList.add('active');
+                structuresView.classList.remove('active');
+            } else {
+                structuresBtn.classList.add('active');
+                productsBtn.classList.remove('active');
+                structuresView.classList.add('active');
+                productsView.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+
+</html>

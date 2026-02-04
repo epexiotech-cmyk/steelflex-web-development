@@ -8,6 +8,79 @@
     <meta name="description"
         content="Discover our structural engineering capabilities, workflow, and quality assurance standards.">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Capabilities specific overrides for layout */
+        .vm-block {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+
+        .vm-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .vm-content {
+            flex: 1;
+        }
+
+        .vm-image-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .vm-image {
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-radius-lg);
+            display: block;
+        }
+
+        /* Reverse layout for alternate blocks */
+        .vm-block.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .capability-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .cap-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .cap-icon {
+            font-size: 1.5rem;
+            background: #F6F8FB;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 900px) {
+
+            .vm-block,
+            .vm-block.reverse {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .capability-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -22,7 +95,7 @@
             <nav class="main-nav">
                 <ul>
                     <li><a href="about-us.html">About Us</a></li>
-                    <li><a href="products.html">Products</a></li>
+                    <li><a href="products-structures.html">Products</a></li>
                     <li><a href="capabilities.html" class="active">Capabilities</a></li>
                     <li><a href="machineries.html">Machineries</a></li>
                     <li><a href="projects.html">Projects</a></li>
@@ -32,100 +105,178 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
+    <!-- Page Hero -->
+    <section class="hero-section" style="padding: 120px 0 80px; text-align: center; background: #fff;">
         <div class="container">
-            <header>
-                <h1>Operational Capabilities & Execution</h1>
-                <p class="subheading">From Design to Delivered Reality: A Systematic Approach to Heavy Engineering.</p>
-            </header>
+            <h1 style="color: var(--primary-color); font-size: 3rem; margin-bottom: 20px;">Operational Excellence</h1>
+            <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto; color: var(--secondary-color);">From
+                extensive design analysis to precision on-site erection, our capabilities cover the full lifecycle of
+                industrial steel construction.</p>
         </div>
     </section>
 
     <!-- Main Content -->
     <main>
-        <!-- Core Capabilities -->
-        <section class="core-capabilities container">
-            <h2>Core Competencies</h2>
-            <div class="card">
-                <ul class="capability-list">
-                    <li><strong>Design & Detailing:</strong> Advanced 3D modeling and structural analysis using Tekla
-                        and STAAD.Pro for zero-error fabrication.</li>
-                    <li><strong>Heavy Fabrication:</strong> Production capacity of 500+ MT per month for complex
-                        industrial frameworks.</li>
-                    <li><strong>On-Site Erection:</strong> Specialized teams for safe and rapid assembly of structural
-                        steel in challenging environments.</li>
-                    <li><strong>Turnkey Project Management:</strong> End-to-end oversight ensuring timeline adherence
-                        and seamless integration of all project phases.</li>
-                </ul>
+
+        <!-- Core Capabilities Section (Vision Style) -->
+        <section class="strategic-section" style="padding: 0 0 80px;">
+            <div class="container">
+                <!-- Block 1: Design & Engineering -->
+                <div class="vm-block">
+                    <div class="vm-image-container">
+                        <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80"
+                            alt="Engineering Design" class="vm-image">
+                    </div>
+                    <div class="vm-content">
+                        <span class="why-emoji">📐</span>
+                        <h2 style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;">Engineering &
+                            Detailing</h2>
+                        <p style="font-size: 1.1rem; line-height: 1.6; color: #555; margin-bottom: 30px;">
+                            Precision begins before the first beam is cut. Our engineering team utilizes advanced 3D
+                            modeling software to eliminate errors and optimize material usage.
+                        </p>
+                        <div class="capability-grid">
+                            <div class="cap-item">
+                                <span class="cap-icon">🖥️</span>
+                                <div>
+                                    <strong style="display:block; color:#000;">Tekla Structures</strong>
+                                    <span style="font-size:0.9rem; color:#666;">3D BIM modeling</span>
+                                </div>
+                            </div>
+                            <div class="cap-item">
+                                <span class="cap-icon">📊</span>
+                                <div>
+                                    <strong style="display:block; color:#000;">STAAD.Pro</strong>
+                                    <span style="font-size:0.9rem; color:#666;">Structural analysis</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Block 2: Manufacturing (Reverse) -->
+                <div class="vm-block reverse" style="margin-top: 100px;">
+                    <div class="vm-image-container">
+                        <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=800&q=80"
+                            alt="Welding and Fabrication" class="vm-image">
+                    </div>
+                    <div class="vm-content">
+                        <span class="why-emoji">🔥</span>
+                        <h2 style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;">Heavy Fabrication
+                        </h2>
+                        <p style="font-size: 1.1rem; line-height: 1.6; color: #555; margin-bottom: 30px;">
+                            Our state-of-the-art facility is equipped to handle complex structural components. With a
+                            production capacity of 500+ MT per month, we deliver at scale.
+                        </p>
+                        <div class="capability-grid">
+                            <div class="cap-item">
+                                <span class="cap-icon">🛡️</span>
+                                <div>
+                                    <strong style="display:block; color:#000;">Quality Control</strong>
+                                    <span style="font-size:0.9rem; color:#666;">UT & MPI testing</span>
+                                </div>
+                            </div>
+                            <div class="cap-item">
+                                <span class="cap-icon">⚙️</span>
+                                <div>
+                                    <strong style="display:block; color:#000;">CNC Processing</strong>
+                                    <span style="font-size:0.9rem; color:#666;">Automated cutting & drilling</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Block 3: Erection & Safety -->
+                <div class="vm-block" style="margin-top: 100px;">
+                    <div class="vm-image-container">
+                        <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&q=80"
+                            alt="Construction Site" class="vm-image">
+                    </div>
+                    <div class="vm-content">
+                        <span class="why-emoji">🏗️</span>
+                        <h2 style="font-size: 2rem; color: var(--primary-color); margin-bottom: 15px;">Erection &
+                            Installation</h2>
+                        <p style="font-size: 1.1rem; line-height: 1.6; color: #555; margin-bottom: 30px;">
+                            Execution is where plans meet reality. Our specialized erection teams ensure rapid assembly
+                            while maintaining strict compliance with global safety standards.
+                        </p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                                <span style="color: var(--primary-color);">✓</span> Zero-accident safety protocol
+                            </li>
+                            <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                                <span style="color: var(--primary-color);">✓</span> Expert logistics management
+                            </li>
+                            <li style="display: flex; align-items: center; gap: 10px;">
+                                <span style="color: var(--primary-color);">✓</span> On-time project handover
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
         </section>
 
-        <!-- Operational Workflow -->
-        <section class="workflow container">
-            <h2>Our Process</h2>
-            <ol class="workflow-steps">
-                <li>
-                    <h3>1. Consultation & Design</h3>
-                    <p>Understanding client requirements and developing optimized structural designs.</p>
-                </li>
-                <li>
-                    <h3>2. Engineering & Detailing</h3>
-                    <p>Creating precise fabrication drawings and bill of materials (BOM).</p>
-                </li>
-                <li>
-                    <h3>3. Procurement & Planning</h3>
-                    <p>Sourcing high-grade raw materials and scheduling production milestones.</p>
-                </li>
-                <li>
-                    <h3>4. Fabrication & Quality Control</h3>
-                    <p>Manufacturing components with rigorous stage-wise inspection.</p>
-                </li>
-                <li>
-                    <h3>5. Logistics & Erection</h3>
-                    <p>Safe transport and expert on-site assembly for final handover.</p>
-                </li>
-            </ol>
-        </section>
-
-        <!-- Quality & Compliance -->
-        <section class="quality-compliance container">
-            <div class="card" style="border-left: 5px solid var(--primary-color);">
-                <h2>Quality & Compliance</h2>
-                <p>At SteelFlex, quality is non-negotiable. Our operations adhere to global ISO 9001:2015 standards.
-                    Every beam, column, and truss undergoes ultrasonic testing (UT) and magnetic particle inspection
-                    (MPI) to identify and rectify internal flaws. We are committed to zero-accident workplaces,
-                    enforcing strict HSE (Health, Safety, and Environment) protocols on every site.</p>
-            </div>
-        </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>SteelFlex Structures</h3>
-                    <p>Your trusted partner in heavy industrial engineering and turnkey steel construction solutions.
-                    </p>
-                </div>
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="products.html">Products</a></li>
-                        <li><a href="capabilities.html">Capabilities</a></li>
-                        <li><a href="projects.html">Projects</a></li>
-                        <li><a href="contact-us.html">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact</h3>
-                    <p>+91 98765 43210</p>
-                    <p>info@steelflexstructures.com</p>
+    <!-- MODERN FOOTER (3 PARTS) -->
+    <footer class="site-footer-redesign">
+        <!-- Part 1: CTA Bridge -->
+        <div class="footer-cta-bridge">
+            <div class="container">
+                <h2 class="footer-cta-title">Ready to start your project?</h2>
+                <a href="contact-us.html" class="btn-footer-cta">Get in Touch</a>
+            </div>
+        </div>
+
+        <!-- Part 2: Main Footer Content -->
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid-modern">
+                    <!-- Column 1: Brand -->
+                    <div class="footer-col">
+                        <span class="footer-brand-title">SteelFlex Structures</span>
+                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
+                            steel construction solutions.</p>
+                    </div>
+
+                    <!-- Column 2: Quick Links -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Quick Links</h4>
+                        <ul class="footer-links-list">
+                            <li><a href="about-us.html">About Us</a></li>
+                            <li><a href="products-structures.html">Products</a></li>
+                            <li><a href="capabilities.html">Capabilities</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="contact-us.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Contact Info -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Contact</h4>
+                        <div class="footer-contact-item">
+                            <span>Phone</span>
+                            +91 98765 43210
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Email</span>
+                            info@steelflexstructures.com
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Location</span>
+                            Mumbai, India
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="copyright">
-                &copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.
+        </div>
+
+        <!-- Part 3: Legal Strip -->
+        <div class="footer-legal">
+            <div class="container">
+                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
             </div>
         </div>
     </footer>
