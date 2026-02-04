@@ -80,16 +80,16 @@
     <header class="main-header">
         <div class="container nav-container">
             <div class="logo">
-                <a href="about-us.html">Steel<span>Flex</span></a>
+                <a href="about-us.html"><img src="Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
             </div>
             <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
             <nav class="main-nav">
                 <ul>
                     <li><a href="about-us.html">About Us</a></li>
-                    <li><a href="products-structures.html">Products</a></li>
+                    <li><a href="products-structures.html">Products & Structures</a></li>
                     <li><a href="capabilities.html">Capabilities</a></li>
-                    <li><a href="machineries.html" class="active">Machineries</a></li>
                     <li><a href="projects.html">Projects</a></li>
+                    <li><a href="careers.html">Careers</a></li>
                     <li><a href="contact-us.html">Contact</a></li>
                 </ul>
             </nav>
@@ -101,8 +101,15 @@
         <div class="container">
             <h1 style="color: var(--primary-color); font-size: 3rem; margin-bottom: 20px;">Infrastructure & Technology
             </h1>
-            <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto; color: var(--secondary-color);">Our facility
-                houses advanced machinery to ensure precision fabrication and high-volume output.</p>
+            <p
+                style="font-size: 1.2rem; max-width: 900px; margin: 0 auto; color: var(--secondary-color); line-height: 1.6;">
+                Our manufacturing facility in Vadodara is equipped with advanced automated machinery to ensure precision
+                fabrication and high-volume output. With a production capacity of over <strong>500 MT per
+                    month</strong>, our infrastructure features fully automated H-Beam welding lines, high-precision CNC
+                laser and plasma cutting systems, and heavy-duty forming equipment. This state-of-the-art technology
+                allows us to deliver international quality standards with zero-error fabrication, meeting the demands of
+                complex industrial and commercial projects.
+            </p>
         </div>
     </section>
 
@@ -110,79 +117,209 @@
     <main style="background-color: var(--background-section); padding: 80px 0;">
         <div class="container">
             <!-- Machine Fleet Grid -->
-            <div class="machines-grid">
+            <div class="product-grid" style="grid-template-columns: repeat(3, 1fr); gap: 30px;">
 
-                <!-- Machine 1 -->
-                <article class="machine-card">
+                <!-- 1. CNC Laser Bodor -->
+                <div class="why-card-new">
                     <img src="https://images.unsplash.com/photo-1565043666747-69f6646db940?auto=format&fit=crop&w=600&q=80"
-                        alt="CNC Plasma" class="machine-img">
-                    <div class="machine-content">
-                        <h3 class="machine-name">CNC Plasma Cutting</h3>
-                        <span class="machine-specs">Max Thickness: 50mm</span>
-                        <p class="machine-desc">High-precision profile cutting of steel plates with minimized material
-                            wastage.</p>
-                    </div>
-                </article>
+                        alt="Bodor A3 Laser"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">CNC Laser Cutting</span>
+                    <span class="why-desc-new"><strong>Bodor A3</strong><br>
+                        Max Thickness: MS-25mm; SS-18mm<br>
+                        Bed Size: 6100 x 2500mm</span>
+                </div>
 
-                <!-- Machine 2 -->
-                <article class="machine-card">
-                    <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
-                        alt="H-Beam Welding" class="machine-img">
-                    <div class="machine-content">
-                        <h3 class="machine-name">H-Beam Welding Line</h3>
-                        <span class="machine-specs">Web Height: 2500mm</span>
-                        <p class="machine-desc">Automated submerged arc welding (SAW) specifically for heavy beam
-                            fabrication.</p>
-                    </div>
-                </article>
-
-                <!-- Machine 3 -->
-                <article class="machine-card">
+                <!-- 2. CNC Laser SLTL -->
+                <div class="why-card-new">
                     <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=600&q=80"
-                        alt="Hydraulic Shearing" class="machine-img">
-                    <div class="machine-content">
-                        <h3 class="machine-name">Hydraulic Shearing</h3>
-                        <span class="machine-specs">4000mm x 16mm</span>
-                        <p class="machine-desc">Precision shearing of plates and sheets ensuring clean edges for fit-up.
-                        </p>
-                    </div>
-                </article>
+                        alt="SLTL Laser"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">CNC Laser Cutting</span>
+                    <span class="why-desc-new"><strong>SLTL Prime 3KW</strong><br>
+                        Max Thickness: MS-12mm; SS-8mm<br>
+                        Bed Size: 3000 x 1500mm</span>
+                </div>
 
-                <!-- Machine 4 -->
-                <article class="machine-card">
+                <!-- 3. CNC Tube Cutting -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1590725140246-20ac70da7340?auto=format&fit=crop&w=600&q=80"
+                        alt="Tube Laser"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">CNC Laser Tube Cutting</span>
+                    <span class="why-desc-new"><strong>SLTL T6200 (3 KW)</strong><br>
+                        Cutting Dia: 20-205mm<br>
+                        Max Length: 6000mm</span>
+                </div>
+
+                <!-- 4. CNC Plasma -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1535063406526-97e7ee7798bd?auto=format&fit=crop&w=600&q=80"
+                        alt="CNC Plasma"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">CNC Plasma Plate & Pipe</span>
+                    <span class="why-desc-new"><strong>Universal 3020</strong><br>
+                        Max Plate Thk: 32mm<br>
+                        Bed Size: 6500 x 2500mm<br>
+                        Max Pipe Dia: 450mm</span>
+                </div>
+
+                <!-- 5. Amada A3 Punching -->
+                <div class="why-card-new">
                     <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=600&q=80"
-                        alt="Radial Drilling" class="machine-img">
-                    <div class="machine-content">
-                        <h3 class="machine-name">Radial Drilling</h3>
-                        <span class="machine-specs">50mm Drill Capacity</span>
-                        <p class="machine-desc">Heavy-duty drilling operations for thick connection plates and flanges.
-                        </p>
-                    </div>
-                </article>
+                        alt="Amada A3"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">CNC Turret Punching 1</span>
+                    <span class="why-desc-new"><strong>Amada A3</strong><br>
+                        Max Cutting Thk: Up to 3mm<br>
+                        Bed Size: 2500 x 1250mm</span>
+                </div>
 
-                <!-- Machine 5 -->
-                <article class="machine-card">
+                <!-- 6. Amada Pega Punching -->
+                <div class="why-card-new">
                     <img src="https://images.unsplash.com/photo-1618585474320-f57bb810f63b?auto=format&fit=crop&w=600&q=80"
-                        alt="Shot Blasting" class="machine-img">
-                    <div class="machine-content">
-                        <h3 class="machine-name">Shot Blasting</h3>
-                        <span class="machine-specs">2000mm x 1500mm</span>
-                        <p class="machine-desc">Surface preparation to Sa 2.5 standards ensuring superior paint
-                            adhesion.</p>
-                    </div>
-                </article>
+                        alt="Amada Pega"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">CNC Turret Punching 2</span>
+                    <span class="why-desc-new"><strong>Amada Pega 357</strong><br>
+                        Max Cutting Thk: Up to 4mm<br>
+                        Bed Size: 2500 x 1250mm</span>
+                </div>
 
-                <!-- Machine 6 -->
-                <article class="machine-card">
-                    <img src="https://images.unsplash.com/photo-1581092335397-9583eb92d232?auto=format&fit=crop&w=600&q=80"
-                        alt="Mobile Cranes" class="machine-img">
-                    <div class="machine-content">
-                        <h3 class="machine-name">Mobile Cranes</h3>
-                        <span class="machine-specs">Up to 100 MT</span>
-                        <p class="machine-desc">Dedicated certified fleet for safe onsite material handling and
-                            erection.</p>
-                    </div>
-                </article>
+                <!-- 7. Trumpf Bending -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
+                        alt="Trumpf Bending"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">CNC Bending Machine 1</span>
+                    <span class="why-desc-new"><strong>Trumpf Trubend 1225</strong><br>
+                        Max Thickness: Up to 12mm<br>
+                        Max Length: 4000mm</span>
+                </div>
+
+                <!-- 8. Amada Bending -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=600&q=80"
+                        alt="Amada Bending"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">CNC Bending Machine 2</span>
+                    <span class="why-desc-new"><strong>Amada RGM2 1003</strong><br>
+                        Max Thickness: Up to 3.2mm<br>
+                        Max Length: 3000mm</span>
+                </div>
+
+                <!-- 9. Plate Rolling -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1520699697851-3dc68aa3a474?auto=format&fit=crop&w=600&q=80"
+                        alt="Plate Rolling"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Plate Rolling Machine</span>
+                    <span class="why-desc-new">
+                        Max Plate Thk: Up to 8mm<br>
+                        Precision rolling for curved fascia and structural components.</span>
+                </div>
+
+                <!-- 10. Horizontal Balancing -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1581093458791-9f3c3900df4b?auto=format&fit=crop&w=600&q=80"
+                        alt="Balancing Mc"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Horizontal Balancing Mc (2 Nos)</span>
+                    <span class="why-desc-new"><strong>FIE (HDM 650)</strong><br>
+                        Max Weight: 650 Kgs<br>
+                        Max Dia: 1250 mm</span>
+                </div>
+
+                <!-- 11. H-Beam (Keep from previous) -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
+                        alt="H-Beam Welding"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">H-Beam Auto Welding Line</span>
+                    <span class="why-desc-new">Capacity: <strong>500 MT/Month</strong><br>
+                        Automated SAW Welding for heavy structural members.</span>
+                </div>
+
+                <!-- 13. Hydraulic Press -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1542058188-4672323d6fae?auto=format&fit=crop&w=600&q=80"
+                        alt="Hydraulic Press"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Hydraulic Shop Press</span>
+                    <span class="why-desc-new"><strong>5 Units Available</strong><br>
+                        Capacities: 400MT(1), 200MT(2), 50MT(1), 20MT(1)<br>For heavy-duty forming and
+                        straightening.</span>
+                </div>
+
+                <!-- 14. Mechanical Power Press -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1620302066872-96538d381cfc?auto=format&fit=crop&w=600&q=80"
+                        alt="Power Press"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Mechanical Power Press</span>
+                    <span class="why-desc-new"><strong>4 Units Available</strong><br>
+                        High-speed stamping and punching for smaller components and connection clips.</span>
+                </div>
+
+                <!-- 15. Lathe Machine -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1563200843-c603b5cad511?auto=format&fit=crop&w=600&q=80"
+                        alt="Lathe Machine"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Semi-Automatic Lathe</span>
+                    <span class="why-desc-new"><strong>4 Units Available</strong><br>
+                        Precision turning for anchor bolts, sag rods, and custom threaded components.</span>
+                </div>
+
+                <!-- 16. Milling Machine -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1616421350644-80277259695d?auto=format&fit=crop&w=600&q=80"
+                        alt="Milling Machine"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Milling Machine</span>
+                    <span class="why-desc-new"><strong>1 Unit Available</strong><br>
+                        For face milling, slotting, and machining flat surfaces on base plates.</span>
+                </div>
+
+                <!-- 17. Radial Drilling -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1594916298583-936605d8f6cc?auto=format&fit=crop&w=600&q=80"
+                        alt="Radial Drilling"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Radial Drilling Mc</span>
+                    <span class="why-desc-new"><strong>2 Units Available</strong><br>
+                        Heavy-duty drilling for large diameter holes in thick columns and rafters.</span>
+                </div>
+
+                <!-- 18. Pillar Drilling -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
+                        alt="Pillar Drilling"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Pillar Drilling Mc</span>
+                    <span class="why-desc-new"><strong>3 Units Available</strong><br>
+                        Vertical drilling for secondary members and standard connection holes.</span>
+                </div>
+
+                <!-- 19. Band Saw -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1606326164506-695e347ad5ae?auto=format&fit=crop&w=600&q=80"
+                        alt="Band Saw"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Band Saw Machine</span>
+                    <span class="why-desc-new"><strong>2 Units Available</strong><br>
+                        High-precision cutting of sections, tubes, and solid bars.</span>
+                </div>
+
+                <!-- 20. Pipe & Section Rolling -->
+                <div class="why-card-new">
+                    <img src="https://images.unsplash.com/photo-1565620808034-7a7018d36398?auto=format&fit=crop&w=600&q=80"
+                        alt="Section Rolling"
+                        style="width:100%; height:200px; object-fit:cover; border-radius:8px; margin-bottom:15px;">
+                    <span class="why-title-new">Pipe & Section Rolling</span>
+                    <span class="why-desc-new"><strong>1 Unit Available</strong><br>
+                        Bending of pipes, angles, and channels for curved structural elements.</span>
+                </div>
 
             </div>
         </div>
@@ -204,7 +341,8 @@
                 <div class="footer-grid-modern">
                     <!-- Column 1: Brand -->
                     <div class="footer-col">
-                        <span class="footer-brand-title">SteelFlex Structures</span>
+                        <span class="footer-brand-title"><img src="Logo/Steelflex Logo.png" alt="SteelFlex"
+                                style="height: 50px;"></span>
                         <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
                             steel construction solutions.</p>
                     </div>
@@ -217,6 +355,8 @@
                             <li><a href="products-structures.html">Products</a></li>
                             <li><a href="capabilities.html">Capabilities</a></li>
                             <li><a href="machineries.html">Machineries</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="careers.html">Careers</a></li>
                             <li><a href="contact-us.html">Contact Us</a></li>
                         </ul>
                     </div>
@@ -226,15 +366,15 @@
                         <h4 class="footer-col-title">Contact</h4>
                         <div class="footer-contact-item">
                             <span>Phone</span>
-                            +91 98765 43210
+                            +91 94264 43442
                         </div>
                         <div class="footer-contact-item">
                             <span>Email</span>
-                            info@steelflexstructures.com
+                            md@steelflexstructures.com
                         </div>
                         <div class="footer-contact-item">
                             <span>Location</span>
-                            Mumbai, India
+                            Vadodara, Gujarat
                         </div>
                     </div>
                 </div>

@@ -137,7 +137,7 @@ section {
 .main-header {
     background-color: transparent;
     /* Floating header look */
-    padding: 30px 0;
+    padding: 15px 0;
     position: absolute;
     width: 100%;
     top: 0;
@@ -151,11 +151,16 @@ section {
 }
 
 .logo a {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.logo-img {
+    height: 35px;
+    /* Adjust height as needed */
+    width: auto;
+    object-fit: contain;
 }
 
 .logo span {
@@ -224,9 +229,9 @@ section {
    FREE-FLOW HERO SECTION
    ========================================= */
 .hero-section {
-    padding-top: 180px;
+    padding-top: 160px;
     /* Clear header */
-    padding-bottom: 120px;
+    padding-bottom: 60px;
     background: linear-gradient(135deg, #FFFFFF 50%, #F6F8FB 50%);
     /* Subtle diagonal split */
 }
@@ -365,123 +370,194 @@ section {
 }
 
 /* Center Content Anchor */
-.arc-center-anchor {
+/* Center Content Anchor - STRICT ABSOLUTE CENTERING (V2) */
+.arc-center-anchor-v2 {
     position: absolute;
-    bottom: 0;
     left: 50%;
-    transform: translateX(-50%);
+    bottom: 0;
+    transform: translateX(-50%) !important;
+    /* FORCE CENTER */
     text-align: center;
-    width: 480px;
-    z-index: 2;
-    background: #FFFFFF;
-    padding-top: 20px;
+    width: 600px;
+    z-index: 5;
+    pointer-events: none;
+    padding-bottom: 25px;
 }
 
+/* Update Mobile Rule for v2 */
+@media (max-width: 900px) {
+    .arc-center-anchor-v2 {
+        position: relative;
+        left: auto;
+        bottom: auto;
+        transform: none !important;
+        width: 100%;
+        margin-bottom: 40px;
+        text-align: center;
+        padding: 0;
+    }
+}
+
+/* Center Image (Significantly Larger ~50% increase) */
+/* Center Image (320px Wide - Scaled Up) */
 .arc-center-image {
-    width: 140px;
-    height: 90px;
+    width: 320px;
+    height: 200px;
     margin: 0 auto 15px;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 16px 32px rgba(38, 71, 150, 0.2);
+    transition: all 0.3s ease;
+    background: #fff;
+    pointer-events: auto;
 }
 
 .arc-center-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.3s ease;
 }
 
-.arc-center-anchor h3 {
-    font-size: 1.8rem;
+/* Typography Hierarchy */
+.arc-center-anchor-v2 h3 {
+    font-size: 2.4rem;
+    font-weight: 800;
     color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
     transition: opacity 0.2s ease, transform 0.2s ease;
-    /* Smooth fade */
+    pointer-events: auto;
+}
+
+.arc-center-anchor-v2 p {
+    font-size: 1.1rem;
+    color: #556070;
+    line-height: 1.4;
+    font-weight: 500;
+    max-width: 400px;
+    margin: 0 auto;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: auto;
+    min-height: 3em;
+}
+
+/* Typography Hierarchy */
+.arc-center-anchor h3 {
+    font-size: 2.2rem;
+    /* DOMINANT Title */
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 8px;
+    text-shadow: 0 2px 10px rgba(255, 255, 255, 0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: auto;
 }
 
 .arc-center-anchor p {
-    font-size: 1rem;
-    color: var(--secondary-color);
-    line-height: 1.5;
+    font-size: 1.1rem;
+    color: #556070;
+    line-height: 1.4;
+    font-weight: 500;
+    max-width: 400px;
+    margin: 0 auto;
     transition: opacity 0.2s ease, transform 0.2s ease;
-    /* Smooth fade */
+    pointer-events: auto;
     min-height: 3em;
-    /* Reserve text space preventing jump */
 }
 
 /* Metric Items along the Arc */
 .arc-item {
     position: absolute;
-    width: 220px;
+    width: 180px;
     text-align: center;
-    z-index: 3;
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-    /* Start from center bottom for origin reference? No, use fixed coordinates */
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    /* Bouncy scaling */
 }
 
 .arc-item:hover {
-    transform: translateY(-10px) scale(1.05);
-    z-index: 10;
+    transform: scale(1.15) translateY(-5px);
+    z-index: 12;
 }
 
-/* Specific Positions (Radius ~400px) */
-/* Item 1: Far Left (~160 deg) */
+/* Specific Positions (Radius=600px, 180deg to 0deg) */
+/* User requested: 0, 36, 72, 108, 144, 180 degrees */
+/* Calculated with R=600px, ItemWidth=180px (Offset 90px), Vertical Shift -100px */
+
+/* Pos 1: 180deg (Leftmost) -> x=-600, y=0 */
 .arc-item.pos-1 {
-    bottom: 120px;
-    left: 50px;
+    left: calc(50% - 600px - 90px);
+    bottom: -100px;
 }
 
-/* Item 2: Mid Left (~110 deg) */
+/* Pos 2: 144deg -> x=-485, y=353 */
 .arc-item.pos-2 {
-    bottom: 300px;
-    left: 200px;
+    left: calc(50% - 485px - 90px);
+    bottom: 253px;
 }
 
-/* Item 3: Mid Right (~70 deg) */
+/* Pos 3: 108deg -> x=-185, y=571 */
 .arc-item.pos-3 {
-    bottom: 300px;
-    right: 200px;
+    left: calc(50% - 185px - 90px);
+    bottom: 471px;
 }
 
-/* Item 4: Far Right (~20 deg) */
+/* Pos 4: 72deg -> x=185, y=571 */
 .arc-item.pos-4 {
-    bottom: 120px;
-    right: 50px;
+    left: calc(50% + 185px - 90px);
+    bottom: 471px;
+}
+
+/* Pos 5: 36deg -> x=485, y=353 */
+.arc-item.pos-5 {
+    left: calc(50% + 485px - 90px);
+    bottom: 253px;
+}
+
+/* Pos 6: 0deg (Rightmost) -> x=600, y=0 */
+.arc-item.pos-6 {
+    left: calc(50% + 600px - 90px);
+    bottom: -100px;
 }
 
 
 /* Content Styling */
+/* Content Styling - Visual Balance */
 .arc-emoji {
-    font-size: 3rem;
-    margin-bottom: 5px;
     display: block;
-    filter: grayscale(20%);
+    font-size: 1.6rem;
+    /* Medium */
+    margin-bottom: 5px;
+    opacity: 0.9;
     transition: transform 0.3s ease;
 }
 
 .arc-item:hover .arc-emoji {
     transform: scale(1.2);
-    filter: grayscale(0%);
 }
 
 .arc-num {
     display: block;
-    font-size: 2.2rem;
-    font-weight: 700;
+    font-size: 2.4rem;
+    /* DOMINANT */
+    font-weight: 800;
     color: var(--primary-color);
-    line-height: 1.1;
+    line-height: 1;
+    margin-bottom: 5px;
+    letter-spacing: -1px;
 }
 
 .arc-label {
     display: block;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--secondary-color);
+    font-size: 0.8rem;
+    /* Supportive */
+    font-weight: 700;
+    color: #64748b;
     margin-top: 5px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 .arc-story {
@@ -927,9 +1003,11 @@ section {
 /* =========================================
    WHO WE ARE - TECH REDESIGN
    ========================================= */
+/* =========================================
+   WHO WE ARE - REDESIGNED GRID
+   ========================================= */
 .who-section-tech {
-    padding: 100px 0 60px;
-    position: relative;
+    padding: 100px 0;
     background: #FFFFFF;
 }
 
@@ -949,83 +1027,173 @@ section {
     content: '';
     display: block;
     width: 60px;
+    /* Initial state */
     height: 4px;
     background: var(--primary-color);
     margin: 10px auto 0;
+    transition: width 0.3s ease-in-out;
+    /* Smooth growth */
+}
+
+.who-header:hover h2::after {
+    width: 100%;
+    /* Expands on hover */
 }
 
 .who-header p {
     color: var(--secondary-color);
     margin-top: 15px;
     font-size: 1.1rem;
-    /* Positioning sentence size */
 }
 
-.tech-grid {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    /* 60% Left, 40% Right */
-    gap: 60px;
-    align-items: center;
-    margin-bottom: 60px;
+/* New Centered Intro */
+.intro-centered {
+    max-width: 800px;
+    margin: 0 auto 60px;
+    text-align: center;
 }
 
-.tech-content h3 {
+.intro-centered h3 {
     font-size: 2rem;
-    line-height: 1.2;
-    margin-bottom: 40px;
     color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.intro-centered p {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    line-height: 1.6;
+}
+
+/* Facts Grid */
+.facts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 40px;
+}
+
+/* Fact Card */
+.fact-card {
+    background: #fff;
+    padding: 40px 30px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+}
+
+.fact-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    /* Sophisticated shadow */
+    border-color: rgba(38, 71, 150, 0.2);
+}
+
+/* Icon & Typography */
+.fact-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+.fact-card h4 {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 15px;
     font-weight: 600;
 }
 
-.value-pillars {
-    display: grid;
-    gap: 30px;
-    /* Space between pillars */
-    margin-bottom: 40px;
-}
-
-.pillar-item h4 {
-    font-size: 1.2rem;
+.fact-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    /* Extra bold for impact */
     color: var(--primary-color);
-    margin-bottom: 5px;
-    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
 }
 
-.pillar-item p {
-    font-size: 1rem;
+.fact-card p {
     color: var(--secondary-color);
-    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 15px;
+}
+
+.fact-desc {
+    font-size: 0.95rem;
+    color: #666;
     line-height: 1.5;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
 }
 
-/* Tech Visual with Overlay */
-.tech-visual {
+/* Specific List Styling for Capacity */
+.fact-list {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    display: inline-block;
+    /* Center the block, but align list left */
+    margin-top: 10px;
+}
+
+.fact-list li {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-bottom: 6px;
     position: relative;
-    border-radius: var(--border-radius-lg);
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding-left: 15px;
 }
 
-.tech-visual img {
-    display: block;
-    width: 100%;
-    border-radius: var(--border-radius-lg);
-}
-
-/* Subtle Tech Overlay (Dots) */
-.tech-overlay {
+.fact-list li::before {
+    content: '•';
+    color: var(--primary-color);
     position: absolute;
-    top: 0;
     left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: radial-gradient(var(--primary-color) 1.5px, transparent 1.5px);
-    background-size: 24px 24px;
-    opacity: 0.15;
-    z-index: 1;
-    pointer-events: none;
-    border-radius: var(--border-radius-lg);
+    font-weight: bold;
+}
+
+/* Highlight Card (Center) */
+.highlight-card {
+    border-color: rgba(38, 71, 150, 0.15);
+    /* Slight tint default */
+    background: linear-gradient(to bottom, #fff 0%, #fafbff 100%);
+}
+
+@media (max-width: 900px) {
+    .facts-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .intro-centered {
+        margin-bottom: 40px;
+        padding: 0 20px;
+    }
+}
+
+/* Why Choose Us Header Animation */
+.why-header h2 {
+    position: relative;
+    display: inline-block;
+    color: var(--primary-color);
+}
+
+.why-header h2::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: var(--primary-color);
+    margin: 10px auto 0;
+    transition: width 0.3s ease-in-out;
+}
+
+.why-header:hover h2::after {
+    width: 100%;
 }
 
 /* Micro Tech Strip */
@@ -1496,18 +1664,30 @@ section {
     gap: 40px;
 }
 
+/* Explicit 3-Column Grid for Products */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
 .why-card-new {
     background-color: var(--background-section);
     /* Soft background #F6F8FB */
     padding: 40px;
     border-radius: var(--border-radius-lg);
-    transition: transform 0.3s ease;
-    /* No borders, no shadows */
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    border: 1px solid transparent;
+    /* Prepare for border hover */
 }
 
 .why-card-new:hover {
-    transform: translateY(-5px);
-    /* Subtle lift */
+    transform: translateY(-8px);
+    background: #ffffff;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+    /* Sophisticated shadow */
+    border-color: rgba(38, 71, 150, 0.2);
+    /* Subtle primary border */
 }
 
 .why-emoji {
@@ -1697,5 +1877,375 @@ section {
 
     .footer-brand-statement {
         margin: 0 auto;
+    }
+}
+
+/* Global Helper: Hide new interaction elements on mobile/tablet */
+.power-line {
+    display: none;
+}
+
+
+/* =========================================
+   EDGE-TO-EDGE DESKTOP LAYOUT (≥1280px)
+   Global Visual Density Update
+   ========================================= */
+
+@media (min-width: 1280px) {
+
+    /* 1. Navbar Edge-to-Edge */
+    .main-header {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        background: #ffffff;
+        /* Ensure bg is opaque */
+        padding: 20px 0;
+        /* Control padding in inner */
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .main-header .container,
+    .main-header .nav-container {
+        max-width: 1400px !important;
+        margin: 0 auto;
+        padding: 0 32px;
+        width: 100%;
+    }
+
+    /* 2. Hero Sections Full Bleed */
+    .hero-section,
+    .about-hero {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        background: linear-gradient(135deg, #ffffff 0%, #f4f7fb 100%) !important;
+        padding-top: 160px;
+        padding-bottom: 60px;
+        position: relative;
+        left: 0;
+        right: 0;
+    }
+
+    /* Inner Hero Content */
+    .hero-section>.container,
+    .hero-section>.hero-grid,
+    .hero-grid {
+        max-width: 1400px !important;
+        margin: 0 auto;
+        padding: 0 32px;
+        width: 100%;
+        position: relative;
+        z-index: 2;
+    }
+
+    /* 3. Global Content Containers -> 1400px */
+    .container,
+    .content-container {
+        max-width: 1400px !important;
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+
+    /* 4. Visual Balancers (Side Gradients) */
+    .hero-section::before,
+    .hero-section::after,
+    .who-section-tech::before,
+    .who-section-tech::after,
+    .why-section-redesign::before,
+    .why-section-redesign::after,
+    .powers-section::before,
+    .powers-section::after,
+    .strategic-section::before,
+    .strategic-section::after,
+    .products-section::before,
+    .products-section::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 120px;
+        height: 100%;
+        background: radial-gradient(circle, rgba(38, 71, 150, 0.04), transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .hero-section::before,
+    .who-section-tech::before,
+    .why-section-redesign::before,
+    .powers-section::before,
+    .strategic-section::before,
+    .products-section::before {
+        left: 0;
+    }
+
+    .hero-section::after,
+    .who-section-tech::after,
+    .why-section-redesign::after,
+    .powers-section::after,
+    .strategic-section::after,
+    .products-section::after {
+        right: 0;
+    }
+
+
+    /* 5. Footer Full Width */
+    .site-footer-redesign,
+    footer {
+        width: 100vw;
+        margin-left: calc(-50vw + 50%);
+        background: #f4f7fb;
+    }
+
+    .site-footer-redesign .container,
+    .footer-inner {
+        max-width: 1400px !important;
+        margin: auto;
+        padding-left: 32px;
+        padding-right: 32px;
+    }
+
+    /* =========================================
+       HOVER INTERACTIONS (Desktop Only)
+       ========================================= */
+
+    /* 2. Disable old border */
+    .power-block::before {
+        content: none;
+    }
+
+    /* 3. Enable new structure */
+    .power-line {
+        display: block;
+        position: absolute;
+        top: 20px;
+        bottom: 20px;
+        left: 0;
+        width: 3px;
+        background: #898989;
+        overflow: hidden;
+    }
+
+    .power-line-fill {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 0%;
+        background: #264796;
+        transform: translateY(-50%);
+        transition: height 0.4s ease;
+    }
+
+    .power-item {
+        cursor: pointer;
+        /* Ensure specific hover area behavior if needed */
+    }
+
+    .power-item:hover .power-line-fill {
+        height: 100%;
+    }
+
+    /* 4. Title Hover Effect */
+    .what-powers-title {
+        position: relative;
+        display: inline-block;
+        cursor: default;
+    }
+
+    .what-powers-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -10px;
+        width: 48px;
+        height: 3px;
+        background: #264796;
+        transition: width 0.4s ease;
+    }
+
+    .what-powers-title:hover::after {
+        width: 100%;
+    }
+
+    /* 5. Emoji Jiggle */
+    @keyframes emojiJiggle {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        25% {
+            transform: rotate(-6deg);
+        }
+
+        50% {
+            transform: rotate(6deg);
+        }
+
+        75% {
+            transform: rotate(-3deg);
+        }
+
+        100% {
+            transform: rotate(0deg);
+        }
+    }
+
+    .power-item:hover .power-emoji {
+        animation: emojiJiggle 0.6s ease-in-out;
+        display: inline-block;
+        /* Required for transform */
+    }
+
+    /* =========================================
+       STRATEGIC SECTION HOVER EFFECTS
+       (Vision, Mission, Goals)
+       ========================================= */
+
+    /* 1. Title Underline Expansion */
+    .vm-title {
+        position: relative;
+        display: inline-block;
+        cursor: default;
+    }
+
+    .vm-title::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -5px;
+        width: 48px;
+        /* Consistent starting state */
+        height: 3px;
+        background: #264796;
+        transition: width 0.4s ease;
+    }
+
+    .vm-title:hover::after {
+        width: 100%;
+    }
+
+    /* Animoji Update: Jiggle on Title Hover */
+    .title-emoji {
+        display: inline-block;
+        /* Required for transform */
+        transition: transform 0.3s ease;
+    }
+
+    .vm-title:hover .title-emoji {
+        animation: emojiJiggle 0.6s ease-in-out;
+    }
+
+    /* 2. Image Zoom Interaction */
+    .vm-img-hover {
+        overflow: hidden;
+        /* Contain the zoom */
+        border-radius: 12px;
+        /* Match existing radius consistency */
+    }
+
+    .vm-img-hover img {
+        transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .vm-img-hover:hover img {
+        transform: scale(1.04);
+        /* Subtle zoom */
+    }
+
+    /* 3. Goal Card Lift & Emoji Jiggle */
+    .goal-card-interaction {
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .goal-card-interaction:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .goal-card-interaction:hover .goal-emoji {
+        display: inline-block;
+        animation: emojiJiggle 0.6s ease-in-out;
+    }
+
+    /* 4. Mission List Item Highlight */
+    .mission-item {
+        transition: transform 0.3s ease, color 0.3s ease;
+        padding: 5px 10px;
+        margin-left: -10px;
+        border-radius: 6px;
+    }
+
+    .mission-item:hover {
+        background: rgba(38, 71, 150, 0.04);
+        color: #264796;
+        transform: translateX(5px);
+    }
+
+    .mission-item:hover span {
+        display: inline-block;
+        animation: emojiJiggle 0.6s ease-in-out;
+    }
+}
+
+/* =========================================
+   STEEL DIVIDER (Visual Bridge - Option A)
+   ========================================= */
+.steel-divider {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 24px 0 12px;
+}
+
+.steel-divider span {
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(to right,
+            transparent,
+            #264796,
+            transparent);
+    opacity: 0.6;
+    position: relative;
+    overflow: hidden;
+    /* Contain the scan */
+}
+
+.steel-divider span::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -1px;
+    width: 24px;
+    height: 4px;
+    background: #264796;
+    opacity: 0.8;
+    animation: steelScan 3s ease-in-out infinite;
+}
+
+@keyframes steelScan {
+    0% {
+        left: -20%;
+    }
+
+    /* Start off-screen layer */
+    50% {
+        left: 100%;
+    }
+
+    /* Move to end */
+    100% {
+        left: -20%;
+    }
+
+    /* Reset loop */
+}
+
+@media (max-width: 900px) {
+    .steel-divider {
+        display: none;
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
 }
