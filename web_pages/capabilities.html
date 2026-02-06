@@ -135,25 +135,36 @@
                     <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 40px;">Production
                         Capacity</h2>
                     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: center;">
-                        <div style="border-right: 1px solid #ddd;">
+                        <!-- Item 1: Primary Members -->
+                        <div class="capacity-item" style="border-right: 1px solid #ddd;">
+                            <div class="capacity-emoji">🏗️</div>
                             <span style="font-size: 2.5rem; color: var(--primary-color); font-weight: 700;">6,000</span>
                             <span style="display: block; font-size: 0.9rem; color: #666; text-transform: uppercase;">MT
                                 / Year</span>
                             <p style="margin-top: 10px; font-weight: 600;">Primary Members</p>
                         </div>
-                        <div style="border-right: 1px solid #ddd;">
+
+                        <!-- Item 2: Secondary Members -->
+                        <div class="capacity-item" style="border-right: 1px solid #ddd;">
+                            <div class="capacity-emoji">🔩</div>
                             <span style="font-size: 2.5rem; color: var(--primary-color); font-weight: 700;">4,000</span>
                             <span style="display: block; font-size: 0.9rem; color: #666; text-transform: uppercase;">MT
                                 / Year</span>
                             <p style="margin-top: 10px; font-weight: 600;">Secondary Members</p>
                         </div>
-                        <div style="border-right: 1px solid #ddd;">
+
+                        <!-- Item 3: Color Coated Sheets -->
+                        <div class="capacity-item" style="border-right: 1px solid #ddd;">
+                            <div class="capacity-emoji">🎨</div>
                             <span style="font-size: 2.5rem; color: var(--primary-color); font-weight: 700;">4,000</span>
                             <span style="display: block; font-size: 0.9rem; color: #666; text-transform: uppercase;">MT
                                 / Year</span>
                             <p style="margin-top: 10px; font-weight: 600;">Color Coated Sheets</p>
                         </div>
-                        <div>
+
+                        <!-- Item 4: Total Output -->
+                        <div class="capacity-item">
+                            <div class="capacity-emoji">📈</div>
                             <span style="font-size: 2.5rem; color: var(--primary-color); font-weight: 700;">500+</span>
                             <span style="display: block; font-size: 0.9rem; color: #666; text-transform: uppercase;">MT
                                 / Month</span>
@@ -259,53 +270,108 @@
         <!-- SECTION 3: THE PROCESS -->
         <section class="process-section" style="padding: 60px 0; background-color: #f4f7fb;">
             <div class="container">
-                <h2 class="section-divider-title"
-                    style="margin-top: 0; border: none; font-size: 2.5rem; color: var(--primary-color); text-align: center; margin-bottom: 50px;">
-                    The SteelFlex Workflow</h2>
+                <div style="text-align: center; margin-bottom: 50px;">
+                    <h2 class="section-divider-title"
+                        style="margin-top: 0; border: none; font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;">
+                        The SteelFlex Workflow</h2>
+                    <p style="font-size: 1.1rem; color: var(--secondary-color);">From concept to completion, every
+                        SteelFlex project follows a structured, precision-driven workflow.</p>
+                </div>
 
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px;">
-                    <!-- Step 1 -->
-                    <div style="flex: 1; text-align: center; min-width: 150px;">
-                        <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">💡</span>
-                        <h4 style="color: var(--primary-color); margin-bottom: 10px;">1. Concept</h4>
-                        <p style="font-size: 0.9rem; color: #666;">Requirement Analysis & Planning</p>
+                <div class="workflow-container">
+                    <!-- Left Rail with Animated Nut/Bolt -->
+                    <div class="workflow-rail">
+                        <div class="rail-line"></div>
+                        <div class="rail-fill"></div>
+                        <div class="nut-bolt-wrapper">
+                            <svg width="60" height="60" viewBox="0 0 100 100" class="nut-bolt-icon">
+                                <!-- Static Bolt Head -->
+                                <circle cx="50" cy="50" r="20" fill="#8899A6" />
+                                <rect x="42" y="30" width="16" height="40" fill="#556677" rx="2" />
+                                <!-- Rotating Nut Assembly -->
+                                <g id="nut-assembly" transform-origin="center">
+                                    <path d="M50 10 L85 30 L85 70 L50 90 L15 70 L15 30 Z" fill="none" stroke="#264796"
+                                        stroke-width="8" />
+                                    <path d="M50 25 L72 37 L72 63 L50 75 L28 63 L28 37 Z" fill="#264796"
+                                        opacity="0.2" />
+                                </g>
+                            </svg>
+                        </div>
                     </div>
-                    <!-- Arrow -->
-                    <div style="align-self: center; font-size: 1.5rem; color: #ccc;">➔</div>
 
-                    <!-- Step 2 -->
-                    <div style="flex: 1; text-align: center; min-width: 150px;">
-                        <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">📐</span>
-                        <h4 style="color: var(--primary-color); margin-bottom: 10px;">2. Design</h4>
-                        <p style="font-size: 0.9rem; color: #666;">Structural Analysis & Detailing</p>
-                    </div>
-                    <!-- Arrow -->
-                    <div style="align-self: center; font-size: 1.5rem; color: #ccc;">➔</div>
+                    <!-- Right Content Steps -->
+                    <div class="workflow-steps">
+                        <!-- Step 1: Concept -->
+                        <div class="workflow-step" data-step="1">
+                            <div class="step-image-container">
+                                <img src="https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=600&q=80"
+                                    alt="Concept Planning" class="step-image">
+                            </div>
+                            <div class="step-content">
+                                <h3>1. Concept</h3>
+                                <h4>Requirement Analysis & Planning</h4>
+                                <p class="step-story">We start by understanding your vision, site constraints, and
+                                    operational needs. This phase defines scope, feasibility, and execution strategy.
+                                </p>
+                            </div>
+                        </div>
 
-                    <!-- Step 3 -->
-                    <div style="flex: 1; text-align: center; min-width: 150px;">
-                        <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">⚙️</span>
-                        <h4 style="color: var(--primary-color); margin-bottom: 10px;">3. Fabrication</h4>
-                        <p style="font-size: 0.9rem; color: #666;">Precision Manufacturing</p>
-                    </div>
-                    <!-- Arrow -->
-                    <div style="align-self: center; font-size: 1.5rem; color: #ccc;">➔</div>
+                        <!-- Step 2: Design -->
+                        <div class="workflow-step" data-step="2">
+                            <div class="step-image-container">
+                                <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=600&q=80"
+                                    alt="Structural Design" class="step-image">
+                            </div>
+                            <div class="step-content">
+                                <h3>2. Design</h3>
+                                <h4>Structural Analysis & Detailing</h4>
+                                <p class="step-story">Our engineers use advanced BIM and simulation tools to design
+                                    structures optimized for strength, speed, and cost efficiency.</p>
+                            </div>
+                        </div>
 
-                    <!-- Step 4 -->
-                    <div style="flex: 1; text-align: center; min-width: 150px;">
-                        <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🚚</span>
-                        <h4 style="color: var(--primary-color); margin-bottom: 10px;">4. Logistics</h4>
-                        <p style="font-size: 0.9rem; color: #666;">Safe & Timely Transport</p>
-                    </div>
-                    <!-- Arrow -->
-                    <div style="align-self: center; font-size: 1.5rem; color: #ccc;">➔</div>
+                        <!-- Step 3: Fabrication -->
+                        <div class="workflow-step" data-step="3">
+                            <div class="step-image-container">
+                                <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"
+                                    alt="Fabrication" class="step-image">
+                            </div>
+                            <div class="step-content">
+                                <h3>3. Fabrication</h3>
+                                <h4>Precision Manufacturing</h4>
+                                <p class="step-story">Components are manufactured in controlled environments with strict
+                                    quality checks to ensure dimensional accuracy and durability.</p>
+                            </div>
+                        </div>
 
-                    <!-- Step 5 -->
-                    <div style="flex: 1; text-align: center; min-width: 150px;">
-                        <span style="font-size: 2.5rem; display: block; margin-bottom: 10px;">🏗️</span>
-                        <h4 style="color: var(--primary-color); margin-bottom: 10px;">5. Assembly</h4>
-                        <p style="font-size: 0.9rem; color: #666;">Site Erection & Handover</p>
+                        <!-- Step 4: Logistics -->
+                        <div class="workflow-step" data-step="4">
+                            <div class="step-image-container">
+                                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80"
+                                    alt="Logistics" class="step-image">
+                            </div>
+                            <div class="step-content">
+                                <h3>4. Logistics</h3>
+                                <h4>Safe & Timely Transport</h4>
+                                <p class="step-story">Planned logistics ensure just-in-time delivery to site. Each
+                                    component is tracked, handled, and transported safely to minimize delays and on-site
+                                    congestion.</p>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Assembly -->
+                        <div class="workflow-step" data-step="5">
+                            <div class="step-image-container">
+                                <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80"
+                                    alt="Assembly" class="step-image">
+                            </div>
+                            <div class="step-content">
+                                <h3>5. Assembly</h3>
+                                <h4>Site Erection & Handover</h4>
+                                <p class="step-story">Expert erection teams assemble structures efficiently with
+                                    safety-first protocols, followed by inspection and handover.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -380,6 +446,86 @@
     <script>
         document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
             document.querySelector('.main-nav').classList.toggle('active');
+        });
+    </script>
+    <style>
+        /* FORCE OVERFLOW FIX for Sticky Nut */
+        .process-section {
+            overflow: visible !important;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const nutAssembly = document.getElementById('nut-assembly');
+            const railFill = document.querySelector('.rail-fill');
+            const steps = document.querySelectorAll('.workflow-step');
+            const workflowSection = document.querySelector('.process-section'); // Section to track
+
+            // --- Continuous Scroll Animation ---
+            function updateScrollAnimation() {
+                if (!workflowSection || !nutAssembly) return;
+
+                const sectionRect = workflowSection.getBoundingClientRect();
+                const sectionTop = sectionRect.top;
+                const sectionHeight = sectionRect.height;
+                const viewportHeight = window.innerHeight;
+
+                // Calculate progress for rotation
+                const start = viewportHeight;
+                const end = -sectionHeight;
+                const progress = (start - sectionTop) / (start - end);
+
+                // Rotate Nut
+                const rotationDeg = progress * 1080;
+                nutAssembly.style.transformOrigin = '50px 50px';
+                nutAssembly.style.transform = `rotate(${rotationDeg}deg)`;
+
+                // Sync Line Fill DIRECTLY to Nut Position
+                if (railFill) {
+                    const rail = document.querySelector('.workflow-rail');
+                    const nutWrapper = document.querySelector('.nut-bolt-wrapper');
+
+                    if (rail && nutWrapper) {
+                        const railRect = rail.getBoundingClientRect();
+                        const nutRect = nutWrapper.getBoundingClientRect();
+
+                        // Distance = (Nut Top - Rail Top) + (Offset to center)
+                        const fillHeight = (nutRect.top - railRect.top) + (nutRect.height / 2);
+                        railFill.style.height = `${Math.max(0, fillHeight)}px`;
+                    }
+                }
+            }
+
+            // Use requestAnimationFrame for smooth scroll
+            let ticking = false;
+            window.addEventListener('scroll', () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        updateScrollAnimation();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+            // Initial call
+            updateScrollAnimation();
+
+
+            // --- Step Visibility (Keep IntersectionObserver) ---
+            const observerOptions = {
+                root: null,
+                threshold: 0.3
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            steps.forEach(step => observer.observe(step));
         });
     </script>
 </body>
