@@ -102,8 +102,8 @@
     <section class="hero-section"
         style="padding: 150px 0 100px; text-align: center; position: relative; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1600&q=80'); background-size: cover; background-position: center;">
         <div class="container" style="position: relative; z-index: 2;">
-            <h1 style="color: #fff; font-size: 3.5rem; margin-bottom: 20px;">National Logistics Hub</h1>
-            <div class="project-meta-pills">
+            <h1 class="reveal-on-scroll" style="color: #fff; font-size: 3.5rem; margin-bottom: 20px;">National Logistics Hub</h1>
+            <div class="project-meta-pills reveal-on-scroll delay-1">
                 <span class="meta-pill">Client: Global Logistics Ltd.</span>
                 <span class="meta-pill">Location: Delhi NCR</span>
                 <span class="meta-pill">Completion: 2024</span>
@@ -117,7 +117,7 @@
         <!-- The Challenge -->
         <section class="case-section container">
             <div class="case-grid">
-                <div>
+                <div class="reveal-on-scroll">
                     <span class="section-label"
                         style="color: var(--secondary-color); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; font-weight: 700;">The
                         Challenge</span>
@@ -129,7 +129,7 @@
                         unobstructed automated vehicle movement, while also supporting a heavy rooftop solar array.
                     </p>
                 </div>
-                <div>
+                <div class="reveal-on-scroll delay-1">
                     <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80"
                         alt="Warehousing Challenge"
                         style="width: 100%; border-radius: var(--border-radius-lg); box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
@@ -141,7 +141,7 @@
         <section class="case-section" style="background-color: var(--background-section);">
             <div class="container">
                 <div class="case-grid">
-                    <div style="order: 2;"> <!-- Swap order for asymmetry -->
+                    <div style="order: 2;" class="reveal-on-scroll"> <!-- Swap order for asymmetry -->
                         <span class="section-label"
                             style="color: var(--secondary-color); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; font-weight: 700;">Our
                             Approach</span>
@@ -156,7 +156,7 @@
                                 time by 4 weeks.</li>
                         </ul>
                     </div>
-                    <div style="order: 1;">
+                    <div style="order: 1;" class="reveal-on-scroll delay-1">
                         <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80"
                             alt="Steel Erection"
                             style="width: 100%; border-radius: var(--border-radius-lg); box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
@@ -167,26 +167,27 @@
 
         <!-- The Result -->
         <section class="case-section container" style="text-align: center;">
-            <span class="section-label"
+            <span class="section-label reveal-on-scroll"
                 style="color: var(--secondary-color); text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem; font-weight: 700;">The
                 Outcome</span>
-            <h2 style="font-size: 2.2rem; margin: 15px 0 25px; color: var(--primary-color);">Delivered Ahead of Schedule
+            <h2 class="reveal-on-scroll" style="font-size: 2.2rem; margin: 15px 0 25px; color: var(--primary-color);">Delivered
+                Ahead of Schedule
             </h2>
-            <p style="font-size: 1.1rem; max-width: 700px; margin: 0 auto; color: #555;">
+            <p class="reveal-on-scroll delay-1" style="font-size: 1.1rem; max-width: 700px; margin: 0 auto; color: #555;">
                 The National Logistics Hub is now a fully operational node, processing over 10,000 parcels daily. The
                 project stands as a benchmark for rapid industrial infrastructure delivery.
             </p>
 
-            <div class="stat-grid">
-                <div class="stat-card">
+            <div class="stat-grid" data-stagger>
+                <div class="stat-card reveal-on-scroll">
                     <span class="stat-val">15 Days</span>
                     <span class="stat-label">Ahead of Schedule</span>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card reveal-on-scroll">
                     <span class="stat-val">Zero</span>
                     <span class="stat-label">Lost-Time Injuries</span>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card reveal-on-scroll">
                     <span class="stat-val">2,500 MT</span>
                     <span class="stat-label">Steel Fabricated</span>
                 </div>
@@ -199,7 +200,7 @@
     <footer class="site-footer-redesign">
         <!-- Part 1: CTA Bridge -->
         <div class="footer-cta-bridge">
-            <div class="container">
+            <div class="container reveal-on-scroll">
                 <h2 class="footer-cta-title">Ready to build your legacy?</h2>
                 <a href="contact-us.html" class="btn-footer-cta">Discuss Your Project</a>
             </div>
@@ -264,5 +265,7 @@
         });
     </script>
 </body>
+
+<script src="animations.js"></script>
 
 </html>

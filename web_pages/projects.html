@@ -157,8 +157,9 @@
     <!-- Page Hero -->
     <section class="hero-section" style="padding: 120px 0 60px; text-align: center; background: #fff;">
         <div class="container">
-            <h1 style="color: var(--primary-color); font-size: 3rem; margin-bottom: 20px;">Our Portfolio</h1>
-            <p
+            <h1 class="reveal-on-scroll" style="color: var(--primary-color); font-size: 3rem; margin-bottom: 20px;">Our Portfolio
+            </h1>
+            <p class="reveal-on-scroll delay-1"
                 style="font-size: 1.2rem; max-width: 900px; margin: 0 auto; color: var(--secondary-color); line-height: 1.6;">
                 Our diverse portfolio spans across heavy industrial manufacturing, advanced warehousing logistics, and
                 large-scale infrastructure projects. We take pride in delivering robust, high-performance steel
@@ -174,7 +175,8 @@
         <div class="container">
 
             <!-- Tab Navigation -->
-            <div class="project-tabs" style="display: flex; justify-content: center; gap: 20px; margin-bottom: 50px;">
+            <div class="project-tabs reveal-on-scroll delay-2"
+                style="display: flex; justify-content: center; gap: 20px; margin-bottom: 50px;">
                 <button class="tab-btn active" data-tab="ongoing" onclick="switchTab('ongoing')">Ongoing
                     Projects</button>
                 <button class="tab-btn" data-tab="completed" onclick="switchTab('completed')">Completed
@@ -182,10 +184,10 @@
             </div>
 
             <!-- ONGOING PROJECTS GRID -->
-            <div id="ongoing-projects" class="projects-grid active-tab-content">
+            <div id="ongoing-projects" class="projects-grid active-tab-content" data-stagger>
 
                 <!-- Project 1: The Indure -->
-                <article class="project-card" onclick="openModal('indure')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('indure')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1565610261709-5c569e32a688?auto=format&fit=crop&w=600&q=80"
                             alt="Power Plant Structure" class="project-card-image">
@@ -202,7 +204,7 @@
                 </article>
 
                 <!-- Project 2: ISKO Group -->
-                <article class="project-card" onclick="openModal('isko')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('isko')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=600&q=80"
                             alt="Industrial Facility" class="project-card-image">
@@ -219,7 +221,7 @@
                 </article>
 
                 <!-- Project 3: Shivanta Global -->
-                <article class="project-card" onclick="openModal('shivanta')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('shivanta')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1590644365607-1c5a38d07d99?auto=format&fit=crop&w=600&q=80"
                             alt="Industrial Park" class="project-card-image">
@@ -236,7 +238,7 @@
                 </article>
 
                 <!-- Project 4: Ronak Radiators -->
-                <article class="project-card" onclick="openModal('ronak')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('ronak')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=600&q=80"
                             alt="Manufacturing Unit" class="project-card-image">
@@ -253,7 +255,7 @@
                 </article>
 
                 <!-- Project 5: Starflex Bellows -->
-                <article class="project-card" onclick="openModal('starflex')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('starflex')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
                             alt="Engineering Plant" class="project-card-image">
@@ -270,7 +272,7 @@
                 </article>
 
                 <!-- Project 6: ABG Engineering -->
-                <article class="project-card" onclick="openModal('abg')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('abg')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=600&q=80"
                             alt="Heavy Engineering" class="project-card-image">
@@ -289,9 +291,9 @@
             </div>
 
             <!-- COMPLETED PROJECTS GRID -->
-            <div id="completed-projects" class="projects-grid" style="display: none;">
+            <div id="completed-projects" class="projects-grid" style="display: none;" data-stagger>
 
-                <article class="project-card" onclick="openModal('nikkiso')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('nikkiso')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=600&q=80"
                             alt="Project" class="project-card-image">
@@ -307,7 +309,7 @@
                     </div>
                 </article>
 
-                <article class="project-card" onclick="openModal('rubamin')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('rubamin')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1565620808034-7a7018d36398?auto=format&fit=crop&w=600&q=80"
                             alt="Project" class="project-card-image">
@@ -323,7 +325,7 @@
                     </div>
                 </article>
 
-                <article class="project-card" onclick="openModal('kevadiya')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('kevadiya')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=600&q=80"
                             alt="Project" class="project-card-image">
@@ -339,7 +341,7 @@
                     </div>
                 </article>
 
-                <article class="project-card" onclick="openModal('vatva')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('vatva')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=600&q=80"
                             alt="Project" class="project-card-image">
@@ -355,7 +357,7 @@
                     </div>
                 </article>
 
-                <article class="project-card" onclick="openModal('africa')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('africa')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1590486803833-1c5dc8ce2ac6?auto=format&fit=crop&w=600&q=80"
                             alt="Project" class="project-card-image">
@@ -371,7 +373,7 @@
                     </div>
                 </article>
 
-                <article class="project-card" onclick="openModal('samirika')">
+                <article class="project-card reveal-on-scroll" onclick="openModal('samirika')">
                     <div class="card-image-wrapper">
                         <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
                             alt="Project" class="project-card-image">
@@ -922,5 +924,7 @@
         });
     </script>
 </body>
+
+<script src="animations.js"></script>
 
 </html>

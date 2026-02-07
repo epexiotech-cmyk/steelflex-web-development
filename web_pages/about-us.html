@@ -40,8 +40,9 @@
     <section class="hero-section">
         <div class="hero-grid">
             <div class="hero-content">
-                <h1>You can always count on <span>us</span> for excellence.</h1>
-                <p class="subheading">Delivering reliable, technology-driven engineering solutions backed by experience,
+                <h1 class="reveal-on-scroll">You can always count on <span>us</span> for excellence.</h1>
+                <p class="subheading reveal-on-scroll delay-1">Delivering reliable, technology-driven engineering solutions backed
+                    by experience,
                     precision, and trust.</p>
                 <div style="margin-top: 40px;">
                     <button class="btn">Explore Capabilities</button>
@@ -318,7 +319,7 @@
     <!-- SECTION 2: TRUSTED BY PARTNERS (CAROUSEL) -->
     <section class="partners-section">
         <div class="container">
-            <h3 class="partners-title">Trusted by partners across industries</h3>
+            <h3 class="partners-title reveal-on-scroll">Trusted by partners across industries</h3>
 
             <div class="logo-carousel">
                 <div class="logo-track">
@@ -370,10 +371,10 @@
     <section class="arc-section">
         <div class="container arc-container">
             <!-- The Dotted Semi-Circle Track -->
-            <div class="arc-track"></div>
+            <div class="arc-track reveal-on-scroll"></div>
 
             <!-- Center Anchor -->
-            <div class="arc-center-anchor-v2">
+            <div class="arc-center-anchor-v2 reveal-on-scroll">
                 <!-- Visual Anchor -->
                 <div class="arc-center-image">
                     <img id="arcCenterImg"
@@ -385,7 +386,7 @@
             </div>
 
             <!-- Item 1: 20+ Years -->
-            <div class="arc-item pos-1 scroll-hidden" data-center-title="Built on Experience"
+            <div class="arc-item pos-1 reveal-on-scroll delay-1" data-center-title="Built on Experience"
                 data-center-desc="Over two decades of hands-on industrial engineering, project execution, and continuous learning."
                 data-center-img="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=400&q=80">
                 <span class="arc-emoji">🕰️</span>
@@ -396,7 +397,7 @@
             </div>
 
             <!-- Item 2: 500+ Projects -->
-            <div class="arc-item pos-2 scroll-hidden" data-center-title="Proven at Scale"
+            <div class="arc-item pos-2 reveal-on-scroll delay-2" data-center-title="Proven at Scale"
                 data-center-desc="Successfully delivered 500+ projects across diverse industrial and infrastructure environments."
                 data-center-img="https://images.unsplash.com/photo-1541976544383-304bd921d429?auto=format&fit=crop&w=400&q=80">
                 <span class="arc-emoji">🏗️</span>
@@ -406,7 +407,7 @@
             </div>
 
             <!-- Item 3: 12 Industries -->
-            <div class="arc-item pos-3 scroll-hidden" data-center-title="Industry Versatility"
+            <div class="arc-item pos-3 reveal-on-scroll delay-3" data-center-title="Industry Versatility"
                 data-center-desc="Engineering solutions tailored for manufacturing, infrastructure, energy, logistics, and more."
                 data-center-img="https://images.unsplash.com/photo-1581091226825-c6a89e7e4801?auto=format&fit=crop&w=400&q=80">
                 <span class="arc-emoji">🏭</span>
@@ -416,7 +417,7 @@
             </div>
 
             <!-- Item 4: 50+ Experts -->
-            <div class="arc-item pos-4 scroll-hidden" data-center-title="People Who Engineer"
+            <div class="arc-item pos-4 reveal-on-scroll delay-4" data-center-title="People Who Engineer"
                 data-center-desc="A multidisciplinary team of engineers, designers, and specialists driving precision."
                 data-center-img="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&q=80">
                 <span class="arc-emoji">👷</span>
@@ -426,7 +427,7 @@
             </div>
 
             <!-- Item 5: 1000+ MT Monthly Capacity -->
-            <div class="arc-item pos-5 scroll-hidden" data-center-title="Production Power"
+            <div class="arc-item pos-5 reveal-on-scroll delay-5" data-center-title="Production Power"
                 data-center-desc="State-of-the-art manufacturing facility with a monthly capacity of over 1000 MT."
                 data-center-img="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=400&q=80">
                 <span class="arc-emoji">⚙️</span>
@@ -436,7 +437,7 @@
             </div>
 
             <!-- Item 6: Pan India Presence -->
-            <div class="arc-item pos-6 scroll-hidden" data-center-title="Nationwide Reach"
+            <div class="arc-item pos-6 reveal-on-scroll delay-1" data-center-title="Nationwide Reach"
                 data-center-desc="Delivering excellence across the country with a robust pan-India logistics and support network."
                 data-center-img="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=400&q=80">
                 <span class="arc-emoji">🇮🇳</span>
@@ -503,35 +504,7 @@
                     });
                 });
 
-                // Scroll Animation (IntersectionObserver)
-                // Respect Reduced Motion
-                const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-                if (!prefersReducedMotion) {
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach((entry, index) => {
-                            if (entry.isIntersecting) {
-                                // Add staggered delay based on DOM order for mobile flow
-                                setTimeout(() => {
-                                    entry.target.classList.add('scroll-active');
-                                }, index * 100);
-                                observer.unobserve(entry.target);
-                            }
-                        });
-                    }, { threshold: 0.2 });
-
-                    document.querySelectorAll('.scroll-hidden').forEach(el => observer.observe(el));
-
-                    // Also animate center anchor
-                    const centerAnchor = document.querySelector('.arc-center-anchor');
-                    if (centerAnchor) {
-                        observer.observe(centerAnchor);
-                        centerAnchor.classList.add('scroll-hidden'); // Add initial class
-                    }
-                } else {
-                    // Immediate show if reduced motion
-                    document.querySelectorAll('.scroll-hidden').forEach(el => el.classList.remove('scroll-hidden'));
-                }
+            });
             });
         </script>
     </section>
@@ -540,12 +513,13 @@
     <section class="container who-section-tech">
         <!-- Section Header -->
         <div class="who-header">
-            <h2>Know Steelflex Structures</h2>
-            <p>Where innovation meets reliability in the world of pre-engineered steel buildings.</p>
+            <h2 class="reveal-on-scroll">Know Steelflex Structures</h2>
+            <p class="reveal-on-scroll delay-1">Where innovation meets reliability in the world of pre-engineered steel buildings.
+            </p>
         </div>
 
         <!-- Redesigned Grid Layout -->
-        <div class="intro-centered">
+        <div class="intro-centered reveal-on-scroll">
             <h3>Redefining excellence in manufacturing.</h3>
             <p>
                 Based in <strong>Vadodara-Por</strong>, our world-class facility drives the industry forward.
@@ -561,9 +535,9 @@
             </p>
         </div>
 
-        <div class="facts-grid">
+        <div class="facts-grid" data-stagger>
             <!-- Fact Card 1 -->
-            <div class="fact-card">
+            <div class="fact-card reveal-on-scroll">
                 <div class="fact-icon">🏭</div>
                 <h4>Massive Capacity</h4>
                 <div class="fact-number">16,000 MT</div>
@@ -588,7 +562,7 @@
             </div>
 
             <!-- Fact Card 3 -->
-            <div class="fact-card">
+            <div class="fact-card reveal-on-scroll">
                 <div class="fact-icon">🧱</div>
                 <h4>Robust Stock</h4>
                 <div class="fact-number">3,000 MT</div>
@@ -605,13 +579,13 @@
     <!-- SECTION 5: WHAT POWERS US (NEW SECTION) -->
     <section class="powers-section">
         <div class="container">
-            <div class="powers-header">
+            <div class="powers-header reveal-on-scroll">
                 <h2 class="what-powers-title">What Powers Us</h2>
             </div>
 
-            <div class="powers-grid">
+            <div class="powers-grid" data-stagger>
                 <!-- Power 1 -->
-                <div class="power-block power-item">
+                <div class="power-block power-item reveal-on-scroll">
                     <div class="power-line">
                         <span class="power-line-fill"></span>
                     </div>
@@ -620,7 +594,7 @@
                     <span class="power-desc">Automated precision fabrication for zero-error components.</span>
                 </div>
                 <!-- Power 2 -->
-                <div class="power-block power-item">
+                <div class="power-block power-item reveal-on-scroll">
                     <div class="power-line">
                         <span class="power-line-fill"></span>
                     </div>
@@ -629,7 +603,7 @@
                     <span class="power-desc">Virtual construction planning to optimize erection timelines.</span>
                 </div>
                 <!-- Power 3 -->
-                <div class="power-block power-item">
+                <div class="power-block power-item reveal-on-scroll">
                     <div class="power-line">
                         <span class="power-line-fill"></span>
                     </div>
@@ -638,7 +612,7 @@
                     <span class="power-desc">Commitment to 100% recyclable materials and green processes.</span>
                 </div>
                 <!-- Power 4 -->
-                <div class="power-block power-item">
+                <div class="power-block power-item reveal-on-scroll">
                     <div class="power-line">
                         <span class="power-line-fill"></span>
                     </div>
@@ -654,7 +628,7 @@
     <section class="container strategic-section">
 
         <!-- VISION: Visual Left, Content Right -->
-        <div class="vm-block">
+        <div class="vm-block reveal-on-scroll">
             <div class="vm-visual vm-img-hover">
                 <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
                     alt="Future Vision">
@@ -685,7 +659,7 @@
         </div>
 
         <!-- MISSION: Content Left, Visual Right -->
-        <div class="vm-block reversed">
+        <div class="vm-block reversed reveal-on-scroll">
             <div class="vm-content">
                 <h3 class="vm-title"><span class="title-emoji">🎯</span> Our Mission</h3>
                 <div class="mission-list">
@@ -720,27 +694,27 @@
             <div class="goals-header">
                 <h3 class="vm-title"><span class="title-emoji">🏆</span> Our Goals</h3>
             </div>
-            <div class="goals-grid">
+            <div class="goals-grid" data-stagger>
                 <!-- Goal 1 -->
-                <div class="goal-card goal-card-interaction">
+                <div class="goal-card goal-card-interaction reveal-on-scroll">
                     <span class="goal-emoji">📈</span>
                     <span class="goal-title">Sustainable Growth</span>
                     <span class="goal-desc">Expand capacity while maintaining quality and efficiency.</span>
                 </div>
                 <!-- Goal 2 -->
-                <div class="goal-card goal-card-interaction">
+                <div class="goal-card goal-card-interaction reveal-on-scroll">
                     <span class="goal-emoji">🧠</span>
                     <span class="goal-title">Technology Leadership</span>
                     <span class="goal-desc">Adopt smarter tools, automation, and data-driven processes.</span>
                 </div>
                 <!-- Goal 3 -->
-                <div class="goal-card goal-card-interaction">
+                <div class="goal-card goal-card-interaction reveal-on-scroll">
                     <span class="goal-emoji">🌍</span>
                     <span class="goal-title">Industry Impact</span>
                     <span class="goal-desc">Deliver infrastructure that supports long-term development.</span>
                 </div>
                 <!-- Goal 4 -->
-                <div class="goal-card goal-card-interaction">
+                <div class="goal-card goal-card-interaction reveal-on-scroll">
                     <span class="goal-emoji">🤝</span>
                     <span class="goal-title">Client Trust</span>
                     <span class="goal-desc">Building relationships based on transparency and reliability.</span>
@@ -758,30 +732,30 @@
                 <p class="why-subtext">What sets Steelflex apart in industrial engineering.</p>
             </div>
 
-            <div class="why-grid-new">
+            <div class="why-grid-new" data-stagger>
                 <!-- Differentiator 1 -->
-                <div class="why-card-new">
+                <div class="why-card-new reveal-on-scroll">
                     <span class="why-emoji">🏆</span>
                     <span class="why-title-new">Unmatched Expertise</span>
                     <span class="why-desc-new">Over 20 years of specialized experience in heavy industrial fabrication
                         and turnkey project management.</span>
                 </div>
                 <!-- Differentiator 2 -->
-                <div class="why-card-new">
+                <div class="why-card-new reveal-on-scroll">
                     <span class="why-emoji">📐</span>
                     <span class="why-title-new">Precision Engineering</span>
                     <span class="why-desc-new">State-of-the-art manufacturing facilities ensuring millimeter-perfect
                         accuracy in every component.</span>
                 </div>
                 <!-- Differentiator 3 -->
-                <div class="why-card-new">
+                <div class="why-card-new reveal-on-scroll">
                     <span class="why-emoji">⏱️</span>
                     <span class="why-title-new">Timely Delivery</span>
                     <span class="why-desc-new">A proven track record of adhering to strict timelines without
                         compromising on quality or safety.</span>
                 </div>
                 <!-- Differentiator 4 -->
-                <div class="why-card-new">
+                <div class="why-card-new reveal-on-scroll">
                     <span class="why-emoji">🤝</span>
                     <span class="why-title-new">Comprehensive Support</span>
                     <span class="why-desc-new">From initial design and consultation to erection and final handover, we
@@ -908,5 +882,7 @@
         });
     </script>
 </body>
+
+<script src="animations.js"></script>
 
 </html>
