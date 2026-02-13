@@ -369,6 +369,15 @@ section {
     z-index: 0;
 }
 
+/* Fix for Arc Track Centering Conflict with Reveal Animation */
+.arc-track.reveal-on-scroll {
+    transform: translateX(-50%) translateY(24px);
+}
+
+.arc-track.reveal-on-scroll.in-view {
+    transform: translateX(-50%) translateY(0);
+}
+
 /* Center Content Anchor */
 /* Center Content Anchor - STRICT ABSOLUTE CENTERING (V2) */
 .arc-center-anchor-v2 {
