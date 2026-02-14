@@ -63,6 +63,91 @@
             color: var(--primary-color);
         }
 
+        /* Vacancy Section */
+        .vacancy-section {
+            padding: 100px 0;
+            background: #fff;
+        }
+
+        .vacancy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .vacancy-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vacancy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+            border-color: transparent;
+        }
+
+        .vacancy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .vacancy-card:hover::before {
+            opacity: 1;
+        }
+
+        .job-role {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .job-location {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .job-desc {
+            color: #555;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .apply-now-btn {
+            display: inline-block;
+            padding: 10px 25px;
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .apply-now-btn:hover {
+            background: var(--primary-color);
+            color: #fff;
+        }
+
         /* Application Section */
         .application-section {
             padding: 100px 0;
@@ -260,7 +345,8 @@
         <section class="careers-hero">
             <div class="container">
                 <h1 class="reveal-on-scroll">Shape the Future <br>of Engineering</h1>
-                <p class="reveal-on-scroll delay-1">Join SteelFlex Structures and be part of a team that is redefining industrial
+                <p class="reveal-on-scroll delay-1">Join SteelFlex Structures and be part of a team that is redefining
+                    industrial
                     infrastructure with
                     innovation and precision.</p>
             </div>
@@ -271,7 +357,8 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="reveal-on-scroll">Why Join Us?</h2>
-                    <p class="reveal-on-scroll delay-1">We provide a collaborative environment where talent meets opportunity.</p>
+                    <p class="reveal-on-scroll delay-1">We provide a collaborative environment where talent meets
+                        opportunity.</p>
                 </div>
                 <div class="culture-grid" data-stagger>
                     <div class="culture-card reveal-on-scroll">
@@ -288,6 +375,57 @@
                         <span class="culture-icon">🤝</span>
                         <h3>Collaboration</h3>
                         <p>A multidisciplinary team environment built on mutual respect.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- Job Vacancy Section -->
+        <section class="vacancy-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="reveal-on-scroll">Current Openings</h2>
+                    <p class="reveal-on-scroll delay-1">Explore opportunities to grow your career with us.</p>
+                </div>
+
+                <div class="vacancy-grid" data-stagger>
+                    <!-- Job 1 -->
+                    <div class="vacancy-card reveal-on-scroll">
+                        <h3 class="job-role">Structural Engineer</h3>
+                        <div class="job-location">📍 Vadodara, Gujarat</div>
+                        <p class="job-desc">We are looking for an experienced Structural Engineer proficient in steel
+                            structure design and detailing software (Tekla/STAAD). Minimum 3 years experience required.
+                        </p>
+                        <button class="apply-now-btn" onclick="applyForRole('structural-engineer')">Apply Now</button>
+                    </div>
+
+                    <!-- Job 2 -->
+                    <div class="vacancy-card reveal-on-scroll">
+                        <h3 class="job-role">Production Supervisor</h3>
+                        <div class="job-location">📍 Por, Vadodara</div>
+                        <p class="job-desc">Oversee daily manufacturing operations, ensure quality control, and manage
+                            shop floor workforce efficiently for timely project delivery.</p>
+                        <button class="apply-now-btn" onclick="applyForRole('production-supervisor')">Apply Now</button>
+                    </div>
+
+                    <!-- Job 3 -->
+                    <div class="vacancy-card reveal-on-scroll">
+                        <h3 class="job-role">Sales Manager</h3>
+                        <div class="job-location">📍 Vadodara (HQ)</div>
+                        <p class="job-desc">Drive business growth by identifying new industrial possibilities and
+                            building strong client relationships. Technical sales background preferred.</p>
+                        <button class="apply-now-btn" onclick="applyForRole('sales-manager')">Apply Now</button>
+                    </div>
+
+                    <!-- Job 4 -->
+                    <div class="vacancy-card reveal-on-scroll">
+                        <h3 class="job-role">Designer / Detailer</h3>
+                        <div class="job-location">📍 Vadodara, Gujarat</div>
+                        <p class="job-desc">Create precise fabrication drawings and erection diagrams. Must have strong
+                            attention to detail and knowledge of drafting standards.</p>
+                        <button class="apply-now-btn" onclick="applyForRole('designer-detailer')">Apply Now</button>
                     </div>
                 </div>
             </div>
@@ -374,6 +512,7 @@
                             <li><a href="about-us.html">About Us</a></li>
                             <li><a href="products-structures.html">Products</a></li>
                             <li><a href="capabilities.html">Capabilities</a></li>
+                            <li><a href="machineries.html">Machineries</a></li>
                             <li><a href="projects.html">Projects</a></li>
                             <li><a href="careers.html">Careers</a></li>
                             <li><a href="contact-us.html">Contact Us</a></li>
@@ -436,6 +575,24 @@
             uploadBox.style.background = "transparent";
             uploadBox.style.borderColor = "#eee";
         });
+
+        // Apply Button Interaction
+        function applyForRole(roleValue) {
+            const selectBox = document.getElementById('position');
+            const formSection = document.querySelector('.application-section');
+
+            // set value
+            if (selectBox) {
+                selectBox.value = roleValue;
+            }
+
+            // scroll to form
+            if (formSection) {
+                formSection.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        }
     </script>
 </body>
 
