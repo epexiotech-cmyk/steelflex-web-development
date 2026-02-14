@@ -1,0 +1,11 @@
+[
+  {
+    "id": "app_1",
+    "name": "David Lee",
+    "email": "david.lee@email.com",
+    "appliedRole": "Site Engineer",
+    "cvFile": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+    "status": "new",
+    "date": "2026-02-14T06:07:51.723Z"
+  }
+]

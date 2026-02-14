@@ -1,0 +1,26 @@
+[
+  {
+    "id": "rev_1",
+    "clientName": "John Smith",
+    "companyName": "Urban Developers Inc.",
+    "reviewText": "Steelflex delivered exceptional quality on our foundation project. Their team was professional and on schedule.",
+    "rating": "5",
+    "status": "Active"
+  },
+  {
+    "id": "rev_2",
+    "clientName": "Sarah Connor",
+    "companyName": "SkyNet Logistics",
+    "reviewText": "Solid work and great communication throughout easier than expected.",
+    "rating": "4",
+    "status": "Active"
+  },
+  {
+    "id": "rev_3",
+    "clientName": "Michael Chang",
+    "companyName": "Chang Properties",
+    "reviewText": "Very reliable partners for large-scale infrastructure projects.",
+    "rating": "5",
+    "status": "Active"
+  }
+]

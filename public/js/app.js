@@ -177,7 +177,7 @@ async function loadModule(moduleId) {
                 ]);
 
                 // Calculate counts
-                const newReviews = reviews.filter(r => r.status === 'new').length;
+                const newReviews = reviews.filter(r => r.status === 'Pending').length;
                 const newQueries = queries.filter(q => q.status === 'new').length;
                 const totalProjects = projects.length;
                 const totalApps = careers.length;
@@ -253,7 +253,7 @@ async function loadModule(moduleId) {
                             <h3>Recent Reviews <button class="btn-sm btn-edit" onclick="loadModule('reviews')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
                             <div class="recent-list">
                                 ${reviews.slice(0, 3).map(r => `
-                                    <div class="recent-item ${r.status === 'new' ? 'unread' : ''}" onclick="loadModule('reviews')">
+                                    <div class="recent-item ${r.status === 'Pending' ? 'unread' : ''}" onclick="loadModule('reviews')">
                                         <div class="avatar">${r.clientName.charAt(0)}</div>
                                         <div class="info">
                                             <h4>${r.clientName}</h4>
@@ -381,7 +381,10 @@ window.showUserModal = () => {
                 closeModal();
                 showToast('User created');
                 loadModule('users');
-            } catch (err) { }
+            } catch (err) {
+                console.error(err);
+                alert('Error creating user: ' + (err.message || 'Unknown error'));
+            }
         };
     });
 };
@@ -392,7 +395,10 @@ window.deleteUser = async (id) => {
             await apiCall(`/users/${id}`, 'DELETE');
             showToast('User deleted');
             loadModule('users');
-        } catch (err) { }
+        } catch (err) {
+            console.error(err);
+            alert('Error deleting user: ' + (err.message || 'Unknown error'));
+        }
     }
 };
 
@@ -406,23 +412,126 @@ async function loadReviews(container) {
                 <table class="data-table">
                     <thead><tr><th>Client</th><th>Company</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead>
                     <tbody>
-                        ${reviews.map(r => `
+                        ${reviews.map(r => {
+            let statusColor = 'var(--warning)'; // Pending
+            if (r.status === 'Accepted') statusColor = 'var(--success)';
+            if (r.status === 'Rejected') statusColor = 'var(--danger)';
+
+            return `
                             <tr>
                                 <td>${r.clientName}</td>
-                                <td>${r.companyName}</td>
+                                <td>${r.companyName || '-'}</td>
                                 <td>${r.rating}/5</td>
-                                <td><span style="color: ${r.status === 'Active' ? 'var(--success)' : 'var(--warning)'}">${r.status}</span></td>
+                                <td><span style="color: ${statusColor}; font-weight: 600;">${r.status}</span></td>
                                 <td>
-                                    <button class="btn-sm btn-delete" onclick="deleteReview('${r.id}')"><i class="fas fa-trash"></i></button>
+                                    <button class="btn-sm btn-edit" title="View Details" onclick="viewReviewDetails('${r.id}')"><i class="fas fa-eye"></i></button>
+                                    <button class="btn-sm btn-delete" title="Delete" onclick="deleteReview('${r.id}')"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
-                        `).join('')}
+                        `;
+        }).join('')}
                     </tbody>
                 </table>
             </div>
         `;
+        window.cachedReviews = reviews;
     } catch (e) { container.innerHTML = 'Error loading reviews'; }
 }
+
+window.viewReviewDetails = (id) => {
+    const review = window.cachedReviews.find(r => r.id === id);
+    if (!review) return;
+
+    showModal(`
+        <div class="review-detail-modal">
+            <div class="modal-header-custom">
+                <h3>Review Details</h3>
+                <span class="status-badge ${review.status.toLowerCase()}">${review.status}</span>
+            </div>
+            
+            <div class="review-media-grid">
+                <div class="media-item">
+                    <label>Reviewer Photo</label>
+                    ${review.reviewerPhoto ? `<img src="${review.reviewerPhoto}" class="review-img-preview">` : '<div class="no-img">No Photo</div>'}
+                </div>
+                <div class="media-item">
+                    <label>Company Logo</label>
+                    ${review.companyLogo ? `<img src="${review.companyLogo}" class="review-img-preview">` : '<div class="no-img">No Logo</div>'}
+                </div>
+            </div>
+
+            ${review.reviewImages && review.reviewImages.length > 0 ? `
+                <div class="review-carousel-container">
+                    <label style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 5px; display: block;">Project Images</label>
+                    <div class="carousel-wrapper">
+                        <div class="carousel-slides">
+                            ${review.reviewImages.map(img => `<img src="${img}" class="carousel-img" onclick="window.open('${img}', '_blank')">`).join('')}
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
+
+            <div class="review-info-grid">
+                <div><strong>Client:</strong> ${review.clientName}</div>
+                <div><strong>Company:</strong> ${review.companyName || '-'}</div>
+                <div><strong>Rating:</strong> ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+                <div><strong>Date:</strong> ${review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'N/A'}</div>
+            </div>
+
+            <div class="review-text-block">
+                <label>Review</label>
+                <p>"${review.reviewText}"</p>
+            </div>
+
+            <div class="modal-actions">
+                ${review.status !== 'Accepted' ? `<button class="btn btn-success" onclick="updateReviewStatus('${review.id}', 'Accepted')">Accept Review</button>` : ''}
+                ${review.status !== 'Rejected' ? `<button class="btn btn-danger" onclick="updateReviewStatus('${review.id}', 'Rejected')">Reject Review</button>` : ''}
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+        <style>
+            .review-detail-modal { display: flex; flex-direction: column; gap: 1rem; }
+            .modal-header-custom { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
+            .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+            .status-badge.pending { background: #fff7ed; color: #c2410c; }
+            .status-badge.accepted { background: #f0fdf4; color: #15803d; }
+            .status-badge.rejected { background: #fef2f2; color: #b91c1c; }
+            .review-media-grid { display: flex; gap: 1rem; margin-top: 0.5rem; }
+            .media-item { flex: 1; text-align: center; background: #f9fafb; padding: 10px; border-radius: 6px; }
+            .media-item label { display: block; font-size: 0.75rem; color: #6b7280; margin-bottom: 5px; }
+            .review-img-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #e5e7eb; }
+            .no-img { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #e5e7eb; border-radius: 50%; color: #9ca3af; margin: 0 auto; font-size: 0.7rem; }
+            .review-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem; background: #f3f4f6; padding: 10px; border-radius: 6px; }
+            .review-text-block { background: #fff; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px; }
+            .review-text-block label { display: block; font-size: 0.75rem; color: #6b7280; margin-bottom: 5px; font-weight: 600; }
+            .review-text-block p { font-style: italic; color: #374151; margin: 0; }
+            .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem; }
+            .modal-actions .btn { min-width: 100px; } /* Ensure buttons have width */
+        </style>
+    `);
+};
+
+window.updateReviewStatus = async (id, status) => {
+    if (confirm(`Mark review as ${status}?`)) {
+        try {
+            // Must allow partial updates via FormData or JSON. 
+            // Our controller expects multipart mostly for files, but handles JSON if no files? 
+            // The route expects Multer which handles multipart. 
+            // If we send JSON to a Multer route, it generally works if we don't send files, 
+            // BUT let's use FormData to be safe since the route is configured for it.
+
+            const formData = new FormData();
+            formData.append('status', status);
+
+            await apiCall(`/reviews/${id}`, 'PUT', formData, true);
+            closeModal();
+            showToast(`Review ${status}`);
+            loadModule('reviews');
+        } catch (err) {
+            alert('Error updating status');
+        }
+    }
+};
 
 window.showReviewModal = () => {
     showModal(`
@@ -432,10 +541,26 @@ window.showReviewModal = () => {
             <div class="form-group"><label>Company</label><input type="text" name="companyName" class="form-control"></div>
             <div class="form-group"><label>Review Text</label><textarea name="reviewText" class="form-control" required></textarea></div>
             <div class="form-group"><label>Rating (1-5)</label><input type="number" name="rating" min="1" max="5" class="form-control" required></div>
-            <div class="form-group"><label>Status</label>
+            
+            <div class="form-group">
+                <label>Reviewer Photo (Optional)</label>
+                <input type="file" name="reviewerPhoto" class="form-control" accept="image/*">
+            </div>
+             <div class="form-group">
+                <label>Company Logo (Optional)</label>
+                <input type="file" name="companyLogo" class="form-control" accept="image/*">
+            </div>
+            
+            <div class="form-group">
+                <label>Project Images (Multiple, Optional)</label>
+                <input type="file" name="reviewImages" class="form-control" accept="image/*" multiple>
+            </div>
+
+            <div class="form-group"><label>Initial Status</label>
                 <select name="status" class="form-control">
-                    <option value="Active">Active</option>
-                    <option value="Hidden">Hidden</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Accepted">Accepted</option>
+                    <option value="Rejected">Rejected</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Save Review</button>
@@ -445,11 +570,21 @@ window.showReviewModal = () => {
             e.preventDefault();
             const formData = new FormData(e.target);
             try {
-                await apiCall('/reviews', 'POST', Object.fromEntries(formData));
+                // Remove empty files to avoid backend issues if any (Multer handles empty fields ok usually)
+                const photo = formData.get('reviewerPhoto');
+                if (photo && photo.size === 0) formData.delete('reviewerPhoto');
+
+                const logo = formData.get('companyLogo');
+                if (logo && logo.size === 0) formData.delete('companyLogo');
+
+                await apiCall('/reviews', 'POST', formData, true); // Multipart
                 closeModal();
                 showToast('Review saved');
                 loadModule('reviews');
-            } catch (err) { }
+            } catch (err) {
+                console.error(err);
+                alert('Error saving review: ' + (err.message || 'Unknown error'));
+            }
         };
     });
 };
@@ -652,6 +787,7 @@ window.showProjectModal = (project = null) => {
             <div class="form-group"><label>Title</label><input type="text" name="title" class="form-control" value="${project ? project.title : ''}" required></div>
             <div class="form-group"><label>Location</label><input type="text" name="location" class="form-control" value="${project ? project.location : ''}" required></div>
             <div class="form-group"><label>Area (SqFt)</label><input type="text" name="area" class="form-control" value="${project ? project.area || '' : ''}"></div>
+            <div class="form-group"><label>Weight</label><input type="text" name="weight" class="form-control" value="${project ? project.weight || '' : ''}"></div>
             <div class="form-group"><label>Status</label>
                 <select name="status" class="form-control">
                     <option value="Ongoing" ${project && project.status === 'Ongoing' ? 'selected' : ''}>Ongoing</option>
@@ -720,14 +856,198 @@ window.deleteProject = async (id) => {
     }
 };
 
-// 5. Careers
+// 5. Careers (Vacancies + Applications)
 async function loadCareers(container) {
+    container.innerHTML = `
+        <div id="vacancies-section">
+            <h3 style="margin-bottom: 1rem; color: var(--text-main);">Job Vacancies</h3>
+            <div id="vacancies-container"></div>
+        </div>
+        <div id="applications-section" style="margin-top: 3rem;">
+            <h3 style="margin-bottom: 1rem; color: var(--text-main);">Job Applications</h3>
+            <div id="applications-container"></div>
+        </div>
+    `;
+
+    // Load both sections
+    await renderVacancies(document.getElementById('vacancies-container'));
+    await renderApplications(document.getElementById('applications-container'));
+}
+
+// Remove switchCareerTab as it's no longer needed
+
+// --- Vacancies Sub-module ---
+let cachedVacancies = [];
+
+async function renderVacancies(container) {
+    try {
+        cachedVacancies = await apiCall('/vacancies', 'GET');
+        container.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                 <div class="filter-bar" style="margin-bottom: 0;">
+                    <button class="filter-btn active" onclick="filterVacancies('ALL', this)">All Vacancies</button>
+                    <button class="filter-btn" onclick="filterVacancies('Open', this)">Open</button>
+                    <button class="filter-btn" onclick="filterVacancies('Closed', this)">Closed</button>
+                </div>
+                <button class="btn btn-primary" onclick="showVacancyModal()">Add Job Vacancy</button>
+            </div>
+            
+            <div class="card">
+                <table class="data-table">
+                    <thead><tr><th>Title</th><th>Department</th><th>Location</th><th>Status</th><th>Posted Date</th><th>Actions</th></tr></thead>
+                    <tbody id="vacancies-table-body">
+                        <!-- Dynamic Content -->
+                    </tbody>
+                </table>
+                 <div id="no-vacancies-msg" style="display:none; text-align: center; padding: 2rem; color: var(--text-gray);">
+                    No vacancies found for this filter.
+                </div>
+            </div>
+        `;
+        renderVacancyTable(cachedVacancies);
+    } catch (e) {
+        container.innerHTML = `<p class="error">Error loading vacancies: ${e.message}</p>`;
+    }
+}
+
+window.filterVacancies = (status, btn) => {
+    if (btn) {
+        // Ensure we only select buttons within the vacancies container
+        const container = document.getElementById('vacancies-container');
+        if (container) {
+            container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        }
+        btn.classList.add('active');
+    }
+
+    if (status === 'ALL') {
+        renderVacancyTable(cachedVacancies);
+    } else {
+        const filtered = cachedVacancies.filter(v => v.status === status);
+        renderVacancyTable(filtered);
+    }
+};
+
+function renderVacancyTable(vacancies) {
+    const tbody = document.getElementById('vacancies-table-body');
+    const noMsg = document.getElementById('no-vacancies-msg');
+
+    if (vacancies.length === 0) {
+        tbody.innerHTML = '';
+        noMsg.style.display = 'block';
+        return;
+    }
+
+    noMsg.style.display = 'none';
+    tbody.innerHTML = vacancies.map(v => `
+        <tr>
+            <td>${v.title}</td>
+            <td>${v.department}</td>
+            <td>${v.location}</td>
+            <td>
+                <span style="color: ${v.status === 'Open' ? 'var(--success)' : 'var(--warning)'}">${v.status}</span>
+            </td>
+            <td>${new Date(v.createdAt).toLocaleDateString()}</td>
+            <td>
+                <button class="btn-sm btn-edit" onclick="openEditVacancy('${v.id}')"><i class="fas fa-edit"></i></button>
+                <button class="btn-sm btn-edit" title="${v.status === 'Open' ? 'Close Vacancy' : 'Re-open Vacancy'}" onclick="toggleVacancyStatus('${v.id}')">
+                    <i class="fas ${v.status === 'Open' ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
+                </button>
+                <button class="btn-sm btn-delete" onclick="deleteVacancy('${v.id}')"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.showVacancyModal = (vacancy = null) => {
+    showModal(`
+        <h3>${vacancy ? 'Edit Vacancy' : 'Create Job Vacancy'}</h3>
+        <form id="vacancy-form">
+            <div class="form-group"><label>Job Title</label><input type="text" name="title" class="form-control" value="${vacancy ? vacancy.title : ''}" required></div>
+            <div class="row">
+                <div class="col"><div class="form-group"><label>Department</label><input type="text" name="department" class="form-control" value="${vacancy ? vacancy.department : ''}"></div></div>
+                <div class="col"><div class="form-group"><label>Location</label><input type="text" name="location" class="form-control" value="${vacancy ? vacancy.location : ''}"></div></div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-group"><label>Employment Type</label>
+                        <select name="employmentType" class="form-control">
+                            <option value="Full-Time" ${vacancy && vacancy.employmentType === 'Full-Time' ? 'selected' : ''}>Full-Time</option>
+                            <option value="Part-Time" ${vacancy && vacancy.employmentType === 'Part-Time' ? 'selected' : ''}>Part-Time</option>
+                            <option value="Contract" ${vacancy && vacancy.employmentType === 'Contract' ? 'selected' : ''}>Contract</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col"><div class="form-group"><label>Experience</label><input type="text" name="experience" class="form-control" value="${vacancy ? vacancy.experience || '' : ''}" placeholder="e.g. 2-5 years"></div></div>
+            </div>
+            <div class="form-group"><label>Salary Range</label><input type="text" name="salary" class="form-control" value="${vacancy ? vacancy.salary || '' : ''}" placeholder="Optional"></div>
+            <div class="form-group"><label>Job Description</label><textarea name="description" class="form-control" style="height: 120px;">${vacancy ? vacancy.description || '' : ''}</textarea></div>
+            <div class="form-group"><label>Status</label>
+                <select name="status" class="form-control">
+                    <option value="Open" ${vacancy && vacancy.status === 'Open' ? 'selected' : ''}>Open</option>
+                    <option value="Closed" ${vacancy && vacancy.status === 'Closed' ? 'selected' : ''}>Closed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">${vacancy ? 'Update Vacancy' : 'Create Vacancy'}</button>
+        </form>
+    `, () => {
+        document.getElementById('vacancy-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const url = vacancy ? `/vacancies/${vacancy.id}` : '/vacancies';
+                const method = vacancy ? 'PUT' : 'POST';
+                await apiCall(url, method, data);
+
+                closeModal();
+                showToast(vacancy ? 'Vacancy updated' : 'Vacancy created');
+                // Refresh list
+                renderVacancies(document.getElementById('vacancies-container'));
+            } catch (err) {
+                console.error(err);
+                alert('Error saving vacancy: ' + (err.message || 'Unknown error'));
+            }
+        };
+    });
+};
+
+window.openEditVacancy = (id) => {
+    const vacancy = cachedVacancies.find(v => v.id === id);
+    if (vacancy) showVacancyModal(vacancy);
+};
+
+window.toggleVacancyStatus = async (id) => {
+    try {
+        await apiCall(`/vacancies/${id}/toggle-status`, 'PATCH');
+        showToast('Status updated');
+        renderVacancies(document.getElementById('vacancies-container'));
+    } catch (err) {
+        alert('Error updating status');
+    }
+};
+
+window.deleteVacancy = async (id) => {
+    if (confirm('Delete this vacancy details?')) {
+        try {
+            await apiCall(`/vacancies/${id}`, 'DELETE');
+            showToast('Vacancy deleted');
+            renderVacancies(document.getElementById('vacancies-container'));
+        } catch (err) {
+            alert('Error deleting vacancy');
+        }
+    }
+};
+
+// --- Applications Sub-module (Existing Logic moved here) ---
+async function renderApplications(container) {
     try {
         const apps = await apiCall('/careers/admin', 'GET');
         container.innerHTML = `
             <div class="card">
                 <table class="data-table">
-                    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>CV</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>CV</th><th>Submitted</th><th>Actions</th></tr></thead>
                     <tbody>
                         ${apps.map(a => `
                             <tr>
@@ -735,22 +1055,31 @@ async function loadCareers(container) {
                                 <td>${a.appliedRole}</td>
                                 <td>${a.email}</td>
                                 <td><a href="${a.cvFile}" target="_blank" style="color: var(--primary);">Download</a></td>
+                                <td>${new Date(a.submittedAt || a.date).toLocaleDateString()}</td>
                                 <td>
                                     <button class="btn-sm btn-delete" onclick="deleteApplication('${a.id}')"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
-                        `).join('')}
+                        `).join('') || '<tr><td colspan="6" style="text-align:center;">No applications found.</td></tr>'}
                     </tbody>
                 </table>
             </div>
         `;
-    } catch (e) { container.innerHTML = 'Error loading applications'; }
+    } catch (e) {
+        container.innerHTML = `<p class="error">Error loading applications: ${e.message}</p>`;
+    }
 }
 
 window.deleteApplication = async (id) => {
     if (confirm('Delete application?')) {
-        await apiCall(`/careers/admin/${id}`, 'DELETE');
-        loadModule('careers');
+        try {
+            await apiCall(`/careers/admin/${id}`, 'DELETE');
+            showToast('Application deleted');
+            // Refresh applications list
+            renderApplications(document.getElementById('applications-container'));
+        } catch (err) {
+            alert('Error deleting application');
+        }
     }
 };
 

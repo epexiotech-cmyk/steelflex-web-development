@@ -23,7 +23,9 @@ const reviewsRoutes = require('./routes/reviewsRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const projectsRoutes = require('./routes/projectsRoutes');
 const careersRoutes = require('./routes/careersRoutes');
+const vacanciesRoutes = require('./routes/vacanciesRoutes');
 const seedSuperAdmin = require('./utils/seeder');
+const backupData = require('./utils/backup');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -31,6 +33,7 @@ app.use('/api/reviews', reviewsRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/projects', projectsRoutes);
 app.use('/api/careers', careersRoutes);
+app.use('/api/vacancies', vacanciesRoutes);
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date() });
@@ -62,6 +65,9 @@ async function startServer() {
         await initFile(path.join(__dirname, 'data/contact_queries.json'), []);
         await initFile(path.join(__dirname, 'data/projects.json'), []);
         await initFile(path.join(__dirname, 'data/careers.json'), []);
+
+        // Backup Data
+        await backupData();
 
         // Seed Super Admin
         await seedSuperAdmin();

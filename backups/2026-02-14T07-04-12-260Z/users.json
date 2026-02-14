@@ -1,0 +1,10 @@
+[
+  {
+    "id": "superadmin_1",
+    "name": "Super Admin",
+    "email": "admin@hostinger.com",
+    "userId": "admin",
+    "password": "$2b$10$haXYGfuWLW5VW.TVFWiihOzKlLSQXoYSWv5QnMfXsNjDMOK/eQqx6",
+    "role": "SUPER_ADMIN"
+  }
+]

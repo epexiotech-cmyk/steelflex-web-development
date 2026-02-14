@@ -2,16 +2,41 @@ const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/reviewsController');
 const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs-extra');
 
-router.get('/', controller.getAllReviews); // Public or Protected? Usually public for site, but this is admin API.
-// If this API is ONLY for Admin Panel, then protect it.
-// If the website also consumes this, we might need a separate public route.
-// Assuming this is the Admin API based on user prompt "Modules to Implement ... Admin Panel"
-// We'll protect write operations. Read can be public if needed, but for Admin Panel usage, we expect auth.
+// Multer Setup
+const uploadDir = path.join(__dirname, '../public/uploads/reviews');
+fs.ensureDirSync(uploadDir);
 
-router.get('/admin', verifyToken, isAdmin, controller.getAllReviews); // Admin View
-router.post('/', verifyToken, isAdmin, controller.createReview);
-router.put('/:id', verifyToken, isAdmin, controller.updateReview);
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '-'))
+});
+
+const upload = multer({ storage });
+
+// Admin Routes
+router.get('/admin', verifyToken, isAdmin, controller.getAllReviews);
+
+// Create: Support file uploads
+router.post('/', verifyToken, isAdmin, upload.fields([
+    { name: 'reviewerPhoto', maxCount: 1 },
+    { name: 'companyLogo', maxCount: 1 },
+    { name: 'reviewImages', maxCount: 5 }
+]), controller.createReview);
+
+// Update: Support file uploads + status
+router.put('/:id', verifyToken, isAdmin, upload.fields([
+    { name: 'reviewerPhoto', maxCount: 1 },
+    { name: 'companyLogo', maxCount: 1 },
+    { name: 'reviewImages', maxCount: 5 }
+]), controller.updateReview);
+
 router.delete('/:id', verifyToken, isAdmin, controller.deleteReview);
+
+// Public Route (Filtered)
+router.get('/', controller.getAllReviews);
 
 module.exports = router;

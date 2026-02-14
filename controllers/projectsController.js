@@ -41,7 +41,7 @@ const processImages = async (files) => {
 
 const createProject = async (req, res) => {
     try {
-        const { title, location, area, status, description, youtubeUrl } = req.body;
+        const { title, location, area, weight, status, description, youtubeUrl } = req.body;
 
         // Handle Images
         let images = [];
@@ -54,6 +54,7 @@ const createProject = async (req, res) => {
             title,
             location,
             area,
+            weight,
             status,
             description,
             images, // Array of strings
@@ -70,7 +71,7 @@ const createProject = async (req, res) => {
 const updateProject = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, location, area, status, description, youtubeUrl } = req.body;
+        const { title, location, area, weight, status, description, youtubeUrl } = req.body;
         let { existingImages } = req.body;
 
         const project = await projectStore.getById(id);
@@ -94,7 +95,7 @@ const updateProject = async (req, res) => {
         }
 
         const updates = {
-            title, location, area, status, description, youtubeUrl,
+            title, location, area, weight, status, description, youtubeUrl,
             images: finalImages
         };
 

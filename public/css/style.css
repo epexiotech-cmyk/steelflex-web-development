@@ -598,6 +598,22 @@ body {
     background-color: var(--success);
 }
 
+.btn-secondary {
+    background-color: var(--secondary);
+}
+
+.btn-secondary:hover {
+    background-color: #666;
+}
+
+.btn-danger {
+    background-color: var(--danger);
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
 /* Modal */
 #modal-container {
     position: fixed;
@@ -712,4 +728,56 @@ body {
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+/* Review Carousel */
+.review-carousel-container {
+    margin-top: 1rem;
+}
+
+.carousel-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    padding-bottom: 10px;
+    /* Space for scrollbar */
+}
+
+.carousel-slides {
+    display: inline-flex;
+    gap: 10px;
+}
+
+.carousel-img {
+    height: 150px;
+    width: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.carousel-img:hover {
+    transform: scale(1.02);
+}
+
+/* Custom Scrollbar for Carousel */
+.carousel-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #999;
 }
