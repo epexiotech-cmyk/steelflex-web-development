@@ -642,7 +642,32 @@ body {
     /* Scroll if too tall */
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     display: flex;
+    display: flex;
     flex-direction: column;
+    position: relative;
+    /* Context for absolute close button */
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #E53935;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s;
+    z-index: 10;
+}
+
+.modal-close-btn:hover {
+    background: #d32f2f;
 }
 
 /* ... existing header code ... */
@@ -780,4 +805,140 @@ body {
 
 .carousel-wrapper::-webkit-scrollbar-thumb:hover {
     background: #999;
+}
+
+/* Mobile Branding */
+.mobile-brand {
+    display: none !important;
+    /* Hidden on desktop */
+}
+
+.mobile-brand h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+    color: var(--primary);
+}
+
+.mobile-brand span {
+    color: var(--btn-color);
+}
+
+/* Burger Button Base Style */
+.burger-btn {
+    display: none;
+    /* Hidden on desktop */
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .dashboard-container {
+        display: block;
+        /* Stack layout */
+        position: relative;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 1000;
+        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
+    }
+
+    .main-content {
+        width: 100%;
+        margin-left: 0;
+        min-height: 100vh;
+    }
+
+    .top-bar {
+        padding: 0 1.5rem;
+        gap: 1rem;
+    }
+
+    .burger-btn {
+        display: flex;
+        /* Visible on mobile */
+        order: -1;
+    }
+
+    .mobile-brand {
+        display: block !important;
+        flex: 1;
+        text-align: center;
+    }
+
+    /* Hide Page Title on Mobile */
+    #page-title {
+        display: none;
+    }
+
+    /* Adjust Grid */
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+        /* Tablet: 2 cols */
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        /* Mobile: 1 col */
+    }
+
+    .top-bar h1 {
+        font-size: 1.25rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    /* Table Responsive */
+    .card {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        min-width: 600px;
+        /* Force scroll */
+    }
 }

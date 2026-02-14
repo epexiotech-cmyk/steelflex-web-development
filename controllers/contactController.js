@@ -13,12 +13,13 @@ const getAllQueries = async (req, res) => {
 // Public endpoint to submit a query
 const createQuery = async (req, res) => {
     try {
-        const { name, email, phone, message } = req.body;
+        const { name, email, phone, message, projectType } = req.body;
         const newQuery = {
             id: Date.now().toString(),
             name,
             email,
             phone,
+            projectType, // New field
             message,
             date: new Date(),
             isRead: false

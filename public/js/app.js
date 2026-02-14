@@ -115,16 +115,50 @@ function renderLogin() {
 
 function renderDashboard() {
     document.getElementById('login-container').style.display = 'none';
-    document.getElementById('app-container').style.display = 'flex';
+    const appContainer = document.getElementById('app-container');
+    appContainer.style.display = 'flex'; // Reset to flex (desktop) or handled by CSS
+
+    // Inject Overlay if not exists
+    if (!document.querySelector('.sidebar-overlay')) {
+        const overlay = document.createElement('div');
+        overlay.className = 'sidebar-overlay';
+        overlay.onclick = closeSidebar;
+        document.body.appendChild(overlay);
+    }
 
     document.getElementById('current-user-name').textContent = state.user.name;
     document.getElementById('current-user-role').textContent = state.user.role;
 
     document.getElementById('logout-btn').onclick = logout;
 
+    // Add Burger Button to Header if missing
+    const topBar = document.querySelector('.top-bar');
+    if (!topBar.querySelector('.burger-btn')) {
+        const burgerBtn = document.createElement('button');
+        burgerBtn.className = 'burger-btn';
+        burgerBtn.innerHTML = '<i class="fas fa-bars"></i>';
+        burgerBtn.onclick = toggleSidebar;
+        topBar.insertBefore(burgerBtn, topBar.firstChild);
+    }
+
     renderSidebar();
     loadModule('dashboard'); // Default view
 }
+
+// Sidebar Toggles
+window.toggleSidebar = () => {
+    document.querySelector('.sidebar').classList.toggle('active');
+    document.querySelector('.sidebar-overlay').classList.toggle('active');
+    // Lock body scroll
+    document.body.style.overflow = document.body.style.overflow === 'hidden' ? '' : 'hidden';
+};
+
+window.closeSidebar = () => {
+    document.querySelector('.sidebar').classList.remove('active');
+    document.querySelector('.sidebar-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+};
+
 
 function renderSidebar() {
     const menu = document.getElementById('nav-menu');
@@ -150,6 +184,11 @@ function renderSidebar() {
                 loadModule(item.id);
                 document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
                 a.classList.add('active');
+
+                // Auto close on mobile
+                if (window.innerWidth < 1024) {
+                    closeSidebar();
+                }
             };
             menu.appendChild(a);
         }
@@ -597,35 +636,118 @@ window.deleteReview = async (id) => {
 };
 
 // 3. Contact Queries
+let cachedQueries = [];
+
 async function loadQueries(container) {
     try {
-        const queries = await apiCall('/contact/admin', 'GET');
+        cachedQueries = await apiCall('/contact/admin', 'GET');
         container.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                 <div class="filter-bar" style="margin-bottom: 0;">
+                    <button class="filter-btn active" onclick="filterQueries('ALL', this)">All</button>
+                    <button class="filter-btn" onclick="filterQueries('Unread', this)">Unread</button>
+                    <button class="filter-btn" onclick="filterQueries('Read', this)">Read</button>
+                </div>
+            </div>
+
             <div class="card">
                 <table class="data-table">
-                    <thead><tr><th>Name</th><th>Email</th><th>Date</th><th>Message</th><th>Actions</th></tr></thead>
-                    <tbody>
-                        ${queries.map(q => `
-                            <tr>
-                                <td>${q.name}</td>
-                                <td>${q.email}</td>
-                                <td>${new Date(q.date).toLocaleDateString()}</td>
-                                <td>${q.message.substring(0, 50)}...</td>
-                                <td>
-                                    <button class="btn-sm btn-delete" onclick="deleteQuery('${q.id}')"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `).join('')}
+                    <thead><tr><th>Status</th><th>Name</th><th>Email</th><th>Date</th><th>Message</th><th>Actions</th></tr></thead>
+                    <tbody id="queries-table-body">
+                        <!-- Dynamic Content -->
                     </tbody>
                 </table>
+                 <div id="no-queries-msg" style="display:none; text-align: center; padding: 2rem; color: var(--text-gray);">
+                    No queries found.
+                </div>
             </div>
         `;
+        renderQueryTable(cachedQueries);
     } catch (e) { container.innerHTML = 'Error loading queries'; }
 }
 
-window.deleteQuery = async (id) => {
+window.filterQueries = (filter, btn) => {
+    if (btn) {
+        // Scope to filter bar in queries section if needed, though globally unique works for now
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    if (filter === 'ALL') {
+        renderQueryTable(cachedQueries);
+    } else if (filter === 'Unread') {
+        renderQueryTable(cachedQueries.filter(q => !q.isRead));
+    } else if (filter === 'Read') {
+        renderQueryTable(cachedQueries.filter(q => q.isRead));
+    }
+};
+
+function renderQueryTable(queries) {
+    const tbody = document.getElementById('queries-table-body');
+    const noMsg = document.getElementById('no-queries-msg');
+
+    if (queries.length === 0) {
+        tbody.innerHTML = '';
+        noMsg.style.display = 'block';
+        return;
+    }
+
+    noMsg.style.display = 'none';
+    tbody.innerHTML = queries.map(q => `
+        <tr style="${!q.isRead ? 'font-weight: 600; background-color: #f0f9ff;' : ''}">
+            <td>${q.isRead ? '<span style="color:var(--secondary);"><i class="fas fa-check-double"></i> Read</span>' : '<span style="color:var(--primary);"><i class="fas fa-circle" style="font-size: 8px;"></i> New</span>'}</td>
+            <td>${q.name}</td>
+            <td>${q.email}</td>
+            <td>${new Date(q.date).toLocaleDateString()}</td>
+            <td>${q.message.substring(0, 50)}...</td>
+            <td>
+                <button class="btn-sm btn-edit" onclick="viewQuery('${q.id}')"><i class="fas fa-eye"></i></button>
+                <button class="btn-sm btn-delete" onclick="deleteQuery('${q.id}')"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.viewQuery = async (id) => {
+    const query = cachedQueries.find(q => q.id === id);
+    if (!query) return;
+
+    // Mark as read if not already
+    if (!query.isRead) {
+        try {
+            await apiCall(`/contact/admin/${id}/read`, 'PUT');
+            query.isRead = true;
+            // Update UI row immediately without full reload if possible, or just re-render
+            renderQueryTable(cachedQueries); // This might reset filter if we don't track state, but simple for now
+        } catch (e) { console.error('Failed to mark read', e); }
+    }
+
+    showModal(`
+        <h3>Contact Query</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; background: #f8fafc; padding: 1rem; border-radius: 8px;">
+            <div><strong>Name:</strong> ${query.name}</div>
+            <div><strong>Email:</strong> ${query.email}</div>
+            <div><strong>Phone:</strong> ${query.phone || '-'}</div>
+            <div><strong>Date:</strong> ${new Date(query.date).toLocaleString()}</div>
+            <div style="grid-column: span 2;"><strong>Project Type:</strong> ${query.projectType || '-'}</div>
+        </div>
+        <div class="form-group">
+            <label>Message</label>
+            <div style="padding: 1rem; border: 1px solid #eee; border-radius: 6px; background: white; min-height: 100px;">
+                ${query.message}
+            </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1rem;">
+             <button class="btn btn-danger" onclick="deleteQuery('${query.id}', true)">Delete</button>
+             <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        </div>
+    `);
+};
+
+window.deleteQuery = async (id, fromModal = false) => {
     if (confirm('Delete query?')) {
         await apiCall(`/contact/admin/${id}`, 'DELETE');
+        if (fromModal) closeModal();
         loadModule('queries');
     }
 };
@@ -1088,10 +1210,9 @@ function showModal(contentHtml, callback) {
     const container = document.getElementById('modal-container');
     container.innerHTML = `
         <div class="modal-content">
-            <div class="modal-header">
-                <div></div>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
-            </div>
+            <button class="modal-close-btn" onclick="closeModal()" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
             ${contentHtml}
         </div>
     `;
@@ -1102,6 +1223,13 @@ function showModal(contentHtml, callback) {
 window.closeModal = () => {
     document.getElementById('modal-container').style.display = 'none';
 };
+
+// Close on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
 
 // Start
 init();
