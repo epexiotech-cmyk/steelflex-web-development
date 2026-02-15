@@ -1,0 +1,38 @@
+[
+  {
+    "id": "proj_1",
+    "title": "Skyline Tower Foundation",
+    "location": "Downtown Metropolis",
+    "description": "Deep foundation work for a 50-story commercial tower, involving extensive excavation and piling.",
+    "status": "Ongoing",
+    "area": "12000",
+    "images": [
+      "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop"
+    ],
+    "youtubeUrl": ""
+  },
+  {
+    "id": "proj_2",
+    "title": "Harbor Bridge Retrofit",
+    "location": "Bay Area",
+    "description": "Seismic retrofitting and structural reinforcement of the historic harbor bridge.",
+    "status": "Completed",
+    "area": "5000",
+    "images": [
+      "https://images.unsplash.com/photo-1590644365607-1c5a2e91a317?q=80&w=2650&auto=format&fit=crop"
+    ],
+    "youtubeUrl": ""
+  },
+  {
+    "id": "proj_3",
+    "title": "Green Valley Office Park",
+    "location": "Suburban Heights",
+    "description": "Construction of an eco-friendly office complex with sustainable materials.",
+    "status": "Ongoing",
+    "area": "25000",
+    "images": [
+      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=2831&auto=format&fit=crop"
+    ],
+    "youtubeUrl": ""
+  }
+]
