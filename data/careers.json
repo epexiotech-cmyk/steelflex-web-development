@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "id": "1771266380929",
+    "name": "Harsh Patel",
+    "email": "Harsh.rural@gmail.com",
+    "phone": "09016950157",
+    "appliedRole": "sales-manager",
+    "introduction": "khfkhffhfhfhf",
+    "cvFile": "/uploads/cvs/1771266380887-401023296.pdf",
+    "status": "New",
+    "submittedAt": "2026-02-16T18:26:20.929Z"
+  },
+  {
+    "id": "1771269184234",
+    "name": "VARSHABEN PATEL",
+    "email": "harsh.rural@gmail.com",
+    "phone": "09016950157",
+    "appliedRole": "difghdgdlkngdg",
+    "introduction": "zddlmklvdsklvdsklv",
+    "cvFile": "/uploads/cvs/1771269184211-807144548.pdf",
+    "status": "New",
+    "submittedAt": "2026-02-16T19:13:04.234Z"
+  }
+]

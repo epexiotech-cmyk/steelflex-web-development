@@ -16,55 +16,73 @@ const DATA_MAP = {
 };
 
 // --- Utils ---
+// --- Utils ---
 async function apiCall(endpoint, method = 'GET', body = null, isMultipart = false) {
     console.log(`API Call: ${method} ${endpoint}`);
 
-    // Mock Write Operations for static environment
-    if (method !== 'GET' && endpoint !== '/auth/login') {
-        return { success: true, message: 'Operation simulated in static mode' };
-    }
-
-    // Mock Login
-    if (endpoint === '/auth/login') {
-        const users = await apiCall('/users', 'GET');
-        const user = users.find(u => u.userId === body.userId);
-        if (user) {
-            return {
-                id: user.id,
-                name: user.name,
-                role: user.role,
-                email: user.email,
-                accessToken: 'mock-token-' + Date.now()
-            };
+    // Allow real API calls to /api prefix
+    let url = endpoint;
+    if (!endpoint.startsWith('/data/') && !endpoint.includes('.json')) {
+        // Assume it's a real API call if it doesn't look like a static file request
+        // Ensure /api prefix if not present (logic specific to how endpoints are passed)
+        if (!endpoint.startsWith('/api') && !endpoint.startsWith('http')) {
+            url = `/api${endpoint}`; // e.g., /users -> /api/users
         }
-        throw new Error('Invalid credentials');
     }
 
-    const dataPath = DATA_MAP[endpoint] || endpoint;
+    // Default headers
+    const headers = {};
+    const token = localStorage.getItem('token');
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const options = {
+        method,
+        headers
+    };
+
+    if (body) {
+        if (isMultipart) {
+            options.body = body; // FormData
+        } else {
+            headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(body);
+        }
+    }
 
     try {
-        const response = await fetch(dataPath);
+        const response = await fetch(url, options);
         if (!response.ok) {
-            throw new Error(`Failed to load data from ${dataPath} (Status: ${response.status})`);
+            if (response.status === 401) {
+                // Token invalid or expired
+                logout();
+                throw new Error('Session expired. Please login again.');
+            }
+
+            // Try to parse error message
+            let errMsg = response.statusText;
+            try {
+                const errData = await response.json();
+                errMsg = errData.message || errMsg;
+            } catch (e) { }
+            throw new Error(errMsg);
         }
+
+        // For 204 No Content or similar
+        if (response.status === 204) return null;
 
         const text = await response.text();
-        if (!text || text.trim() === "") {
-            return []; // Return empty array for empty files
-        }
+        if (!text) return null;
 
-        try {
-            return JSON.parse(text);
-        } catch (e) {
-            console.error('JSON Parse Error:', e, 'Text:', text);
-            return []; // Fallback to avoid crash
-        }
+        return JSON.parse(text);
     } catch (error) {
         console.error('API Error:', error);
         showToast(error.message, 'error');
-        return []; // Return empty array to keep UI usable
+        throw error;
     }
 }
+
 
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
@@ -192,7 +210,7 @@ function renderSidebar() {
         { id: 'reviews', icon: 'star', label: 'Client Reviews', roles: ['SUPER_ADMIN', 'ADMIN'] },
         { id: 'queries', icon: 'envelope', label: 'Contact Queries', roles: ['SUPER_ADMIN', 'ADMIN'] },
         { id: 'projects', icon: 'building', label: 'Projects', roles: ['SUPER_ADMIN', 'ADMIN'] },
-        { id: 'careers', icon: 'briefcase', label: 'Careers', roles: ['SUPER_ADMIN', 'ADMIN'] },
+        { id: 'careers', icon: 'briefcase', label: 'Careers & Jobs', roles: ['SUPER_ADMIN', 'ADMIN'] },
     ];
 
     items.forEach(item => {
@@ -384,14 +402,245 @@ async function loadModule(moduleId) {
             break;
 
         case 'careers':
-            title.textContent = 'Job Applications';
+            title.textContent = 'Careers & Job Management';
             await loadCareers(content);
             break;
     }
 }
 
 // --- Module Implementations ---
-// 1. Users
+
+// 1. Careers (Merged: Vacancies + Applications)
+let cachedCareers = [];
+async function loadCareers(container) {
+    try {
+        const [applications, vacancies] = await Promise.all([
+            apiCall('/careers/admin', 'GET'),
+            apiCall('/vacancies', 'GET')
+        ]);
+
+        cachedCareers = applications; // Update cache
+
+        container.innerHTML = `
+            <!-- VACANCIES SECTION -->
+            <div style="margin-bottom: 3rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.25rem;">Active Job Vacancies</h3>
+                    <button class="btn btn-primary" onclick="showVacancyModal()">Create Job Vacancy</button>
+                </div>
+                <div class="card">
+                    <table class="data-table">
+                        <thead><tr><th>Title</th><th>Location</th><th>Experience</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            ${vacancies.map(v => `
+                                <tr>
+                                    <td><strong>${v.title}</strong><br><small style="color:#666">${v.department || ''}</small></td>
+                                    <td>${v.location}</td>
+                                    <td>${v.experience}</td>
+                                    <td>
+                                        <span class="badge ${v.status === 'Open' ? 'badge-success' : 'badge-danger'} is-light">
+                                            ${v.status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-sm btn-secondary" onclick="toggleVacancyStatus('${v.id}')" title="Toggle Status">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                        <button class="btn-sm btn-delete" onclick="deleteVacancy('${v.id}')" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                     ${vacancies.length === 0 ? '<div style="text-align:center; padding: 2rem; color: #888;">No vacancies found.</div>' : ''}
+                </div>
+            </div>
+
+            <!-- APPLICATIONS SECTION -->
+            <div>
+                 <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Job Applications</h3>
+                <div class="card">
+                    <table class="data-table">
+                        <thead><tr><th>Status</th><th>Name</th><th>Role</th><th>Email / Phone</th><th>Date</th><th>CV</th><th>Actions</th></tr></thead>
+                        <tbody id="careers-table-body">
+                             ${cachedCareers.map(app => renderCareerRow(app)).join('')}
+                        </tbody>
+                    </table>
+                     ${cachedCareers.length === 0 ? '<div style="text-align:center; padding: 2rem; color: #888;">No applications found.</div>' : ''}
+                </div>
+            </div>
+        `;
+    } catch (e) {
+        container.innerHTML = 'Error loading careers data: ' + e.message;
+    }
+}
+
+window.showVacancyModal = () => {
+    showModal(`
+        <h3>Create Job Vacancy</h3>
+        <form id="create-vacancy-form">
+            <div class="form-group">
+                <label>Job Title</label>
+                <input type="text" name="title" class="form-control" required placeholder="e.g. Structural Engineer">
+            </div>
+            <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Department</label>
+                    <input type="text" name="department" class="form-control" placeholder="e.g. Engineering">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" class="form-control" required placeholder="e.g. Vadodara, Gujarat">
+                </div>
+            </div>
+            <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                 <div class="form-group">
+                    <label>Experience</label>
+                    <input type="text" name="experience" class="form-control" placeholder="e.g. 3-5 Years">
+                </div>
+                 <div class="form-group">
+                    <label>Employment Type</label>
+                    <select name="employmentType" class="form-control">
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="4" required placeholder="Brief job description..."></textarea>
+            </div>
+             <div class="form-group">
+                <label>Status</label>
+                <select name="status" class="form-control">
+                    <option value="Open">Open</option>
+                    <option value="Closed">Closed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Vacancy</button>
+        </form>
+    `, async () => {
+        document.getElementById('create-vacancy-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            try {
+                await apiCall('/vacancies', 'POST', data);
+                closeModal();
+                showToast('Vacancy created successfully');
+                loadModule('careers'); // Changed from 'vacancies'
+            } catch (err) {
+                alert('Error creating vacancy: ' + err.message);
+            }
+        };
+    });
+};
+
+window.toggleVacancyStatus = async (id) => {
+    try {
+        await apiCall(`/vacancies/${id}/toggle-status`, 'PATCH');
+        loadModule('careers'); // Changed from 'vacancies'
+        showToast('Vacancy status updated');
+    } catch (e) {
+        alert('Error updating status: ' + e.message);
+    }
+};
+
+window.deleteVacancy = async (id) => {
+    if (confirm('Delete this vacancy?')) {
+        try {
+            await apiCall(`/vacancies/${id}`, 'DELETE');
+            loadModule('careers'); // Changed from 'vacancies'
+            showToast('Vacancy deleted');
+        } catch (e) {
+            alert('Error deleting vacancy: ' + e.message);
+        }
+    }
+};
+
+function renderCareerRow(app) {
+    let statusBadge = `<span class="badge badge-info is-light">${app.status || 'New'}</span>`;
+    if (app.status === 'Reviewed') statusBadge = `<span class="badge badge-success is-light">Reviewed</span>`;
+    if (app.status === 'Rejected') statusBadge = `<span class="badge badge-danger is-light">Rejected</span>`;
+    if (app.status === 'Interview') statusBadge = `<span class="badge badge-warning is-light">Interview</span>`;
+
+    return `
+        <tr>
+            <td>${statusBadge}</td>
+            <td><strong>${app.name}</strong></td>
+            <td>${app.appliedRole}</td>
+            <td>
+                <div>${app.email}</div>
+                <div style="font-size: 0.85rem; color: #666;">${app.phone}</div>
+            </td>
+            <td>${new Date(app.submittedAt).toLocaleDateString()}</td>
+            <td>
+                ${app.cvFile ? `<a href="${app.cvFile}" target="_blank" class="btn-sm btn-edit" title="Download CV"><i class="fas fa-download"></i> CV</a>` : '-'}
+            </td>
+            <td>
+                <div class="dropdown" style="display:inline-block;">
+                    <button class="btn-sm btn-secondary dropdown-toggle" type="button" onclick="toggleDropdown('${app.id}')">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div id="dropdown-${app.id}" class="dropdown-menu" style="display:none; position:absolute; bg:white; border:1px solid #ccc; z-index:100; padding:5px; background:white; box-shadow:0 2px 5px rgba(0,0,0,0.2); border-radius:4px; right: 0;">
+                        <a href="#" class="dropdown-item" onclick="updateCareerStatus('${app.id}', 'Reviewed'); return false;">Mark Reviewed</a>
+                        <a href="#" class="dropdown-item" onclick="updateCareerStatus('${app.id}', 'Interview'); return false;">Mark Interview</a>
+                        <a href="#" class="dropdown-item" onclick="updateCareerStatus('${app.id}', 'Rejected'); return false;">Mark Rejected</a>
+                        <div class="dropdown-divider" style="border-top:1px solid #eee; margin:5px 0;"></div>
+                        <a href="#" class="dropdown-item text-danger" onclick="deleteCareer('${app.id}'); return false;">Delete</a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    `;
+}
+
+window.toggleDropdown = (id) => {
+    // effective close others
+    document.querySelectorAll('.dropdown-menu').forEach(el => {
+        if (el.id !== `dropdown-${id}`) el.style.display = 'none';
+    });
+
+    const menu = document.getElementById(`dropdown-${id}`);
+    if (menu) {
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+};
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
+    }
+});
+
+
+window.updateCareerStatus = async (id, status) => {
+    try {
+        await apiCall(`/careers/admin/${id}/status`, 'PATCH', { status });
+        const app = cachedCareers.find(a => a.id === id);
+        if (app) app.status = status;
+        loadCareers(document.getElementById('content-area')); // Reload or re-render
+        showToast(`Status updated to ${status}`);
+    } catch (e) {
+        alert('Error updating status: ' + e.message);
+    }
+};
+
+window.deleteCareer = async (id) => {
+    if (confirm('Delete this application? This action cannot be undone.')) {
+        try {
+            await apiCall(`/careers/admin/${id}`, 'DELETE');
+            loadCareers(document.getElementById('content-area'));
+            showToast('Application deleted');
+        } catch (e) {
+            alert('Error deleting: ' + e.message);
+        }
+    }
+};
 async function loadUsers(container) {
     try {
         const users = await apiCall('/users', 'GET');
@@ -671,7 +920,11 @@ let cachedQueries = [];
 
 async function loadQueries(container) {
     try {
-        cachedQueries = await apiCall('/contact/admin', 'GET');
+        // Use the new standard endpoint
+        cachedQueries = await apiCall('/contact', 'GET');
+        // Sort newest first if not already
+        cachedQueries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
         container.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                  <div class="filter-bar" style="margin-bottom: 0;">
@@ -694,12 +947,11 @@ async function loadQueries(container) {
             </div>
         `;
         renderQueryTable(cachedQueries);
-    } catch (e) { container.innerHTML = 'Error loading queries'; }
+    } catch (e) { container.innerHTML = 'Error loading queries: ' + e.message; }
 }
 
 window.filterQueries = (filter, btn) => {
     if (btn) {
-        // Scope to filter bar in queries section if needed, though globally unique works for now
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     }
@@ -707,9 +959,9 @@ window.filterQueries = (filter, btn) => {
     if (filter === 'ALL') {
         renderQueryTable(cachedQueries);
     } else if (filter === 'Unread') {
-        renderQueryTable(cachedQueries.filter(q => !q.isRead));
+        renderQueryTable(cachedQueries.filter(q => q.status === 'Unread'));
     } else if (filter === 'Read') {
-        renderQueryTable(cachedQueries.filter(q => q.isRead));
+        renderQueryTable(cachedQueries.filter(q => q.status === 'Read'));
     }
 };
 
@@ -717,7 +969,7 @@ function renderQueryTable(queries) {
     const tbody = document.getElementById('queries-table-body');
     const noMsg = document.getElementById('no-queries-msg');
 
-    if (queries.length === 0) {
+    if (!queries || queries.length === 0) {
         tbody.innerHTML = '';
         noMsg.style.display = 'block';
         return;
@@ -725,11 +977,11 @@ function renderQueryTable(queries) {
 
     noMsg.style.display = 'none';
     tbody.innerHTML = queries.map(q => `
-        <tr style="${!q.isRead ? 'font-weight: 600; background-color: #f0f9ff;' : ''}">
-            <td>${q.isRead ? '<span style="color:var(--secondary);"><i class="fas fa-check-double"></i> Read</span>' : '<span style="color:var(--primary);"><i class="fas fa-circle" style="font-size: 8px;"></i> New</span>'}</td>
+        <tr style="${q.status === 'Unread' ? 'font-weight: 600; background-color: #f0f9ff;' : ''}">
+            <td>${q.status === 'Read' ? '<span style="color:var(--secondary);"><i class="fas fa-check-double"></i> Read</span>' : '<span style="color:var(--primary);"><i class="fas fa-circle" style="font-size: 8px;"></i> Unread</span>'}</td>
             <td>${q.name}</td>
             <td>${q.email}</td>
-            <td>${new Date(q.date).toLocaleDateString()}</td>
+            <td>${new Date(q.createdAt).toLocaleDateString()}</td>
             <td>${q.message.substring(0, 50)}...</td>
             <td>
                 <button class="btn-sm btn-edit" onclick="viewQuery('${q.id}')"><i class="fas fa-eye"></i></button>
@@ -744,12 +996,11 @@ window.viewQuery = async (id) => {
     if (!query) return;
 
     // Mark as read if not already
-    if (!query.isRead) {
+    if (query.status === 'Unread') {
         try {
-            await apiCall(`/contact/admin/${id}/read`, 'PUT');
-            query.isRead = true;
-            // Update UI row immediately without full reload if possible, or just re-render
-            renderQueryTable(cachedQueries); // This might reset filter if we don't track state, but simple for now
+            await apiCall(`/contact/${id}/read`, 'PATCH');
+            query.status = 'Read';
+            renderQueryTable(cachedQueries);
         } catch (e) { console.error('Failed to mark read', e); }
     }
 
@@ -759,7 +1010,7 @@ window.viewQuery = async (id) => {
             <div><strong>Name:</strong> ${query.name}</div>
             <div><strong>Email:</strong> ${query.email}</div>
             <div><strong>Phone:</strong> ${query.phone || '-'}</div>
-            <div><strong>Date:</strong> ${new Date(query.date).toLocaleString()}</div>
+            <div><strong>Date:</strong> ${new Date(query.createdAt).toLocaleString()}</div>
             <div style="grid-column: span 2;"><strong>Project Type:</strong> ${query.projectType || '-'}</div>
         </div>
         <div class="form-group">
@@ -777,9 +1028,14 @@ window.viewQuery = async (id) => {
 
 window.deleteQuery = async (id, fromModal = false) => {
     if (confirm('Delete query?')) {
-        await apiCall(`/contact/admin/${id}`, 'DELETE');
-        if (fromModal) closeModal();
-        loadModule('queries');
+        try {
+            await apiCall(`/contact/${id}`, 'DELETE');
+            if (fromModal) closeModal();
+            loadModule('queries');
+            showToast('Query deleted');
+        } catch (e) {
+            alert('Error deleting: ' + e.message);
+        }
     }
 };
 

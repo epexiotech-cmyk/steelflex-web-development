@@ -390,43 +390,9 @@
                     <p class="reveal-on-scroll delay-1">Explore opportunities to grow your career with us.</p>
                 </div>
 
-                <div class="vacancy-grid" data-stagger>
-                    <!-- Job 1 -->
-                    <div class="vacancy-card reveal-on-scroll">
-                        <h3 class="job-role">Structural Engineer</h3>
-                        <div class="job-location">📍 Vadodara, Gujarat</div>
-                        <p class="job-desc">We are looking for an experienced Structural Engineer proficient in steel
-                            structure design and detailing software (Tekla/STAAD). Minimum 3 years experience required.
-                        </p>
-                        <button class="apply-now-btn" onclick="applyForRole('structural-engineer')">Apply Now</button>
-                    </div>
-
-                    <!-- Job 2 -->
-                    <div class="vacancy-card reveal-on-scroll">
-                        <h3 class="job-role">Production Supervisor</h3>
-                        <div class="job-location">📍 Por, Vadodara</div>
-                        <p class="job-desc">Oversee daily manufacturing operations, ensure quality control, and manage
-                            shop floor workforce efficiently for timely project delivery.</p>
-                        <button class="apply-now-btn" onclick="applyForRole('production-supervisor')">Apply Now</button>
-                    </div>
-
-                    <!-- Job 3 -->
-                    <div class="vacancy-card reveal-on-scroll">
-                        <h3 class="job-role">Sales Manager</h3>
-                        <div class="job-location">📍 Vadodara (HQ)</div>
-                        <p class="job-desc">Drive business growth by identifying new industrial possibilities and
-                            building strong client relationships. Technical sales background preferred.</p>
-                        <button class="apply-now-btn" onclick="applyForRole('sales-manager')">Apply Now</button>
-                    </div>
-
-                    <!-- Job 4 -->
-                    <div class="vacancy-card reveal-on-scroll">
-                        <h3 class="job-role">Designer / Detailer</h3>
-                        <div class="job-location">📍 Vadodara, Gujarat</div>
-                        <p class="job-desc">Create precise fabrication drawings and erection diagrams. Must have strong
-                            attention to detail and knowledge of drafting standards.</p>
-                        <button class="apply-now-btn" onclick="applyForRole('designer-detailer')">Apply Now</button>
-                    </div>
+                <div class="vacancy-grid" id="vacancy-container" data-stagger>
+                    <!-- Vacancies will be loaded dynamically -->
+                    <div style="grid-column: 1/-1; text-align: center; color: #888;">Loading open positions...</div>
                 </div>
             </div>
         </section>
@@ -565,16 +531,7 @@
             }
         });
 
-        // Form Submit Simulation
-        document.getElementById('careerForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            alert('Application submitted successfully! Our team will review your CV.');
-            this.reset();
-            fileNameDisplay.textContent = "";
-            uploadText.textContent = "Click or Drag & Drop CV here";
-            uploadBox.style.background = "transparent";
-            uploadBox.style.borderColor = "#eee";
-        });
+
 
         // Apply Button Interaction
         function applyForRole(roleValue) {
