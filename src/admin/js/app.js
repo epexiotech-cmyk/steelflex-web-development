@@ -16,72 +16,40 @@ const DATA_MAP = {
 };
 
 // --- Utils ---
-// --- Utils ---
 async function apiCall(endpoint, method = 'GET', body = null, isMultipart = false) {
-    if (endpoint.startsWith('/reviews') || endpoint.startsWith('/auth')) {
-        let url = '/api' + endpoint;
-        if (endpoint === '/reviews/admin') url = '/api/reviews';
+    let url = '/api' + endpoint;
 
-        const options = { method, headers: {} };
-        if (state.token) options.headers['Authorization'] = `Bearer ${state.token}`;
+    // Fallback overrides if any specific mapping is needed
+    if (endpoint === '/reviews/admin') url = '/api/reviews';
+    if (endpoint === '/contact/admin') url = '/api/contact';
+    if (endpoint === '/careers/admin') url = '/api/careers/admin'; // Admin careers endpoint
 
-        if (body) {
-            if (isMultipart) {
-                options.body = body;
-            } else {
-                options.headers['Content-Type'] = 'application/json';
-                options.body = JSON.stringify(body);
-            }
+    const options = { method, headers: {} };
+    if (state.token) options.headers['Authorization'] = `Bearer ${state.token}`;
+
+    if (body) {
+        if (isMultipart) {
+            options.body = body;
+        } else {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(body);
         }
-
-        try {
-            const response = await fetch(url, options);
-            if (response.status === 401 || response.status === 403) {
-                logout();
-                throw new Error('Session expired. Please login again.');
-            }
-            if (!response.ok) {
-                const err = await response.json().catch(() => ({}));
-                throw new Error(err.message || 'API Error');
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('API Error:', error);
-            showToast(error.message || 'Network error', 'error');
-            throw error;
-        }
-    }
-
-    console.log(`Mock API Call: ${method} ${endpoint}`);
-
-    // Return empty success for non-GET methods so UI doesn't break
-    if (method !== 'GET') {
-        if (endpoint.includes('login')) {
-            return { id: 1, name: 'Admin', role: 'SUPER_ADMIN', email: 'admin@steelflex.com', accessToken: 'mock_token' };
-        }
-        return { success: true };
-    }
-
-    // Resolve static data path
-    let url = DATA_MAP[endpoint];
-    if (!url) {
-        // Dynamic fallback fallback /vacancies -> /data/vacancies.json
-        const cleanName = endpoint.replace('/admin', '').replace(/^\//, '');
-        url = `/data/${cleanName}.json`;
     }
 
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            // Provide empty array for missing files to prevent 500s/UI breakages
-            console.warn(`Static data missing for ${url}, returning empty array.`);
-            return [];
+        const response = await fetch(url, options);
+        if (response.status === 401 || response.status === 403) {
+            logout();
+            throw new Error('Session expired. Please login again.');
         }
-
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.message || 'API Error');
+        }
         return await response.json();
     } catch (error) {
         console.error('API Error:', error);
-        showToast(error.message, 'error');
+        showToast(error.message || 'Network error', 'error');
         throw error;
     }
 }
@@ -722,35 +690,61 @@ window.deleteUser = async (id) => {
 async function loadReviews(container) {
     try {
         const reviews = await apiCall('/reviews/admin', 'GET');
+        window.cachedReviews = reviews;
+        window.currentReviewFilter = window.currentReviewFilter || 'all';
+
+        window.renderReviewsTableRows = (filter) => {
+            let filtered = window.cachedReviews;
+            if (filter !== 'all') {
+                filtered = filtered.filter(r => (r.status || 'pending').toLowerCase() === filter);
+            }
+            if (filtered.length === 0) return '<tr><td colspan="5" style="text-align: center;">No reviews found</td></tr>';
+
+            return filtered.map(r => {
+                let statusColor = 'var(--warning)'; // Pending
+                if (r.status === 'approved' || r.status === 'Accepted') statusColor = 'var(--success)';
+                if (r.status === 'rejected' || r.status === 'Rejected') statusColor = 'var(--danger)';
+
+                return `
+                    <tr>
+                        <td>${r.clientName}</td>
+                        <td>${r.companyName || '-'}</td>
+                        <td>${r.rating}/5</td>
+                        <td><span style="color: ${statusColor}; font-weight: 600; text-transform: capitalize;">${r.status}</span></td>
+                        <td>
+                            <button class="btn-sm btn-edit" title="View Details" onclick="viewReviewDetails('${r.id}')"><i class="fas fa-eye"></i></button>
+                            <button class="btn-sm btn-delete" title="Delete" onclick="deleteReview('${r.id}')"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        window.handleReviewFilterChange = (dropdown) => {
+            window.currentReviewFilter = dropdown.value;
+            const tbody = document.getElementById('admin-reviews-tbody');
+            if (tbody) tbody.innerHTML = window.renderReviewsTableRows(dropdown.value);
+        };
+
         container.innerHTML = `
-            <button class="btn btn-primary" style="margin-bottom: 1rem;" onclick="showReviewModal()">Add Review</button>
+            <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
+                <label style="font-weight: 600; color: #4b5563;">Filter Status:</label>
+                <select id="reviewStatusFilter" class="form-control" style="width: 200px;" onchange="handleReviewFilterChange(this)">
+                    <option value="all" ${window.currentReviewFilter === 'all' ? 'selected' : ''}>All</option>
+                    <option value="pending" ${window.currentReviewFilter === 'pending' ? 'selected' : ''}>Pending</option>
+                    <option value="approved" ${window.currentReviewFilter === 'approved' ? 'selected' : ''}>Approved</option>
+                    <option value="rejected" ${window.currentReviewFilter === 'rejected' ? 'selected' : ''}>Rejected</option>
+                </select>
+            </div>
             <div class="card">
                 <table class="data-table">
                     <thead><tr><th>Client</th><th>Company</th><th>Rating</th><th>Status</th><th>Actions</th></tr></thead>
-                    <tbody>
-                        ${reviews.map(r => {
-            let statusColor = 'var(--warning)'; // Pending
-            if (r.status === 'Accepted') statusColor = 'var(--success)';
-            if (r.status === 'Rejected') statusColor = 'var(--danger)';
-
-            return `
-                            <tr>
-                                <td>${r.clientName}</td>
-                                <td>${r.companyName || '-'}</td>
-                                <td>${r.rating}/5</td>
-                                <td><span style="color: ${statusColor}; font-weight: 600;">${r.status}</span></td>
-                                <td>
-                                    <button class="btn-sm btn-edit" title="View Details" onclick="viewReviewDetails('${r.id}')"><i class="fas fa-eye"></i></button>
-                                    <button class="btn-sm btn-delete" title="Delete" onclick="deleteReview('${r.id}')"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `;
-        }).join('')}
+                    <tbody id="admin-reviews-tbody">
+                        ${window.renderReviewsTableRows(window.currentReviewFilter)}
                     </tbody>
                 </table>
             </div>
         `;
-        window.cachedReviews = reviews;
     } catch (e) { container.innerHTML = 'Error loading reviews'; }
 }
 
@@ -768,11 +762,11 @@ window.viewReviewDetails = (id) => {
             <div class="review-media-grid">
                 <div class="media-item">
                     <label>Reviewer Photo</label>
-                    ${review.reviewerPhoto ? `<img src="${review.reviewerPhoto}" class="review-img-preview">` : '<div class="no-img">No Photo</div>'}
+                    ${review.reviewerPhoto ? `<img src="${review.reviewerPhoto}" class="review-img-preview" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="no-img" style="display:none;">Broken Image</div>` : '<div class="no-img">No Photo</div>'}
                 </div>
                 <div class="media-item">
                     <label>Company Logo</label>
-                    ${review.companyLogo ? `<img src="${review.companyLogo}" class="review-img-preview">` : '<div class="no-img">No Logo</div>'}
+                    ${review.companyLogo ? `<img src="${review.companyLogo}" class="review-img-preview" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="no-img" style="display:none;">Broken Logo</div>` : '<div class="no-img">No Logo</div>'}
                 </div>
             </div>
 
@@ -803,8 +797,8 @@ window.viewReviewDetails = (id) => {
             </div>
 
             <div class="modal-actions">
-                ${review.status !== 'Accepted' ? `<button class="btn btn-success" onclick="updateReviewStatus('${review.id}', 'Accepted')">Accept Review</button>` : ''}
-                ${review.status !== 'Rejected' ? `<button class="btn btn-danger" onclick="updateReviewStatus('${review.id}', 'Rejected')">Reject Review</button>` : ''}
+                ${review.status !== 'approved' ? `<button class="btn btn-success" onclick="updateReviewStatus('${review.id}', 'approved')">Accept Review</button>` : ''}
+                ${review.status !== 'rejected' ? `<button class="btn btn-danger" onclick="updateReviewStatus('${review.id}', 'rejected')">Reject Review</button>` : ''}
                 <button class="btn btn-secondary" onclick="closeModal()">Close</button>
             </div>
         </div>
@@ -813,7 +807,7 @@ window.viewReviewDetails = (id) => {
             .modal-header-custom { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
             .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
             .status-badge.pending { background: #fff7ed; color: #c2410c; }
-            .status-badge.accepted { background: #f0fdf4; color: #15803d; }
+            .status-badge.approved { background: #f0fdf4; color: #15803d; }
             .status-badge.rejected { background: #fef2f2; color: #b91c1c; }
             .review-media-grid { display: flex; gap: 1rem; margin-top: 0.5rem; }
             .media-item { flex: 1; text-align: center; background: #f9fafb; padding: 10px; border-radius: 6px; }
@@ -877,9 +871,9 @@ window.showReviewModal = () => {
 
             <div class="form-group"><label>Initial Status</label>
                 <select name="status" class="form-control">
-                    <option value="Pending">Pending</option>
-                    <option value="Accepted">Accepted</option>
-                    <option value="Rejected">Rejected</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Save Review</button>

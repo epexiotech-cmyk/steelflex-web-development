@@ -210,7 +210,7 @@ async function loadModule(moduleId) {
                 const [users, projects, reviews, queries, careers] = await Promise.all([
                     apiCall('/users', 'GET').catch(() => []), // Super admin only, might fail for others? Safe check:
                     apiCall('/projects', 'GET'),
-                    apiCall('/reviews/admin', 'GET'),
+                    apiCall('/reviews', 'GET'),
                     apiCall('/contact/admin', 'GET'),
                     apiCall('/careers/admin', 'GET')
                 ]);
@@ -444,7 +444,7 @@ window.deleteUser = async (id) => {
 // 2. Reviews
 async function loadReviews(container) {
     try {
-        const reviews = await apiCall('/reviews/admin', 'GET');
+        const reviews = await apiCall('/reviews', 'GET');
         container.innerHTML = `
             <button class="btn btn-primary" style="margin-bottom: 1rem;" onclick="showReviewModal()">Add Review</button>
             <div class="card">

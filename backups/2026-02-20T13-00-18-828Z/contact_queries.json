@@ -1,0 +1,12 @@
+[
+  {
+    "id": "1771592289962",
+    "name": "Test User",
+    "email": "test@example.com",
+    "phone": "1234567890",
+    "projectType": "Factory",
+    "message": "Test query from CLI",
+    "status": "Unread",
+    "createdAt": "2026-02-20T12:58:09.962Z"
+  }
+]

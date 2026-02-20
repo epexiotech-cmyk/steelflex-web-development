@@ -1,34 +1,33 @@
 [
   {
-    "id": "1771263733917",
+    "id": "1771592289962",
     "name": "Test User",
     "email": "test@example.com",
     "phone": "1234567890",
-    "projectType": "Warehouse",
-    "message": "This is a test message.",
-    "status": "Unread",
-    "createdAt": "2026-02-16T17:42:13.917Z"
+    "projectType": "Factory",
+    "message": "Test query from CLI",
+    "status": "Read",
+    "createdAt": "2026-02-20T12:58:09.962Z",
+    "isRead": true
   },
   {
-    "id": "1771264914966",
+    "id": "1771592978441",
     "name": "Harsh Patel",
     "email": "Harsh.rural@gmail.com",
     "phone": "09016950157",
     "projectType": "Not Specified",
-    "message": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    "status": "Read",
-    "createdAt": "2026-02-16T18:01:54.966Z",
-    "isRead": true
+    "message": "hfhhfhfhfh",
+    "status": "Unread",
+    "createdAt": "2026-02-20T13:09:38.441Z"
   },
   {
-    "id": "1771268839976",
-    "name": "Dr Vikram Patel",
-    "email": "vikram.rural@gmail.com",
-    "phone": "09909975831",
+    "id": "1771607021439",
+    "name": "Test User",
+    "email": "via-vite@test.com",
+    "phone": "222",
     "projectType": "Not Specified",
-    "message": "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
-    "status": "Read",
-    "createdAt": "2026-02-16T19:07:19.976Z",
-    "isRead": true
+    "message": "hello",
+    "status": "Unread",
+    "createdAt": "2026-02-20T17:03:41.439Z"
   }
 ]

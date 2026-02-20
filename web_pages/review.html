@@ -304,14 +304,6 @@
                         <label for="project_images" class="modern-label">Project Images (Optional, Multiple)</label>
                     </div>
 
-                    <div class="modern-input-group">
-                        <select id="status" name="status" class="modern-input">
-                            <option value="Pending" selected>Pending</option>
-                            <option value="Approved">Approved</option>
-                            <option value="Rejected">Rejected</option>
-                        </select>
-                        <label for="status" class="modern-label">Initial Status</label>
-                    </div>
 
                     <button type="submit" class="submit-btn" style="background-color: #0097D3;">Submit Review</button>
                 </form>
@@ -331,14 +323,16 @@
     </main>
 
     <!-- MODERN FOOTER -->
-    
+
     <footer class="site-footer-redesign">
         <div class="footer-main">
             <div class="container">
                 <div class="footer-grid-modern">
                     <div class="footer-col">
-                        <span class="footer-brand-title"><img src="Logo/Steelflex Logo.png" alt="SteelFlex" style="height: 50px;"></span>
-                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey steel construction solutions.</p>
+                        <span class="footer-brand-title"><img src="Logo/Steelflex Logo.png" alt="SteelFlex"
+                                style="height: 50px;"></span>
+                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
+                            steel construction solutions.</p>
                     </div>
                     <div class="footer-col">
                         <h4 class="footer-col-title">Quick Links</h4>
@@ -368,7 +362,7 @@
             </div>
         </div>
     </footer>
-    
+
     <script>
         document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
             document.querySelector('.main-nav').classList.toggle('active');
@@ -376,7 +370,7 @@
 
         const reviewForm = document.getElementById('review-form');
         if (reviewForm) {
-            reviewForm.addEventListener('submit', async function(e) {
+            reviewForm.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 const submitBtn = reviewForm.querySelector('.submit-btn');
                 const originalText = submitBtn.textContent;
@@ -389,6 +383,7 @@
                 backendData.append('company', formData.get('company'));
                 backendData.append('reviewText', formData.get('review_text'));
                 backendData.append('rating', formData.get('rating'));
+                backendData.append('status', 'pending');
 
                 if (formData.get('reviewer_photo')?.size > 0) backendData.append('reviewerPhoto', formData.get('reviewer_photo'));
                 if (formData.get('company_logo')?.size > 0) backendData.append('companyLogo', formData.get('company_logo'));
@@ -430,7 +425,7 @@
                     const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
                     const photo = review.reviewerPhoto ? `<img src="${review.reviewerPhoto}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">` : '';
                     const logo = review.companyLogo ? `<img src="${review.companyLogo}" style="max-height: 40px; max-width: 100px; object-fit: contain;">` : '';
-                    const projImages = (review.projectImages && review.projectImages.length > 0) ? 
+                    const projImages = (review.projectImages && review.projectImages.length > 0) ?
                         `<div style="display: flex; gap: 5px; margin-top: 10px;">${review.projectImages.map(img => `<img src="${img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">`).join('')}</div>` : '';
 
                     grid.innerHTML += `<div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 4px solid var(--primary-color);">
@@ -442,11 +437,11 @@
                         <p style="font-style: italic; color: #444; margin: 0; line-height: 1.6;">"${review.reviewText}"</p>${projImages}
                     </div>`;
                 });
-            } catch (err) {}
+            } catch (err) { }
         }
         loadAcceptedReviews();
     </script>
 </body>
 <script src="animations.js"></script>
+
 </html>
-    

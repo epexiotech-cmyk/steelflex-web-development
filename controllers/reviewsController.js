@@ -1,45 +1,41 @@
 const JSONStore = require('../utils/jsonStore');
 const reviewStore = new JSONStore('reviews.json');
-const sharp = require('sharp');
 const path = require('path');
-const fs = require('fs-extra');
+const fs = require('fs');
 
-// Helper: Process single image
-const processImage = async (file, width, height) => {
+// Helper to format file paths relative to public
+const formatFilePath = (file) => {
     if (!file) return null;
-    const uniqueName = `${path.parse(file.filename).name}.webp`;
-    const outputPath = path.join(file.destination, uniqueName);
+    return '/uploads/reviews/' + file.filename;
+};
 
-    try {
-        await sharp(file.path)
-            .resize(width, height, { fit: 'cover' })
-            .toFormat('webp', { quality: 80 })
-            .toFile(outputPath);
-
-        // Delete original
-        await fs.unlink(file.path).catch(console.error);
-        return `/uploads/reviews/${uniqueName}`;
-    } catch (err) {
-        console.error("Error processing review image:", err);
-        return null; // Or handle error
+// Private method to delete local file
+const deleteLocalFile = (filePath) => {
+    if (!filePath) return;
+    const fullPath = path.join(__dirname, '../public', filePath);
+    if (fs.existsSync(fullPath)) {
+        try {
+            fs.unlinkSync(fullPath);
+        } catch (e) {
+            console.error('Failed to delete file:', fullPath, e);
+        }
     }
 };
 
 const getAllReviews = async (req, res) => {
     try {
         const reviews = await reviewStore.getAll();
+        res.json(reviews);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
 
-        // Check if admin request (via route middleware or path)
-        // Since we reuse this controller for public and admin, we can check req.path or user
-        const isAdminRoute = req.path.includes('/admin') || (req.user && req.user.role === 'ADMIN'); // Simple check
-
-        if (isAdminRoute) {
-            res.json(reviews);
-        } else {
-            // Public: Only Accepted
-            const visible = reviews.filter(r => r.status === 'Accepted');
-            res.json(visible);
-        }
+const getAcceptedReviews = async (req, res) => {
+    try {
+        const reviews = await reviewStore.getAll();
+        const accepted = reviews.filter(r => r.status === 'approved' || r.status === 'Accepted');
+        res.json(accepted);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -47,112 +43,53 @@ const getAllReviews = async (req, res) => {
 
 const createReview = async (req, res) => {
     try {
-        const { clientName, companyName, reviewText, rating, status } = req.body;
+        const { clientName, company, reviewText, rating, status } = req.body;
 
-        // Handle Files
-        let reviewerPhoto = null;
-        let companyLogo = null;
-        let reviewImages = [];
-
-        if (req.files) {
-            if (req.files.reviewerPhoto) {
-                reviewerPhoto = await processImage(req.files.reviewerPhoto[0], 400, 400);
-            }
-            if (req.files.companyLogo) {
-                companyLogo = await processImage(req.files.companyLogo[0], 300, 300);
-            }
-            if (req.files.reviewImages) {
-                for (const file of req.files.reviewImages) {
-                    const imgPath = await processImage(file, 800, 600);
-                    if (imgPath) reviewImages.push(imgPath);
-                }
-            }
+        if (!clientName || !reviewText || !rating) {
+            return res.status(400).json({ message: 'Client name, review text, and rating are required.' });
         }
+
+        const files = req.files || {};
+        const reviewerPhotoPath = files['reviewerPhoto'] ? formatFilePath(files['reviewerPhoto'][0]) : null;
+        const companyLogoPath = files['companyLogo'] ? formatFilePath(files['companyLogo'][0]) : null;
+        const projectImagesPaths = files['projectImages'] ? files['projectImages'].map(f => formatFilePath(f)) : [];
 
         const newReview = {
             id: Date.now().toString(),
             clientName,
-            companyName,
+            companyName: company || '',
             reviewText,
-            rating: parseInt(rating),
-            status: status || 'Pending', // Default Pending
-            reviewerPhoto,
-            companyLogo,
-            reviewImages, // New field
-            createdAt: new Date()
+            rating: parseInt(rating, 10),
+            reviewerPhoto: reviewerPhotoPath,
+            companyLogo: companyLogoPath,
+            projectImages: projectImagesPaths,
+            status: status || 'pending',
+            createdAt: new Date().toISOString()
         };
-        await reviewStore.create(newReview);
-        res.status(201).json(newReview);
+
+        const created = await reviewStore.create(newReview);
+        res.status(201).json({ success: true, message: 'Review created successfully', data: created });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-const updateReview = async (req, res) => {
+const updateReviewStatus = async (req, res) => {
     try {
         const { id } = req.params;
-        const review = await reviewStore.getById(id);
-        if (!review) return res.status(404).json({ message: 'Review not found' });
+        const { status } = req.body; // Expecting "approved", "rejected", "Pending" etc
 
-        const { clientName, companyName, reviewText, rating, status } = req.body;
-        let { existingReviewImages } = req.body; // Handle existing images
-
-        // Handle Files
-        let reviewerPhoto = review.reviewerPhoto;
-        let companyLogo = review.companyLogo;
-        let reviewImages = [];
-
-        // Parse existing images
-        if (existingReviewImages) {
-            if (Array.isArray(existingReviewImages)) {
-                reviewImages = existingReviewImages;
-            } else {
-                reviewImages = [existingReviewImages];
-            }
+        if (!status) {
+            return res.status(400).json({ message: 'Status is required' });
         }
 
-        if (req.files) {
-            if (req.files.reviewerPhoto) {
-                // Delete old if exists
-                if (reviewerPhoto) {
-                    await fs.remove(path.join(__dirname, '../public', reviewerPhoto)).catch(console.error);
-                }
-                reviewerPhoto = await processImage(req.files.reviewerPhoto[0], 400, 400);
-            }
-            if (req.files.companyLogo) {
-                // Delete old if exists
-                if (companyLogo) {
-                    await fs.remove(path.join(__dirname, '../public', companyLogo)).catch(console.error);
-                }
-                companyLogo = await processImage(req.files.companyLogo[0], 300, 300);
-            }
-            if (req.files.reviewImages) {
-                for (const file of req.files.reviewImages) {
-                    const imgPath = await processImage(file, 800, 600);
-                    if (imgPath) reviewImages.push(imgPath);
-                }
-            }
+        const updated = await reviewStore.update(id, { status });
+
+        if (!updated) {
+            return res.status(404).json({ message: 'Review not found' });
         }
 
-        // Cleanup: Check which images were removed
-        const oldImages = review.reviewImages || [];
-        const toDelete = oldImages.filter(img => !reviewImages.includes(img));
-        for (const imgPath of toDelete) {
-            await fs.remove(path.join(__dirname, '../public', imgPath)).catch(console.error);
-        }
-
-        const safeUpdates = {};
-        if (clientName !== undefined) safeUpdates.clientName = clientName;
-        if (companyName !== undefined) safeUpdates.companyName = companyName;
-        if (reviewText !== undefined) safeUpdates.reviewText = reviewText;
-        if (rating !== undefined) safeUpdates.rating = parseInt(rating);
-        if (status !== undefined) safeUpdates.status = status;
-        if (reviewerPhoto !== undefined) safeUpdates.reviewerPhoto = reviewerPhoto;
-        if (companyLogo !== undefined) safeUpdates.companyLogo = companyLogo;
-        safeUpdates.reviewImages = reviewImages; // Always update array
-
-        const updated = await reviewStore.update(id, safeUpdates);
-        res.json(updated);
+        res.json({ success: true, message: 'Review updated', data: updated });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -160,23 +97,36 @@ const updateReview = async (req, res) => {
 
 const deleteReview = async (req, res) => {
     try {
-        const review = await reviewStore.getById(req.params.id);
-        if (!review) return res.status(404).json({ message: 'Review not found' });
+        const { id } = req.params;
+        const review = await reviewStore.getById(id);
 
-        // Delete images
-        if (review.reviewerPhoto) await fs.remove(path.join(__dirname, '../public', review.reviewerPhoto)).catch(console.error);
-        if (review.companyLogo) await fs.remove(path.join(__dirname, '../public', review.companyLogo)).catch(console.error);
-        if (review.reviewImages) {
-            for (const img of review.reviewImages) {
-                await fs.remove(path.join(__dirname, '../public', img)).catch(console.error);
-            }
+        if (!review) {
+            return res.status(404).json({ message: 'Review not found' });
         }
 
-        await reviewStore.delete(req.params.id);
-        res.json({ message: 'Review deleted' });
+        // 1. Delete associated media files
+        if (review.reviewerPhoto) deleteLocalFile(review.reviewerPhoto);
+        if (review.companyLogo) deleteLocalFile(review.companyLogo);
+        if (review.projectImages && review.projectImages.length > 0) {
+            review.projectImages.forEach(deleteLocalFile);
+        }
+
+        // 2. Remove from JSON
+        const success = await reviewStore.delete(id);
+
+        if (!success) {
+            return res.status(404).json({ message: 'Failed to delete from store' });
+        }
+        res.json({ success: true, message: 'Review deleted successfully' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
-module.exports = { getAllReviews, createReview, updateReview, deleteReview };
+module.exports = {
+    getAllReviews,
+    getAcceptedReviews,
+    createReview,
+    updateReviewStatus,
+    deleteReview
+};

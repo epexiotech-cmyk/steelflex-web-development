@@ -4,39 +4,35 @@ const controller = require('../controllers/reviewsController');
 const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs-extra');
 
-// Multer Setup
-const uploadDir = path.join(__dirname, '../public/uploads/reviews');
-fs.ensureDirSync(uploadDir);
-
+// Multer Config specifically for reviews
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '-'))
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../public/uploads/reviews'));
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
 });
+const upload = multer({ storage: storage });
 
-const upload = multer({ storage });
-
-// Admin Routes
-router.get('/admin', verifyToken, isAdmin, controller.getAllReviews);
-
-// Create: Support file uploads
-router.post('/', verifyToken, isAdmin, upload.fields([
+// Public routes for website to submit and view
+router.post('/', upload.fields([
     { name: 'reviewerPhoto', maxCount: 1 },
     { name: 'companyLogo', maxCount: 1 },
-    { name: 'reviewImages', maxCount: 5 }
+    { name: 'projectImages', maxCount: 10 }
 ]), controller.createReview);
 
-// Update: Support file uploads + status
-router.put('/:id', verifyToken, isAdmin, upload.fields([
-    { name: 'reviewerPhoto', maxCount: 1 },
-    { name: 'companyLogo', maxCount: 1 },
-    { name: 'reviewImages', maxCount: 5 }
-]), controller.updateReview);
+router.get('/accepted', controller.getAcceptedReviews);
 
-router.delete('/:id', verifyToken, isAdmin, controller.deleteReview);
+// Admin routes
+router.use('/', verifyToken, isAdmin); // Protect all below routes
+router.get('/', controller.getAllReviews); // GET /api/reviews
+router.put('/:id', controller.updateReviewStatus); // PUT /api/reviews/:id
+router.delete('/:id', controller.deleteReview); // DELETE /api/reviews/:id
 
-// Public Route (Filtered)
-router.get('/', controller.getAllReviews);
+// For fallback references from admin app.js if any
+router.get('/admin', controller.getAllReviews);
 
 module.exports = router;
