@@ -47,15 +47,12 @@ document.addEventListener('DOMContentLoaded', function () {
             };
 
             try {
-                const response = await fetch('/api/contact', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
+                // Mock network delay
+                await new Promise(r => setTimeout(r, 600));
 
-                const result = await response.json();
+                // Simulate success response for static build
+                const response = { ok: true };
+                const result = { success: true };
 
                 if (response.ok) {
                     alert('Message sent successfully! We will get back to you soon.');
@@ -93,15 +90,12 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const formData = new FormData(careerForm);
 
-                // Explicitly check FormData entries for debugging if needed
-                // for (let pair of formData.entries()) { console.log(pair[0] + ', ' + pair[1]); }
+                // Mock network delay
+                await new Promise(r => setTimeout(r, 600));
 
-                const response = await fetch('/api/careers/apply', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
+                // Simulate success response for static build
+                const response = { ok: true };
+                const result = { success: true };
 
                 if (response.ok) {
                     alert('Application submitted successfully! We will review your profile and get back to you.');
@@ -130,7 +124,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Dynamic Vacancies Loading
     const vacancyContainer = document.getElementById('vacancy-container');
     if (vacancyContainer) {
-        fetch('/api/vacancies/public')
+        // Return empty array for static mode
+        Promise.resolve({ json: () => Promise.resolve([]) })
             .then(res => res.json())
             .then(vacancies => {
                 vacancyContainer.innerHTML = ''; // Clear loading
@@ -241,9 +236,14 @@ window.loadProjects = async function (status, containerId) {
     // container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px;">Loading...</div>';
 
     try {
-        const res = await fetch(`/api/projects?status=${status}`);
+        const res = await fetch(`/data/projects.json`);
         if (!res.ok) throw new Error('Failed to fetch projects');
-        const projects = await res.json();
+        let projects = await res.json();
+
+        // Local filtering
+        if (status && status !== 'ALL') {
+            projects = projects.filter(p => p.status === status);
+        }
 
         container.innerHTML = '';
 

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Review | SteelFlex Structures</title>
+    <meta name="description"
+        content="Share your experience working with SteelFlex Structures. Your feedback helps us build stronger relationships.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Premium Split Layout - Light Theme */
+        .contact-hero-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            min-height: 85vh;
+            background: #fff;
+        }
+
+        /* LEFT PANEL: Light & Clean */
+        .contact-info-panel {
+            background-color: var(--background-section);
+            color: var(--text-color);
+            padding: 80px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            border-right: 1px solid var(--border-color);
+        }
+
+        /* Clean Blue Line Accent */
+        .contact-info-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--primary-color);
+        }
+
+        .contact-headline {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 50px;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .contact-item {
+            margin-bottom: 40px;
+        }
+
+        .contact-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+            display: block;
+            font-weight: 600;
+        }
+
+        .contact-value {
+            font-size: 1.3rem;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .contact-value a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+            border-bottom: 1px solid transparent;
+        }
+
+        .contact-value a:hover {
+            color: var(--button-color);
+            border-bottom-color: var(--button-color);
+        }
+
+        /* RIGHT PANEL: Clean Form */
+        .contact-form-panel {
+            background: #fff;
+            padding: 80px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .form-intro {
+            margin-bottom: 40px;
+        }
+
+        .form-intro p {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+        }
+
+        .modern-input-group {
+            position: relative;
+            margin-bottom: 35px;
+        }
+
+        .modern-input {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 1.1rem;
+            color: #333;
+            border: none;
+            border-bottom: 2px solid #eee;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .modern-input:focus {
+            outline: none;
+            border-bottom-color: var(--primary-color);
+        }
+
+        /* Select styling to match input */
+        select.modern-input {
+            cursor: pointer;
+            color: #333;
+        }
+
+        /* File input styling adjustment */
+        input[type="file"].modern-input {
+            padding-top: 15px;
+            /* Adjust for label overlap if needed, but keeping consistent */
+        }
+
+        .modern-label {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            font-size: 1rem;
+            color: #999;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .modern-input:focus~.modern-label,
+        .modern-input:valid~.modern-label,
+        .modern-input:not(:placeholder-shown)~.modern-label {
+            top: -20px;
+            font-size: 0.85rem;
+            color: var(--primary-color);
+        }
+
+        .submit-btn {
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            align-self: flex-start;
+        }
+
+        .submit-btn:hover {
+            background: #000;
+            transform: translateY(-2px);
+        }
+
+        .group-affiliation {
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 30px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @media (max-width: 900px) {
+            .contact-hero-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-info-panel,
+            .contact-form-panel {
+                padding: 60px 30px;
+            }
+
+            .contact-headline {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="about-us.html"><img src="Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="about-us.html">About Us</a></li>
+                    <li><a href="products-structures.html">Products & Structures</a></li>
+                    <li><a href="capabilities.html">Capabilities</a></li>
+                    <li><a href="machineries.html">Machineries</a></li>
+                    <li><a href="projects.html">Projects</a></li>
+                    <li><a href="careers.html">Careers</a></li>
+                    <li><a href="contact-us.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Split Layout Wrapper -->
+        <section class="contact-hero-wrapper">
+
+            <!-- Left Panel: Info -->
+            <div class="contact-info-panel" data-stagger>
+                <h1 class="contact-headline reveal-on-scroll">Share Your<br>Experience.</h1>
+                <p style="font-size: 1.1rem; color: #555; margin-bottom: 40px; line-height: 1.6;">Your feedback helps us
+                    build stronger relationships and better structures.</p>
+
+                <div class="contact-item reveal-on-scroll">
+                    <span class="contact-label">Client Support</span>
+                    <div class="contact-value">
+                        SteelFlex Structures Pvt. Ltd.<br>
+                        Plot No. 72 & 73, Aatmiya-2 Industrial Park,<br>
+                        Bamangam, POR, Vadodara – 391243,<br>
+                        Gujarat, India.
+                    </div>
+                </div>
+
+                <div class="contact-item reveal-on-scroll">
+                    <span class="contact-label">Email</span>
+                    <div class="contact-value">
+                        <a href="mailto:reviews@steelflexstructures.com">reviews@steelflexstructures.com</a>
+                    </div>
+                </div>
+
+                <div class="group-affiliation reveal-on-scroll">
+                    A Group of <strong>ISKO & SAMIRIKA</strong>
+                </div>
+            </div>
+
+            <!-- Right Panel: Form -->
+            <div class="contact-form-panel reveal-on-scroll delay-2">
+                <div class="form-intro">
+                    <h2 style="font-size: 2rem; margin-bottom: 10px;">Add Client Review</h2>
+                    <p>Tell us about your experience working with SteelFlex.</p>
+                </div>
+
+                <form id="review-form" method="POST" enctype="multipart/form-data">
+                    <div class="modern-input-group">
+                        <input type="text" id="client_name" name="client_name" class="modern-input" placeholder=" "
+                            required>
+                        <label for="client_name" class="modern-label">Client Name</label>
+                    </div>
+
+                    <div class="modern-input-group">
+                        <input type="text" id="company" name="company" class="modern-input" placeholder=" " required>
+                        <label for="company" class="modern-label">Company</label>
+                    </div>
+
+                    <div class="modern-input-group">
+                        <textarea id="review_text" name="review_text" rows="3" class="modern-input"
+                            style="resize: none;" placeholder=" " required></textarea>
+                        <label for="review_text" class="modern-label">Review Text</label>
+                    </div>
+
+                    <div class="modern-input-group">
+                        <select id="rating" name="rating" class="modern-input" required>
+                            <option value="" disabled selected hidden></option>
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="3">3 - Good</option>
+                            <option value="2">2 - Average</option>
+                            <option value="1">1 - Needs Improvement</option>
+                        </select>
+                        <label for="rating" class="modern-label">Rating</label>
+                    </div>
+
+                    <div class="modern-input-group">
+                        <input type="file" id="reviewer_photo" name="reviewer_photo" class="modern-input"
+                            accept="image/*">
+                        <label for="reviewer_photo" class="modern-label">Reviewer Photo (Optional)</label>
+                    </div>
+
+                    <div class="modern-input-group">
+                        <input type="file" id="company_logo" name="company_logo" class="modern-input" accept="image/*">
+                        <label for="company_logo" class="modern-label">Company Logo (Optional)</label>
+                    </div>
+
+                    <div class="modern-input-group">
+                        <input type="file" id="project_images" name="project_images" class="modern-input"
+                            accept="image/*" multiple>
+                        <label for="project_images" class="modern-label">Project Images (Optional, Multiple)</label>
+                    </div>
+
+                    <div class="modern-input-group">
+                        <select id="status" name="status" class="modern-input">
+                            <option value="Pending" selected>Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                        <label for="status" class="modern-label">Initial Status</label>
+                    </div>
+
+                    <button type="submit" class="submit-btn" style="background-color: #0097D3;">Submit Review</button>
+                </form>
+            </div>
+
+        </section>
+
+        <!-- Testimonials Display Section -->
+        <section id="testimonials-section"
+            style="padding: 60px 20px; text-align: center; margin: 0 auto; max-width: 1200px;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 40px;">What Our Clients Say</h2>
+            <div id="testimonials-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; text-align: left;">
+                <!-- Dynamically loaded reviews go here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- MODERN FOOTER -->
+    
+    <footer class="site-footer-redesign">
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid-modern">
+                    <div class="footer-col">
+                        <span class="footer-brand-title"><img src="Logo/Steelflex Logo.png" alt="SteelFlex" style="height: 50px;"></span>
+                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey steel construction solutions.</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Quick Links</h4>
+                        <ul class="footer-links-list">
+                            <li><a href="about-us.html">About Us</a></li>
+                            <li><a href="products-structures.html">Products</a></li>
+                            <li><a href="capabilities.html">Capabilities</a></li>
+                            <li><a href="machineries.html">Machineries</a></li>
+                            <li><a href="projects.html">Projects</a></li>
+                            <li><a href="careers.html">Careers</a></li>
+                            <li><a href="contact-us.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Contact</h4>
+                        <div class="footer-contact-item"><span>Phone</span> +91 94264 43442</div>
+                        <div class="footer-contact-item"><span>Email</span> md@steelflexstructures.com</div>
+                        <div class="footer-contact-item"><span>Location</span> Vadodara, Gujarat</div>
+                        <a href="review.html" class="btn-footer-review">Add Review</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-legal">
+            <div class="container">
+                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
+            document.querySelector('.main-nav').classList.toggle('active');
+        });
+
+        const reviewForm = document.getElementById('review-form');
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const submitBtn = reviewForm.querySelector('.submit-btn');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Submitting...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData(reviewForm);
+                const backendData = new FormData();
+                backendData.append('clientName', formData.get('client_name'));
+                backendData.append('company', formData.get('company'));
+                backendData.append('reviewText', formData.get('review_text'));
+                backendData.append('rating', formData.get('rating'));
+
+                if (formData.get('reviewer_photo')?.size > 0) backendData.append('reviewerPhoto', formData.get('reviewer_photo'));
+                if (formData.get('company_logo')?.size > 0) backendData.append('companyLogo', formData.get('company_logo'));
+                for (let file of formData.getAll('project_images')) {
+                    if (file.size > 0) backendData.append('projectImages', file);
+                }
+
+                try {
+                    const response = await fetch('/api/reviews', { method: 'POST', body: backendData });
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert('Review submitted successfully!');
+                        reviewForm.reset();
+                        loadAcceptedReviews();
+                    } else alert('Error: ' + (result.message || 'Failed to submit review.'));
+                } catch (error) {
+                    console.error(error);
+                    alert('Network error. Please try again later.');
+                } finally {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        }
+
+        async function loadAcceptedReviews() {
+            const grid = document.getElementById('testimonials-grid');
+            if (!grid) return;
+            try {
+                const res = await fetch('/api/reviews/accepted');
+                if (!res.ok) return;
+                const reviews = await res.json();
+                grid.innerHTML = '';
+                if (reviews.length === 0) {
+                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">Be the first to leave a review!</p>';
+                    return;
+                }
+                reviews.forEach(review => {
+                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                    const photo = review.reviewerPhoto ? `<img src="${review.reviewerPhoto}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">` : '';
+                    const logo = review.companyLogo ? `<img src="${review.companyLogo}" style="max-height: 40px; max-width: 100px; object-fit: contain;">` : '';
+                    const projImages = (review.projectImages && review.projectImages.length > 0) ? 
+                        `<div style="display: flex; gap: 5px; margin-top: 10px;">${review.projectImages.map(img => `<img src="${img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">`).join('')}</div>` : '';
+
+                    grid.innerHTML += `<div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 4px solid var(--primary-color);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                            <div style="display: flex; gap: 15px; align-items: center;">${photo}<div><h4 style="margin: 0; font-size: 1.1rem;">${review.clientName}</h4><div style="font-size: 0.9rem; color: #666;">${review.company}</div></div></div>
+                            <div>${logo}</div>
+                        </div>
+                        <div style="color: #f59e0b; margin-bottom: 15px; font-size: 1.2rem;">${stars}</div>
+                        <p style="font-style: italic; color: #444; margin: 0; line-height: 1.6;">"${review.reviewText}"</p>${projImages}
+                    </div>`;
+                });
+            } catch (err) {}
+        }
+        loadAcceptedReviews();
+    </script>
+</body>
+<script src="animations.js"></script>
+</html>
+    

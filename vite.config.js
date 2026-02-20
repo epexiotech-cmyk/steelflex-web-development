@@ -17,6 +17,7 @@ export default defineConfig({
                 machineries: resolve(__dirname, 'web_pages/machineries.html'),
                 careers: resolve(__dirname, 'web_pages/careers.html'),
                 contact: resolve(__dirname, 'web_pages/contact-us.html'),
+                review: resolve(__dirname, 'web_pages/review.html'),
                 admin: resolve(__dirname, 'src/admin/index.html')
             }
         }

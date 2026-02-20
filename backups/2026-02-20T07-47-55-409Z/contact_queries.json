@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1771263733917",
+    "name": "Test User",
+    "email": "test@example.com",
+    "phone": "1234567890",
+    "projectType": "Warehouse",
+    "message": "This is a test message.",
+    "status": "Unread",
+    "createdAt": "2026-02-16T17:42:13.917Z"
+  },
+  {
+    "id": "1771264914966",
+    "name": "Harsh Patel",
+    "email": "Harsh.rural@gmail.com",
+    "phone": "09016950157",
+    "projectType": "Not Specified",
+    "message": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "Read",
+    "createdAt": "2026-02-16T18:01:54.966Z",
+    "isRead": true
+  },
+  {
+    "id": "1771268839976",
+    "name": "Dr Vikram Patel",
+    "email": "vikram.rural@gmail.com",
+    "phone": "09909975831",
+    "projectType": "Not Specified",
+    "message": "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+    "status": "Read",
+    "createdAt": "2026-02-16T19:07:19.976Z",
+    "isRead": true
+  }
+]

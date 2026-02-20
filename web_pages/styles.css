@@ -2772,4 +2772,21 @@ section {
         /* Optional constraint */
         object-fit: cover;
     }
+}.btn-footer-review {
+    display: inline-block;
+    background-color: var(--primary-color, #264796);
+    color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    margin-top: 12px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    font-weight: 500;
+    font-size: 0.9rem;
+    outline: none;
+    border: none;
+}
+.btn-footer-review:hover {
+    background-color: #1a3473;
 }

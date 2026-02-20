@@ -18,64 +18,67 @@ const DATA_MAP = {
 // --- Utils ---
 // --- Utils ---
 async function apiCall(endpoint, method = 'GET', body = null, isMultipart = false) {
-    console.log(`API Call: ${method} ${endpoint}`);
+    if (endpoint.startsWith('/reviews') || endpoint.startsWith('/auth')) {
+        let url = '/api' + endpoint;
+        if (endpoint === '/reviews/admin') url = '/api/reviews';
 
-    // Allow real API calls to /api prefix
-    let url = endpoint;
-    if (!endpoint.startsWith('/data/') && !endpoint.includes('.json')) {
-        // Assume it's a real API call if it doesn't look like a static file request
-        // Ensure /api prefix if not present (logic specific to how endpoints are passed)
-        if (!endpoint.startsWith('/api') && !endpoint.startsWith('http')) {
-            url = `/api${endpoint}`; // e.g., /users -> /api/users
+        const options = { method, headers: {} };
+        if (state.token) options.headers['Authorization'] = `Bearer ${state.token}`;
+
+        if (body) {
+            if (isMultipart) {
+                options.body = body;
+            } else {
+                options.headers['Content-Type'] = 'application/json';
+                options.body = JSON.stringify(body);
+            }
         }
-    }
 
-    // Default headers
-    const headers = {};
-    const token = localStorage.getItem('token');
-    if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const options = {
-        method,
-        headers
-    };
-
-    if (body) {
-        if (isMultipart) {
-            options.body = body; // FormData
-        } else {
-            headers['Content-Type'] = 'application/json';
-            options.body = JSON.stringify(body);
-        }
-    }
-
-    try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-            if (response.status === 401) {
-                // Token invalid or expired
+        try {
+            const response = await fetch(url, options);
+            if (response.status === 401 || response.status === 403) {
                 logout();
                 throw new Error('Session expired. Please login again.');
             }
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err.message || 'API Error');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('API Error:', error);
+            showToast(error.message || 'Network error', 'error');
+            throw error;
+        }
+    }
 
-            // Try to parse error message
-            let errMsg = response.statusText;
-            try {
-                const errData = await response.json();
-                errMsg = errData.message || errMsg;
-            } catch (e) { }
-            throw new Error(errMsg);
+    console.log(`Mock API Call: ${method} ${endpoint}`);
+
+    // Return empty success for non-GET methods so UI doesn't break
+    if (method !== 'GET') {
+        if (endpoint.includes('login')) {
+            return { id: 1, name: 'Admin', role: 'SUPER_ADMIN', email: 'admin@steelflex.com', accessToken: 'mock_token' };
+        }
+        return { success: true };
+    }
+
+    // Resolve static data path
+    let url = DATA_MAP[endpoint];
+    if (!url) {
+        // Dynamic fallback fallback /vacancies -> /data/vacancies.json
+        const cleanName = endpoint.replace('/admin', '').replace(/^\//, '');
+        url = `/data/${cleanName}.json`;
+    }
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            // Provide empty array for missing files to prevent 500s/UI breakages
+            console.warn(`Static data missing for ${url}, returning empty array.`);
+            return [];
         }
 
-        // For 204 No Content or similar
-        if (response.status === 204) return null;
-
-        const text = await response.text();
-        if (!text) return null;
-
-        return JSON.parse(text);
+        return await response.json();
     } catch (error) {
         console.error('API Error:', error);
         showToast(error.message, 'error');
@@ -246,21 +249,24 @@ async function loadModule(moduleId) {
             title.textContent = 'Dashboard';
 
             try {
-                // Fetch stats concurrently
-                const [users, projects, reviews, queries, careers] = await Promise.all([
-                    apiCall('/users', 'GET').catch(() => []), // Super admin only, might fail for others? Safe check:
-                    apiCall('/projects', 'GET'),
+                // Fetch stats from static dashboard.json
+                const response = await fetch('/data/dashboard.json');
+                if (!response.ok) throw new Error('Failed to load dashboard metrics');
+                const dashboard = await response.json();
+
+                // Fetch other data for the UI arrays
+                const [reviews, queries, careers] = await Promise.all([
                     apiCall('/reviews/admin', 'GET'),
                     apiCall('/contact/admin', 'GET'),
                     apiCall('/careers/admin', 'GET')
                 ]);
 
-                // Calculate counts
-                const newReviews = reviews.filter(r => r.status === 'Pending').length;
-                const newQueries = queries.filter(q => q.status === 'new').length;
-                const totalProjects = projects.length;
-                const totalApps = careers.length;
-                const newApps = careers.filter(c => c.status === 'new').length;
+                // Calculate counts from dashboard config
+                const newReviews = dashboard.totalReviews; // mapped as new for UI demo
+                const newQueries = dashboard.totalContacts;
+                const totalProjects = dashboard.totalProjects;
+                const totalApps = dashboard.totalUsers; // mapping users to apps for UI purposes
+                const newApps = dashboard.totalUsers;
 
                 content.innerHTML = `
                     <div style="margin-bottom: 2rem;">

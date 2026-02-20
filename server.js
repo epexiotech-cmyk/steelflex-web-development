@@ -2,7 +2,26 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const mongoose = require('mongoose');
 const fs = require('fs-extra');
+
+mongoose.set('bufferCommands', false);
+mongoose.set('strictQuery', false);
+
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/steelflex";
+
+async function connectDB() {
+    try {
+        await mongoose.connect(MONGO_URI, {
+            serverSelectionTimeoutMS: 5000
+        });
+
+        console.log("✅ MongoDB Connected Successfully");
+    } catch (error) {
+        console.error("❌ MongoDB Connection Failed:", error.message);
+        process.exit(1);
+    }
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -66,15 +85,17 @@ async function startServer() {
         await initFile(path.join(__dirname, 'data/projects.json'), []);
         await initFile(path.join(__dirname, 'data/careers.json'), []);
 
+        // Connect to MongoDB
+        await connectDB();
+
         // Backup Data
         await backupData();
 
         // Seed Super Admin
         await seedSuperAdmin();
 
-
         app.listen(PORT, () => {
-            console.log(`Server running on http://localhost:${PORT}`);
+            console.log(`🚀 Server running on port ${PORT}`);
         });
     } catch (err) {
         console.error('Failed to start server:', err);
