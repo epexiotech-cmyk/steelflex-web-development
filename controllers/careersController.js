@@ -2,6 +2,7 @@ const JSONStore = require('../utils/jsonStore');
 const careerStore = new JSONStore('careers.json');
 const path = require('path');
 const fs = require('fs-extra');
+const { deleteLocalFile } = require('../utils/fileHelper');
 
 const getAllApplications = async (req, res) => {
     try {
@@ -16,9 +17,6 @@ const getAllApplications = async (req, res) => {
 
 const submitApplication = async (req, res) => {
     try {
-        console.log('Body:', req.body);
-        console.log('File:', req.file);
-
         const { name, email, mobile, position, message } = req.body;
         // Map frontend fields to backend schema
         const appliedRole = position;
@@ -84,8 +82,7 @@ const deleteApplication = async (req, res) => {
 
             // Attempt to delete CV file
             if (app.cvFile) {
-                const cvPath = path.join(__dirname, '../public', app.cvFile);
-                await fs.remove(cvPath).catch(err => console.error("Failed to delete CV:", err));
+                await deleteLocalFile(app.cvFile);
             }
 
             res.json({ message: 'Application deleted' });

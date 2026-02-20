@@ -2,6 +2,7 @@ const JSONStore = require('../utils/jsonStore');
 const projectStore = new JSONStore('projects.json');
 const path = require('path');
 const fs = require('fs-extra');
+const { deleteLocalFile } = require('../utils/fileHelper');
 
 const getAllProjects = async (req, res) => {
     try {
@@ -114,8 +115,7 @@ const updateProject = async (req, res) => {
         const toDelete = oldImages.filter(img => !finalImages.includes(img));
 
         for (const imgPath of toDelete) {
-            const fullPath = path.join(__dirname, '../public', imgPath);
-            await fs.remove(fullPath).catch(err => console.error("Failed to delete old image:", err));
+            await deleteLocalFile(imgPath);
         }
 
         const updated = await projectStore.update(id, updates);
@@ -136,8 +136,7 @@ const deleteProject = async (req, res) => {
 
             // Attempt to delete image file
             if (project.image) {
-                const imagePath = path.join(__dirname, '../public', project.image);
-                await fs.remove(imagePath).catch(err => console.error("Failed to delete image:", err));
+                await deleteLocalFile(project.image);
             }
 
             res.json({ message: 'Project deleted' });

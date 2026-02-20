@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+const initScrollReveal = () => {
     const elements = document.querySelectorAll(".reveal-on-scroll");
 
     if (!("IntersectionObserver" in window)) {
@@ -22,11 +22,11 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     elements.forEach(el => observer.observe(el));
-});
+};
 
 // Contact Form Integration
 // Injected via animations.js to avoid modifying HTML structure
-document.addEventListener('DOMContentLoaded', function () {
+const initFormsAndVacancies = () => {
     const contactForm = document.querySelector('.interaction-form');
 
     if (contactForm) {
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error loading vacancies:', err);
             });
     }
-});
+};
 
 // Helper for Apply Now
 window.applyForRole = function (roleTitle) {
@@ -194,12 +194,18 @@ window.applyForRole = function (roleTitle) {
     }
 };
 
-// --- Projects Integration ---
-document.addEventListener('DOMContentLoaded', () => {
+const initProjects = () => {
     // Check if we are on the projects page by looking for the ongoing-projects container
     if (document.getElementById('ongoing-projects')) {
         loadProjects('Ongoing', 'ongoing-projects');
     }
+};
+
+// Main Initialization
+document.addEventListener('DOMContentLoaded', () => {
+    initScrollReveal();
+    initFormsAndVacancies();
+    initProjects();
 });
 
 // Global switchTab function attached to window

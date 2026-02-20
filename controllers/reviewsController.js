@@ -1,26 +1,6 @@
 const JSONStore = require('../utils/jsonStore');
 const reviewStore = new JSONStore('reviews.json');
-const path = require('path');
-const fs = require('fs');
-
-// Helper to format file paths relative to public
-const formatFilePath = (file) => {
-    if (!file) return null;
-    return '/uploads/reviews/' + file.filename;
-};
-
-// Private method to delete local file
-const deleteLocalFile = (filePath) => {
-    if (!filePath) return;
-    const fullPath = path.join(__dirname, '../public', filePath);
-    if (fs.existsSync(fullPath)) {
-        try {
-            fs.unlinkSync(fullPath);
-        } catch (e) {
-            console.error('Failed to delete file:', fullPath, e);
-        }
-    }
-};
+const { formatFilePath, deleteLocalFile } = require('../utils/fileHelper');
 
 const getAllReviews = async (req, res) => {
     try {
@@ -50,9 +30,9 @@ const createReview = async (req, res) => {
         }
 
         const files = req.files || {};
-        const reviewerPhotoPath = files['reviewerPhoto'] ? formatFilePath(files['reviewerPhoto'][0]) : null;
-        const companyLogoPath = files['companyLogo'] ? formatFilePath(files['companyLogo'][0]) : null;
-        const projectImagesPaths = files['projectImages'] ? files['projectImages'].map(f => formatFilePath(f)) : [];
+        const reviewerPhotoPath = files['reviewerPhoto'] ? formatFilePath(files['reviewerPhoto'][0], 'reviews') : null;
+        const companyLogoPath = files['companyLogo'] ? formatFilePath(files['companyLogo'][0], 'reviews') : null;
+        const projectImagesPaths = files['projectImages'] ? files['projectImages'].map(f => formatFilePath(f, 'reviews')) : [];
 
         const newReview = {
             id: Date.now().toString(),
@@ -105,10 +85,10 @@ const deleteReview = async (req, res) => {
         }
 
         // 1. Delete associated media files
-        if (review.reviewerPhoto) deleteLocalFile(review.reviewerPhoto);
-        if (review.companyLogo) deleteLocalFile(review.companyLogo);
+        if (review.reviewerPhoto) await deleteLocalFile(review.reviewerPhoto);
+        if (review.companyLogo) await deleteLocalFile(review.companyLogo);
         if (review.projectImages && review.projectImages.length > 0) {
-            review.projectImages.forEach(deleteLocalFile);
+            await Promise.all(review.projectImages.map(deleteLocalFile));
         }
 
         // 2. Remove from JSON
