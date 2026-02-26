@@ -89,12 +89,21 @@ const initFormsAndVacancies = () => {
                 const formData = new FormData(careerForm);
                 const data = Object.fromEntries(formData.entries());
 
-                // MOCK UPLOAD LOGIC for local storage sync
+                // CV UPLOAD LOGIC (Base64)
                 if (data.cv instanceof File && data.cv.size > 0) {
-                    data.cvFile = `/uploads/${data.cv.name}`;
-                } else {
-                    delete data.cv;
+                    const file = data.cv;
+                    data.cvName = file.name;
+                    data.cvData = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = error => reject(error);
+                        reader.readAsDataURL(file);
+                    });
                 }
+                delete data.cv; // Remove File object
+
+                // Extra fields for Admin Panel
+                data.cvFile = data.cvData ? 'base64' : null; // Keep compatibility if used elsewhere or remove
                 data.status = 'New'; // Mark for admin notification
 
                 const result = await StorageManager.addItem('careers', data);

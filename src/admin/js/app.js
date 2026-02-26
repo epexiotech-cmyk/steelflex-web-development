@@ -552,7 +552,7 @@ function renderCareerRow(app) {
             </td>
             <td>${new Date(app.submittedAt).toLocaleDateString()}</td>
             <td>
-                ${app.cvFile ? `<a href="${app.cvFile}" target="_blank" class="btn-sm btn-edit" title="Download CV"><i class="fas fa-download"></i> CV</a>` : '-'}
+                ${app.cvData ? `<button onclick="downloadCV('${app.id}')" class="btn-sm btn-edit" title="Download CV" style="border:none; cursor:pointer;"><i class="fas fa-download"></i> CV</button>` : '-'}
             </td>
             <td>
                 <div class="dropdown" style="display:inline-block;">
@@ -571,6 +571,48 @@ function renderCareerRow(app) {
         </tr>
     `;
 }
+
+window.downloadCV = async (id) => {
+    try {
+        const app = await StorageManager.getById('careers', id);
+        if (!app || !app.cvData) {
+            alert('File not available');
+            return;
+        }
+
+        // Convert Base64 to Blob
+        // Format check: "data:application/pdf;base64,JVBERi..."
+        let base64Data = app.cvData;
+        let contentType = 'application/pdf';
+
+        if (app.cvData.includes('base64,')) {
+            const parts = app.cvData.split(';base64,');
+            contentType = parts[0].replace('data:', '') || 'application/pdf';
+            base64Data = parts[1];
+        }
+
+        const byteCharacters = atob(base64Data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: contentType });
+
+        // Trigger download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = app.cvName || 'Resume.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (err) {
+        console.error('Error downloading CV:', err);
+        alert('File not available or corrupted.');
+    }
+};
 
 window.toggleDropdown = (id) => {
     // effective close others
@@ -689,8 +731,17 @@ window.deleteUser = async (id) => {
 // 2. Reviews
 async function loadReviews(container) {
     try {
-        const reviews = await StorageManager.getData('reviews');
-        window.cachedReviews = reviews;
+        const allReviews = await StorageManager.getData('reviews');
+
+        // Data Normalization (Fix Existing Stored Data)
+        window.cachedReviews = allReviews.map(r => {
+            if (r.company && !r.companyName) r.companyName = r.company;
+            if (r.photo && !r.reviewerPhoto) r.reviewerPhoto = r.photo;
+            if (r.logo && !r.companyLogo) r.companyLogo = r.logo;
+            if (r.reviewImages && (!r.projectImages || r.projectImages.length === 0)) r.projectImages = r.reviewImages;
+            return r;
+        });
+
         window.currentReviewFilter = window.currentReviewFilter || 'all';
 
         window.renderReviewsTableRows = (filter) => {
@@ -762,7 +813,7 @@ window.viewReviewDetails = (id) => {
             <div class="review-media-grid">
                 <div class="media-item">
                     <label>Reviewer Photo</label>
-                    <img src="${review.reviewerPhoto ? (review.reviewerPhoto.startsWith('/') ? review.reviewerPhoto : '/uploads/' + review.reviewerPhoto) : ''}" 
+                    <img src="${review.reviewerPhoto || ''}" 
                          class="review-img-preview" 
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                          style="${review.reviewerPhoto ? '' : 'display:none;'}">
@@ -770,7 +821,7 @@ window.viewReviewDetails = (id) => {
                 </div>
                 <div class="media-item">
                     <label>Company Logo</label>
-                    <img src="${review.companyLogo ? (review.companyLogo.startsWith('/') ? review.companyLogo : '/uploads/' + review.companyLogo) : ''}" 
+                    <img src="${review.companyLogo || ''}" 
                          class="review-img-preview" 
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
                          style="${review.companyLogo ? '' : 'display:none;'}">
@@ -778,14 +829,13 @@ window.viewReviewDetails = (id) => {
                 </div>
             </div>
 
-            ${review.reviewImages && review.reviewImages.length > 0 ? `
+            ${review.projectImages && review.projectImages.length > 0 ? `
                 <div class="review-carousel-container">
                     <label style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 5px; display: block;">Project Images</label>
                     <div class="carousel-wrapper">
                         <div class="carousel-slides">
-                            ${review.reviewImages.map(img => {
-        const path = img.startsWith('/') ? '.' + img : img;
-        return `<img src="${path}" class="carousel-img" onclick="window.open('${path}', '_blank')">`;
+                            ${review.projectImages.map(img => {
+        return `<img src="${img}" class="carousel-img" onclick="window.open('${img}', '_blank')">`;
     }).join('')}
                         </div>
                     </div>
@@ -889,16 +939,35 @@ window.showReviewModal = () => {
                 const logo = formData.get('companyLogo');
                 if (logo && logo.size === 0) formData.delete('companyLogo');
 
+                const getBase64 = (file) => new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+
                 const data = Object.fromEntries(formData.entries());
-                // For static mode, handle file object logic by generating dummy paths or reading as base64. 
-                // We'll just generate local paths to fulfill the upload path requirement.
+                data.projectImages = [];
+                data.createdAt = new Date().toISOString();
+
                 if (data.reviewerPhoto instanceof File && data.reviewerPhoto.size > 0) {
-                    data.reviewerPhoto = `/uploads/${data.reviewerPhoto.name}`;
+                    data.reviewerPhoto = await getBase64(data.reviewerPhoto);
                 } else delete data.reviewerPhoto;
 
+                // Make sure company form input links to companyName properly
+                if (data.companyName === undefined && data.company) data.companyName = data.company;
+
                 if (data.companyLogo instanceof File && data.companyLogo.size > 0) {
-                    data.companyLogo = `/uploads/${data.companyLogo.name}`;
+                    data.companyLogo = await getBase64(data.companyLogo);
                 } else delete data.companyLogo;
+
+                for (let file of formData.getAll('reviewImages')) {
+                    if (file.size > 0) {
+                        const b64 = await getBase64(file);
+                        data.projectImages.push(b64);
+                    }
+                }
+                delete data.reviewImages; // Clean up old key
 
                 await StorageManager.addItem('reviews', data);
                 closeModal();
@@ -1492,7 +1561,9 @@ async function renderApplications(container) {
                                 <td>${a.name}</td>
                                 <td>${a.appliedRole}</td>
                                 <td>${a.email}</td>
-                                <td><a href="${a.cvFile}" target="_blank" style="color: var(--primary);">Download</a></td>
+                                <td>
+                                    ${a.cvData ? `<button onclick="downloadCV('${a.id}')" class="btn-sm btn-secondary" style="font-size: 0.8rem; padding: 4px 8px;">Download</button>` : '-'}
+                                </td>
                                 <td>${new Date(a.submittedAt || a.date).toLocaleDateString()}</td>
                                 <td>
                                     <button class="btn-sm btn-delete" onclick="deleteApplication('${a.id}')"><i class="fas fa-trash"></i></button>

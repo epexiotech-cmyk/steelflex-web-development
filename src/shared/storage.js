@@ -44,8 +44,10 @@ const StorageManager = {
     setData(type, data) {
         try {
             localStorage.setItem(`steelflex_${type}`, JSON.stringify(data));
+            return true;
         } catch (e) {
             console.error(`Error saving ${type} to localStorage`, e);
+            return false;
         }
     },
 
@@ -62,7 +64,8 @@ const StorageManager = {
         }
 
         data.push(item);
-        this.setData(type, data);
+        const success = this.setData(type, data);
+        if (!success) throw new Error("Storage Quota Exceeded. Please try uploading smaller files.");
         return item;
     },
 
@@ -73,7 +76,8 @@ const StorageManager = {
 
         if (index !== -1) {
             data[index] = { ...data[index], ...updatedData, updatedAt: new Date().toISOString() };
-            this.setData(type, data);
+            const success = this.setData(type, data);
+            if (!success) throw new Error("Storage Quota Exceeded.");
             return data[index];
         } else {
             throw new Error(`${type} item with id ${id} not found`);

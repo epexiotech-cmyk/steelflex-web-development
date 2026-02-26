@@ -369,6 +369,31 @@
             document.querySelector('.main-nav').classList.toggle('active');
         });
 
+        const compressImage = (file, maxWidth = 800) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > maxWidth) {
+                        height = Math.round(height * (maxWidth / width));
+                        width = maxWidth;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.8)); // 80% quality JPEG
+                };
+                img.onerror = (e) => reject(e);
+            };
+            reader.onerror = error => reject(error);
+        });
+
         const reviewForm = document.getElementById('review-form');
         if (reviewForm) {
             reviewForm.addEventListener('submit', async function (e) {
@@ -383,17 +408,33 @@
                 try {
                     const reviewData = {
                         clientName: formData.get('client_name'),
-                        company: formData.get('company'),
+                        companyName: formData.get('company'),
                         reviewText: formData.get('review_text'),
                         rating: parseInt(formData.get('rating')),
                         status: 'pending',
-                        projectImages: []
+                        projectImages: [],
+                        createdAt: new Date().toISOString()
                     };
 
-                    if (formData.get('reviewer_photo')?.size > 0) reviewData.reviewerPhoto = `/uploads/${formData.get('reviewer_photo').name}`;
-                    if (formData.get('company_logo')?.size > 0) reviewData.companyLogo = `/uploads/${formData.get('company_logo').name}`;
+                    const rPhotoFile = formData.get('reviewer_photo');
+                    if (rPhotoFile && rPhotoFile.size > 0) {
+                        reviewData.reviewerPhoto = await compressImage(rPhotoFile, 400);
+                    } else {
+                        reviewData.reviewerPhoto = null;
+                    }
+
+                    const cLogoFile = formData.get('company_logo');
+                    if (cLogoFile && cLogoFile.size > 0) {
+                        reviewData.companyLogo = await compressImage(cLogoFile, 400);
+                    } else {
+                        reviewData.companyLogo = null;
+                    }
+
                     for (let file of formData.getAll('project_images')) {
-                        if (file.size > 0) reviewData.projectImages.push(`/uploads/${file.name}`);
+                        if (file.size > 0) {
+                            const b64 = await compressImage(file, 800);
+                            reviewData.projectImages.push(b64);
+                        }
                     }
 
                     const result = await StorageManager.addItem('reviews', reviewData);
@@ -418,6 +459,14 @@
             if (!grid) return;
             try {
                 const allReviews = await StorageManager.getData('reviews');
+
+                // Normalization block (for older review models)
+                allReviews.forEach(r => {
+                    if (r.company && !r.companyName) r.companyName = r.company;
+                    if (r.photo && !r.reviewerPhoto) r.reviewerPhoto = r.photo;
+                    if (r.logo && !r.companyLogo) r.companyLogo = r.logo;
+                });
+
                 const reviews = allReviews.filter(r => (r.status || '').toLowerCase() === 'approved' || (r.status || '').toLowerCase() === 'accepted');
                 grid.innerHTML = '';
                 if (reviews.length === 0) {
@@ -433,7 +482,7 @@
 
                     grid.innerHTML += `<div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 4px solid var(--primary-color);">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
-                            <div style="display: flex; gap: 15px; align-items: center;">${photo}<div><h4 style="margin: 0; font-size: 1.1rem;">${review.clientName}</h4><div style="font-size: 0.9rem; color: #666;">${review.company}</div></div></div>
+                            <div style="display: flex; gap: 15px; align-items: center;">${photo}<div><h4 style="margin: 0; font-size: 1.1rem;">${review.clientName}</h4><div style="font-size: 0.9rem; color: #666;">${review.companyName}</div></div></div>
                             <div>${logo}</div>
                         </div>
                         <div style="color: #f59e0b; margin-bottom: 15px; font-size: 1.2rem;">${stars}</div>
