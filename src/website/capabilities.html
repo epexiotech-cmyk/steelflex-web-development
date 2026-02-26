@@ -81,7 +81,7 @@
             }
         }
     </style>
-<script src="/src/shared/storage.js"></script>
+    <script src="/src/shared/storage.js"></script>
 </head>
 
 <body>
@@ -433,17 +433,17 @@
                             Vadodara, Gujarat
                         </div>
                         <a href="review.html" class="btn-footer-review">Add Review</a>
-                    
+
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Part 3: Legal Strip -->
-        <div class="footer-legal">
-            <div class="container">
-                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
+            <!-- Part 3: Legal Strip -->
+            <div class="footer-legal">
+                <div class="container">
+                    <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
+                </div>
             </div>
-        </div>
     </footer>
 
     <script>
@@ -458,7 +458,7 @@
         }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        (function () {
             const nutAssembly = document.getElementById('nut-assembly');
             const railFill = document.querySelector('.rail-fill');
             const steps = document.querySelectorAll('.workflow-step');
@@ -515,7 +515,7 @@
 
 
             // Old observer removed - handled by animations.js
-        });
+        })();
     </script>
     <script src="animations.js"></script>
     </script>

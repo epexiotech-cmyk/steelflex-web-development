@@ -83,7 +83,7 @@
             </div>
 
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
+                (function () {
                     const container = document.getElementById('heroCarousel');
                     const images = Array.from(container.querySelectorAll('.collage-img'));
                     let interval;
@@ -116,7 +116,7 @@
 
                     container.addEventListener('mouseenter', () => clearInterval(interval));
                     container.addEventListener('mouseleave', () => interval = setInterval(container.rotateFn, DURATION));
-                });
+                })();
             </script>
         </div>
     </section>
@@ -224,7 +224,7 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadAcceptedReviews);
+        loadAcceptedReviews();
     </script>
     <script src="animations.js"></script>
 </body>

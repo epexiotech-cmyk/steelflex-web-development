@@ -1322,11 +1322,15 @@ window.showProjectModal = (project = null) => {
             try {
                 const data = Object.fromEntries(formData.entries());
 
-                // Static mode mock for images
-                data.images = existingImages;
-                newFiles.forEach(file => {
-                    data.images.push(`/uploads/${file.name}`);
+                const getBase64 = (f) => new Promise(res => {
+                    const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f);
                 });
+
+                data.images = [...existingImages];
+                for (const file of newFiles) {
+                    const b64 = await getBase64(file);
+                    data.images.push(b64);
+                }
                 data.image = data.images.length > 0 ? data.images[0] : null;
 
                 if (project) {

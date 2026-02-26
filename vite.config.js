@@ -8,33 +8,21 @@ export default defineConfig({
         outDir: 'dist',
         rollupOptions: {
             input: {
-                main: resolve(__dirname, 'web_pages/index.html'),
-                about: resolve(__dirname, 'web_pages/about-us.html'),
-                products: resolve(__dirname, 'web_pages/products-structures.html'),
-                projects: resolve(__dirname, 'web_pages/projects.html'),
-                projectDetail: resolve(__dirname, 'web_pages/project-detail.html'),
-                capabilities: resolve(__dirname, 'web_pages/capabilities.html'),
-                machineries: resolve(__dirname, 'web_pages/machineries.html'),
-                careers: resolve(__dirname, 'web_pages/careers.html'),
-                contact: resolve(__dirname, 'web_pages/contact-us.html'),
-                review: resolve(__dirname, 'web_pages/review.html'),
+                main: resolve(__dirname, 'src/website/index.html'),
+                about: resolve(__dirname, 'src/website/about-us.html'),
+                products: resolve(__dirname, 'src/website/products-structures.html'),
+                projects: resolve(__dirname, 'src/website/projects.html'),
+                projectDetail: resolve(__dirname, 'src/website/project-detail.html'),
+                capabilities: resolve(__dirname, 'src/website/capabilities.html'),
+                machineries: resolve(__dirname, 'src/website/machineries.html'),
+                careers: resolve(__dirname, 'src/website/careers.html'),
+                contact: resolve(__dirname, 'src/website/contact-us.html'),
+                review: resolve(__dirname, 'src/website/review.html'),
                 admin: resolve(__dirname, 'src/admin/index.html')
             }
         }
     },
     server: {
-        port: 5173,
-        proxy: {
-            '/api': {
-                target: 'http://localhost:3000',
-                changeOrigin: true,
-                secure: false
-            },
-            '/uploads': {
-                target: 'http://localhost:3000',
-                changeOrigin: true,
-                secure: false
-            }
-        }
+        port: 5173
     }
 });
