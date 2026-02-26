@@ -40,24 +40,7 @@ const upload = multer({
     limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-// Routes
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const contactRoutes = require('./routes/contactRoutes');
-const projectsRoutes = require('./routes/projectsRoutes');
-const careersRoutes = require('./routes/careersRoutes');
-const vacanciesRoutes = require('./routes/vacanciesRoutes');
-const reviewsRoutes = require('./routes/reviewsRoutes');
-const seedSuperAdmin = require('./utils/seeder');
-const backupData = require('./utils/backup');
-
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/projects', projectsRoutes);
-app.use('/api/careers', careersRoutes);
-app.use('/api/vacancies', vacanciesRoutes);
-app.use('/api/reviews', reviewsRoutes);
+// Legacy REST Routes Removed - Now using LocalStorage/Static fallback
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date() });
@@ -98,11 +81,7 @@ async function startServer() {
         await initFile(path.join(__dirname, 'data/projects.json'), []);
         await initFile(path.join(__dirname, 'data/careers.json'), []);
 
-        // Backup Data
-        await backupData();
-
-        // Seed Super Admin
-        await seedSuperAdmin();
+        // Legacy backups and seeders removed for static mode
 
         app.listen(PORT, () => {
             console.log(`🚀 Server running on port ${PORT}`);

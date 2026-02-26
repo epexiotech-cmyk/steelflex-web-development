@@ -47,20 +47,16 @@ const initFormsAndVacancies = () => {
             };
 
             try {
-                const response = await fetch('/api/contact', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
+                const result = await StorageManager.addItem('contact', {
+                    ...formData,
+                    status: 'Unread' // Mark as unread for admin dashboard
                 });
 
-                let result = {};
-                try { result = await response.json(); } catch (e) { }
-
-                if (response.ok) {
+                if (result) {
                     alert('Message sent successfully! We will get back to you soon.');
                     contactForm.reset();
                 } else {
-                    alert('Error: ' + (result.message || 'Failed to send message.'));
+                    alert('Failed to send message.');
                 }
             } catch (error) {
                 console.error('Error submitting form:', error);
@@ -91,16 +87,19 @@ const initFormsAndVacancies = () => {
 
             try {
                 const formData = new FormData(careerForm);
+                const data = Object.fromEntries(formData.entries());
 
-                const response = await fetch('/api/careers/apply', {
-                    method: 'POST',
-                    body: formData
-                });
+                // MOCK UPLOAD LOGIC for local storage sync
+                if (data.cv instanceof File && data.cv.size > 0) {
+                    data.cvFile = `/uploads/${data.cv.name}`;
+                } else {
+                    delete data.cv;
+                }
+                data.status = 'New'; // Mark for admin notification
 
-                let result = {};
-                try { result = await response.json(); } catch (e) { }
+                const result = await StorageManager.addItem('careers', data);
 
-                if (response.ok) {
+                if (result) {
                     alert('Application submitted successfully! We will review your profile and get back to you.');
                     careerForm.reset();
                     // Reset file display bits if they exist
@@ -111,7 +110,7 @@ const initFormsAndVacancies = () => {
                         document.getElementById('uploadBox').style.borderColor = "#eee";
                     }
                 } else {
-                    alert('Error: ' + (result.message || 'Failed to submit application.'));
+                    alert('Failed to submit application.');
                 }
             } catch (error) {
                 console.error('Submission error:', error);
@@ -127,9 +126,9 @@ const initFormsAndVacancies = () => {
     // Dynamic Vacancies Loading
     const vacancyContainer = document.getElementById('vacancy-container');
     if (vacancyContainer) {
-        fetch('/api/vacancies/public')
-            .then(res => res.json())
-            .then(vacancies => {
+        StorageManager.getData('vacancies')
+            .then(allVacancies => {
+                const vacancies = allVacancies.filter(v => v.status === 'Open');
                 vacancyContainer.innerHTML = ''; // Clear loading
 
                 if (vacancies.length === 0) {
@@ -244,9 +243,7 @@ window.loadProjects = async function (status, containerId) {
     // container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px;">Loading...</div>';
 
     try {
-        const res = await fetch(`/api/projects`);
-        if (!res.ok) throw new Error('Failed to fetch projects');
-        let projects = await res.json();
+        let projects = await StorageManager.getData('projects');
 
         // Local filtering
         if (status && status !== 'ALL') {

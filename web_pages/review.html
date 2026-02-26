@@ -193,6 +193,7 @@
             }
         }
     </style>
+    <script src="/src/shared/storage.js"></script>
 </head>
 
 <body>
@@ -201,12 +202,12 @@
     <header class="main-header">
         <div class="container nav-container">
             <div class="logo">
-                <a href="about-us.html"><img src="Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
+                <a href="index.html"><img src="Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
             </div>
             <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="about-us.html">About Us</a></li>
+                    <li><a href="index.html">About Us</a></li>
                     <li><a href="products-structures.html">Products & Structures</a></li>
                     <li><a href="capabilities.html">Capabilities</a></li>
                     <li><a href="machineries.html">Machineries</a></li>
@@ -337,7 +338,7 @@
                     <div class="footer-col">
                         <h4 class="footer-col-title">Quick Links</h4>
                         <ul class="footer-links-list">
-                            <li><a href="about-us.html">About Us</a></li>
+                            <li><a href="index.html">About Us</a></li>
                             <li><a href="products-structures.html">Products</a></li>
                             <li><a href="capabilities.html">Capabilities</a></li>
                             <li><a href="machineries.html">Machineries</a></li>
@@ -378,27 +379,30 @@
                 submitBtn.disabled = true;
 
                 const formData = new FormData(reviewForm);
-                const backendData = new FormData();
-                backendData.append('clientName', formData.get('client_name'));
-                backendData.append('company', formData.get('company'));
-                backendData.append('reviewText', formData.get('review_text'));
-                backendData.append('rating', formData.get('rating'));
-                backendData.append('status', 'pending');
-
-                if (formData.get('reviewer_photo')?.size > 0) backendData.append('reviewerPhoto', formData.get('reviewer_photo'));
-                if (formData.get('company_logo')?.size > 0) backendData.append('companyLogo', formData.get('company_logo'));
-                for (let file of formData.getAll('project_images')) {
-                    if (file.size > 0) backendData.append('projectImages', file);
-                }
 
                 try {
-                    const response = await fetch('/api/reviews', { method: 'POST', body: backendData });
-                    const result = await response.json();
-                    if (response.ok) {
+                    const reviewData = {
+                        clientName: formData.get('client_name'),
+                        company: formData.get('company'),
+                        reviewText: formData.get('review_text'),
+                        rating: parseInt(formData.get('rating')),
+                        status: 'pending',
+                        projectImages: []
+                    };
+
+                    if (formData.get('reviewer_photo')?.size > 0) reviewData.reviewerPhoto = `/uploads/${formData.get('reviewer_photo').name}`;
+                    if (formData.get('company_logo')?.size > 0) reviewData.companyLogo = `/uploads/${formData.get('company_logo').name}`;
+                    for (let file of formData.getAll('project_images')) {
+                        if (file.size > 0) reviewData.projectImages.push(`/uploads/${file.name}`);
+                    }
+
+                    const result = await StorageManager.addItem('reviews', reviewData);
+
+                    if (result) {
                         alert('Review submitted successfully!');
                         reviewForm.reset();
                         loadAcceptedReviews();
-                    } else alert('Error: ' + (result.message || 'Failed to submit review.'));
+                    } else alert('Error: Failed to submit review.');
                 } catch (error) {
                     console.error(error);
                     alert('Network error. Please try again later.');
@@ -413,9 +417,8 @@
             const grid = document.getElementById('testimonials-grid');
             if (!grid) return;
             try {
-                const res = await fetch('/api/reviews/accepted');
-                if (!res.ok) return;
-                const reviews = await res.json();
+                const allReviews = await StorageManager.getData('reviews');
+                const reviews = allReviews.filter(r => (r.status || '').toLowerCase() === 'approved' || (r.status || '').toLowerCase() === 'accepted');
                 grid.innerHTML = '';
                 if (reviews.length === 0) {
                     grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">Be the first to leave a review!</p>';

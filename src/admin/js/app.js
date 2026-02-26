@@ -75,14 +75,17 @@ function init() {
 
 async function login(userId, password) {
     try {
-        const data = await apiCall('/auth/login', 'POST', { userId, password });
-        state.user = { id: data.id, name: data.name, role: data.role, email: data.email };
-        state.token = data.accessToken;
-        localStorage.setItem('user', JSON.stringify(state.user));
-        localStorage.setItem('token', state.token);
-
-        showToast('Login successful');
-        renderDashboard();
+        // Mock authentication for static mode
+        if (userId && password) {
+            state.user = { id: 1, name: 'Admin', role: 'SUPER_ADMIN', email: 'admin@steelflex.com' };
+            state.token = 'static-token';
+            localStorage.setItem('user', JSON.stringify(state.user));
+            localStorage.setItem('token', state.token);
+            showToast('Login successful');
+            renderDashboard();
+        } else {
+            showToast('Invalid credentials', 'error');
+        }
     } catch (err) {
         console.error(err);
     }
@@ -217,24 +220,21 @@ async function loadModule(moduleId) {
             title.textContent = 'Dashboard';
 
             try {
-                // Fetch stats from static dashboard.json
-                const response = await fetch('/data/dashboard.json');
-                if (!response.ok) throw new Error('Failed to load dashboard metrics');
-                const dashboard = await response.json();
-
-                // Fetch other data for the UI arrays
-                const [reviews, queries, careers] = await Promise.all([
-                    apiCall('/reviews/admin', 'GET'),
-                    apiCall('/contact/admin', 'GET'),
-                    apiCall('/careers/admin', 'GET')
+                // Fetch all data arrays via StorageManager for calculating live stats
+                const [reviews, queries, careers, projects, users] = await Promise.all([
+                    StorageManager.getData('reviews'),
+                    StorageManager.getData('contact'),
+                    StorageManager.getData('careers'),
+                    StorageManager.getData('projects'),
+                    StorageManager.getData('users')
                 ]);
 
-                // Calculate counts from dashboard config
-                const newReviews = dashboard.totalReviews; // mapped as new for UI demo
-                const newQueries = dashboard.totalContacts;
-                const totalProjects = dashboard.totalProjects;
-                const totalApps = dashboard.totalUsers; // mapping users to apps for UI purposes
-                const newApps = dashboard.totalUsers;
+                // Calculate counts directly from the active arrays
+                const newReviews = reviews.filter(r => (r.status || 'pending').toLowerCase() === 'pending').length;
+                const newQueries = queries.filter(q => q.status === 'Unread').length;
+                const totalProjects = projects.length;
+                const newApps = careers.filter(c => c.status === 'New' || !c.status).length;
+                const totalApps = careers.length;
 
                 content.innerHTML = `
                     <div style="margin-bottom: 2rem;">
@@ -389,8 +389,8 @@ let cachedCareers = [];
 async function loadCareers(container) {
     try {
         const [applications, vacancies] = await Promise.all([
-            apiCall('/careers/admin', 'GET'),
-            apiCall('/vacancies', 'GET')
+            StorageManager.getData('careers'),
+            StorageManager.getData('vacancies')
         ]);
 
         cachedCareers = applications; // Update cache
@@ -594,7 +594,7 @@ document.addEventListener('click', (e) => {
 
 window.updateCareerStatus = async (id, status) => {
     try {
-        await apiCall(`/careers/admin/${id}/status`, 'PATCH', { status });
+        await StorageManager.updateItem('careers', id, { status });
         const app = cachedCareers.find(a => a.id === id);
         if (app) app.status = status;
         loadCareers(document.getElementById('content-area')); // Reload or re-render
@@ -605,9 +605,9 @@ window.updateCareerStatus = async (id, status) => {
 };
 
 window.deleteCareer = async (id) => {
-    if (confirm('Delete this application? This action cannot be undone.')) {
+    if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
         try {
-            await apiCall(`/careers/admin/${id}`, 'DELETE');
+            await StorageManager.deleteItem('careers', id);
             loadCareers(document.getElementById('content-area'));
             showToast('Application deleted');
         } catch (e) {
@@ -617,7 +617,7 @@ window.deleteCareer = async (id) => {
 };
 async function loadUsers(container) {
     try {
-        const users = await apiCall('/users', 'GET');
+        const users = await StorageManager.getData('users');
         container.innerHTML = `
             <button class="btn btn-primary" style="margin-bottom: 1rem;" onclick="showUserModal()">Add New Admin</button>
             <div class="card">
@@ -640,7 +640,7 @@ async function loadUsers(container) {
             </div>
         `;
     } catch (e) {
-        container.innerHTML = `<p class="error">Error loading users</p>`;
+        container.innerHTML = `<p class="error">Error loading users: ${e.message}</p>`;
     }
 }
 
@@ -661,7 +661,7 @@ window.showUserModal = () => {
             const data = Object.fromEntries(formData.entries());
             data.role = 'ADMIN'; // Default
             try {
-                await apiCall('/users', 'POST', data);
+                await StorageManager.addItem('users', data);
                 closeModal();
                 showToast('User created');
                 loadModule('users');
@@ -674,9 +674,9 @@ window.showUserModal = () => {
 };
 
 window.deleteUser = async (id) => {
-    if (confirm('Are you sure?')) {
+    if (confirm('Are you sure you want to delete this user?')) {
         try {
-            await apiCall(`/users/${id}`, 'DELETE');
+            await StorageManager.deleteItem('users', id);
             showToast('User deleted');
             loadModule('users');
         } catch (err) {
@@ -689,7 +689,7 @@ window.deleteUser = async (id) => {
 // 2. Reviews
 async function loadReviews(container) {
     try {
-        const reviews = await apiCall('/reviews/admin', 'GET');
+        const reviews = await StorageManager.getData('reviews');
         window.cachedReviews = reviews;
         window.currentReviewFilter = window.currentReviewFilter || 'all';
 
@@ -762,11 +762,19 @@ window.viewReviewDetails = (id) => {
             <div class="review-media-grid">
                 <div class="media-item">
                     <label>Reviewer Photo</label>
-                    ${review.reviewerPhoto ? `<img src="${review.reviewerPhoto}" class="review-img-preview" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="no-img" style="display:none;">Broken Image</div>` : '<div class="no-img">No Photo</div>'}
+                    <img src="${review.reviewerPhoto ? (review.reviewerPhoto.startsWith('/') ? review.reviewerPhoto : '/uploads/' + review.reviewerPhoto) : ''}" 
+                         class="review-img-preview" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                         style="${review.reviewerPhoto ? '' : 'display:none;'}">
+                    <div class="no-img" style="${review.reviewerPhoto ? 'display:none;' : 'display:flex;'}">No Photo</div>
                 </div>
                 <div class="media-item">
                     <label>Company Logo</label>
-                    ${review.companyLogo ? `<img src="${review.companyLogo}" class="review-img-preview" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"><div class="no-img" style="display:none;">Broken Logo</div>` : '<div class="no-img">No Logo</div>'}
+                    <img src="${review.companyLogo ? (review.companyLogo.startsWith('/') ? review.companyLogo : '/uploads/' + review.companyLogo) : ''}" 
+                         class="review-img-preview" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                         style="${review.companyLogo ? '' : 'display:none;'}">
+                    <div class="no-img" style="${review.companyLogo ? 'display:none;' : 'display:flex;'}">No Logo</div>
                 </div>
             </div>
 
@@ -805,14 +813,14 @@ window.viewReviewDetails = (id) => {
         <style>
             .review-detail-modal { display: flex; flex-direction: column; gap: 1rem; }
             .modal-header-custom { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
-            .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+            .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; text-transform: capitalize; }
             .status-badge.pending { background: #fff7ed; color: #c2410c; }
             .status-badge.approved { background: #f0fdf4; color: #15803d; }
             .status-badge.rejected { background: #fef2f2; color: #b91c1c; }
             .review-media-grid { display: flex; gap: 1rem; margin-top: 0.5rem; }
             .media-item { flex: 1; text-align: center; background: #f9fafb; padding: 10px; border-radius: 6px; }
             .media-item label { display: block; font-size: 0.75rem; color: #6b7280; margin-bottom: 5px; }
-            .review-img-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #e5e7eb; }
+            .review-img-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #e5e7eb; margin: 0 auto; display: block; }
             .no-img { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #e5e7eb; border-radius: 50%; color: #9ca3af; margin: 0 auto; font-size: 0.7rem; }
             .review-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem; background: #f3f4f6; padding: 10px; border-radius: 6px; }
             .review-text-block { background: #fff; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px; }
@@ -825,23 +833,14 @@ window.viewReviewDetails = (id) => {
 };
 
 window.updateReviewStatus = async (id, status) => {
-    if (confirm(`Mark review as ${status}?`)) {
+    if (confirm(`Are you sure you want to mark this review as ${status}?`)) {
         try {
-            // Must allow partial updates via FormData or JSON. 
-            // Our controller expects multipart mostly for files, but handles JSON if no files? 
-            // The route expects Multer which handles multipart. 
-            // If we send JSON to a Multer route, it generally works if we don't send files, 
-            // BUT let's use FormData to be safe since the route is configured for it.
-
-            const formData = new FormData();
-            formData.append('status', status);
-
-            await apiCall(`/reviews/${id}`, 'PUT', formData, true);
+            await StorageManager.updateItem('reviews', id, { status });
             closeModal();
-            showToast(`Review ${status}`);
+            showToast(`Review successfully ${status}`);
             loadModule('reviews');
         } catch (err) {
-            alert('Error updating status');
+            alert('Error updating status: ' + (err.message || 'Unknown error'));
         }
     }
 };
@@ -890,13 +889,18 @@ window.showReviewModal = () => {
                 const logo = formData.get('companyLogo');
                 if (logo && logo.size === 0) formData.delete('companyLogo');
 
-                await apiCall('/reviews', 'POST', formData, true); // Multipart
-                // Since this uses relative paths for standard images, we might need a backend tweak or frontend proxy for uploads if they are stored in public/uploads.
-                // Assuming backend returns paths like /uploads/..., we can map them if needed or rely on static serving.
-                // In static mode, uploads are now in ./uploads, but API returns DB paths.
-                // We will rely on the backend returning relative paths or full URLs.
-                // If backend returns /uploads/..., and we serve admin from /src/admin, we might need ../uploads or ensure /uploads is served at root.
-                // For now, let's assume standard behavior.
+                const data = Object.fromEntries(formData.entries());
+                // For static mode, handle file object logic by generating dummy paths or reading as base64. 
+                // We'll just generate local paths to fulfill the upload path requirement.
+                if (data.reviewerPhoto instanceof File && data.reviewerPhoto.size > 0) {
+                    data.reviewerPhoto = `/uploads/${data.reviewerPhoto.name}`;
+                } else delete data.reviewerPhoto;
+
+                if (data.companyLogo instanceof File && data.companyLogo.size > 0) {
+                    data.companyLogo = `/uploads/${data.companyLogo.name}`;
+                } else delete data.companyLogo;
+
+                await StorageManager.addItem('reviews', data);
                 closeModal();
                 showToast('Review saved');
                 loadModule('reviews');
@@ -909,9 +913,14 @@ window.showReviewModal = () => {
 };
 
 window.deleteReview = async (id) => {
-    if (confirm('Delete review?')) {
-        await apiCall(`/reviews/${id}`, 'DELETE');
-        loadModule('reviews');
+    if (confirm('Are you sure you want to delete this review?')) {
+        try {
+            await StorageManager.deleteItem('reviews', id);
+            showToast('Review deleted');
+            loadModule('reviews');
+        } catch (err) {
+            alert('Error deleting: ' + err.message);
+        }
     }
 };
 
@@ -920,8 +929,8 @@ let cachedQueries = [];
 
 async function loadQueries(container) {
     try {
-        // Use the new standard endpoint
-        cachedQueries = await apiCall('/contact', 'GET');
+        // Use DataManager
+        cachedQueries = await StorageManager.getData('contact');
         // Sort newest first if not already
         cachedQueries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -995,10 +1004,9 @@ window.viewQuery = async (id) => {
     const query = cachedQueries.find(q => q.id === id);
     if (!query) return;
 
-    // Mark as read if not already
     if (query.status === 'Unread') {
         try {
-            await apiCall(`/contact/${id}/read`, 'PATCH');
+            await StorageManager.updateItem('contact', id, { status: 'Read' });
             query.status = 'Read';
             renderQueryTable(cachedQueries);
         } catch (e) { console.error('Failed to mark read', e); }
@@ -1027,14 +1035,14 @@ window.viewQuery = async (id) => {
 };
 
 window.deleteQuery = async (id, fromModal = false) => {
-    if (confirm('Delete query?')) {
+    if (confirm('Are you sure you want to delete this query?')) {
         try {
-            await apiCall(`/contact/${id}`, 'DELETE');
+            await StorageManager.deleteItem('contact', id);
             if (fromModal) closeModal();
             loadModule('queries');
             showToast('Query deleted');
         } catch (e) {
-            alert('Error deleting: ' + e.message);
+            alert('Error deleting query: ' + e.message);
         }
     }
 };
@@ -1044,7 +1052,7 @@ let cachedProjects = []; // Store for filtering
 
 async function loadProjects(container) {
     try {
-        cachedProjects = await apiCall('/projects', 'GET');
+        cachedProjects = await StorageManager.getData('projects');
         container.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                  <div class="filter-bar" style="margin-bottom: 0;">
@@ -1243,25 +1251,41 @@ window.showProjectModal = (project = null) => {
             // But I have text inputs.
 
             try {
-                const url = project ? `/projects/${project.id}` : '/projects';
-                const method = project ? 'PUT' : 'POST';
+                const data = Object.fromEntries(formData.entries());
 
-                await apiCall(url, method, formData, true); // multipart
+                // Static mode mock for images
+                data.images = existingImages;
+                newFiles.forEach(file => {
+                    data.images.push(`/uploads/${file.name}`);
+                });
+                data.image = data.images.length > 0 ? data.images[0] : null;
+
+                if (project) {
+                    await StorageManager.updateItem('projects', project.id, data);
+                } else {
+                    await StorageManager.addItem('projects', data);
+                }
+
                 closeModal();
                 showToast(project ? 'Project updated' : 'Project saved');
                 loadModule('projects');
             } catch (err) {
                 console.error(err);
-                alert('Error processing request');
+                alert('Error processing request: ' + (err.message || 'Unknown error'));
             }
         };
     });
 };
 
 window.deleteProject = async (id) => {
-    if (confirm('Delete project?')) {
-        await apiCall(`/projects/${id}`, 'DELETE');
-        loadModule('projects');
+    if (confirm('Are you sure you want to delete this project?')) {
+        try {
+            await StorageManager.deleteItem('projects', id);
+            showToast('Project deleted');
+            loadModule('projects');
+        } catch (err) {
+            alert('Error deleting project: ' + err.message);
+        }
     }
 };
 
@@ -1290,7 +1314,7 @@ let cachedVacancies = [];
 
 async function renderVacancies(container) {
     try {
-        cachedVacancies = await apiCall('/vacancies', 'GET');
+        cachedVacancies = await StorageManager.getData('vacancies');
         container.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                  <div class="filter-bar" style="margin-bottom: 0;">
@@ -1406,9 +1430,11 @@ window.showVacancyModal = (vacancy = null) => {
             const data = Object.fromEntries(formData.entries());
 
             try {
-                const url = vacancy ? `/vacancies/${vacancy.id}` : '/vacancies';
-                const method = vacancy ? 'PUT' : 'POST';
-                await apiCall(url, method, data);
+                if (vacancy) {
+                    await StorageManager.updateItem('vacancies', vacancy.id, data);
+                } else {
+                    await StorageManager.addItem('vacancies', data);
+                }
 
                 closeModal();
                 showToast(vacancy ? 'Vacancy updated' : 'Vacancy created');
@@ -1429,22 +1455,25 @@ window.openEditVacancy = (id) => {
 
 window.toggleVacancyStatus = async (id) => {
     try {
-        await apiCall(`/vacancies/${id}/toggle-status`, 'PATCH');
-        showToast('Status updated');
-        renderVacancies(document.getElementById('vacancies-container'));
+        const v = await StorageManager.getById('vacancies', id);
+        if (v) {
+            await StorageManager.updateItem('vacancies', id, { status: v.status === 'Open' ? 'Closed' : 'Open' });
+            showToast('Status updated');
+            renderVacancies(document.getElementById('vacancies-container'));
+        }
     } catch (err) {
-        alert('Error updating status');
+        alert('Error updating status: ' + err.message);
     }
 };
 
 window.deleteVacancy = async (id) => {
-    if (confirm('Delete this vacancy details?')) {
+    if (confirm('Are you sure you want to delete this vacancy?')) {
         try {
-            await apiCall(`/vacancies/${id}`, 'DELETE');
+            await StorageManager.deleteItem('vacancies', id);
             showToast('Vacancy deleted');
             renderVacancies(document.getElementById('vacancies-container'));
         } catch (err) {
-            alert('Error deleting vacancy');
+            alert('Error deleting vacancy: ' + err.message);
         }
     }
 };
@@ -1452,7 +1481,7 @@ window.deleteVacancy = async (id) => {
 // --- Applications Sub-module (Existing Logic moved here) ---
 async function renderApplications(container) {
     try {
-        const apps = await apiCall('/careers/admin', 'GET');
+        const apps = await StorageManager.getData('careers');
         container.innerHTML = `
             <div class="card">
                 <table class="data-table">
@@ -1480,14 +1509,14 @@ async function renderApplications(container) {
 }
 
 window.deleteApplication = async (id) => {
-    if (confirm('Delete application?')) {
+    if (confirm('Are you sure you want to delete this application?')) {
         try {
-            await apiCall(`/careers/admin/${id}`, 'DELETE');
+            await StorageManager.deleteItem('careers', id);
             showToast('Application deleted');
             // Refresh applications list
             renderApplications(document.getElementById('applications-container'));
         } catch (err) {
-            alert('Error deleting application');
+            alert('Error deleting application: ' + err.message);
         }
     }
 };
