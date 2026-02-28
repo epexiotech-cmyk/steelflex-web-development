@@ -220,13 +220,13 @@ async function loadModule(moduleId) {
             title.textContent = 'Dashboard';
 
             try {
-                // Fetch all data arrays via StorageManager for calculating live stats
+                // Fetch all data arrays via DataManager for calculating live stats
                 const [reviews, queries, careers, projects, users] = await Promise.all([
-                    StorageManager.getData('reviews'),
-                    StorageManager.getData('contact'),
-                    StorageManager.getData('careers'),
-                    StorageManager.getData('projects'),
-                    StorageManager.getData('users')
+                    DataManager.getAll('reviews'),
+                    DataManager.getAll('contact'),
+                    DataManager.getAll('careers'),
+                    DataManager.getAll('projects'),
+                    DataManager.getAll('users')
                 ]);
 
                 // Calculate counts directly from the active arrays
@@ -389,8 +389,8 @@ let cachedCareers = [];
 async function loadCareers(container) {
     try {
         const [applications, vacancies] = await Promise.all([
-            StorageManager.getData('careers'),
-            StorageManager.getData('vacancies')
+            DataManager.getAll('careers'),
+            DataManager.getAll('vacancies')
         ]);
 
         cachedCareers = applications; // Update cache
@@ -420,9 +420,7 @@ async function loadCareers(container) {
                                         <button class="btn-sm btn-secondary" onclick="toggleVacancyStatus('${v.id}')" title="Toggle Status">
                                             <i class="fas fa-sync-alt"></i>
                                         </button>
-                                        <button class="btn-sm btn-delete" onclick="deleteVacancy('${v.id}')" title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <button class="btn-sm btn-delete js-delete-btn" title="Delete" data-id="${v.id}" data-type="vacancies"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             `).join('')}
@@ -502,7 +500,7 @@ window.showVacancyModal = () => {
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
             try {
-                await apiCall('/vacancies', 'POST', data);
+                await DataManager.add('vacancies', data);
                 closeModal();
                 showToast('Vacancy created successfully');
                 loadModule('careers'); // Changed from 'vacancies'
@@ -515,7 +513,8 @@ window.showVacancyModal = () => {
 
 window.toggleVacancyStatus = async (id) => {
     try {
-        await apiCall(`/vacancies/${id}/toggle-status`, 'PATCH');
+        const v = await DataManager.getById('vacancies', id);
+ await DataManager.update('vacancies', id, { status: v.status === 'Open' ? 'Closed' : 'Open' });
         loadModule('careers'); // Changed from 'vacancies'
         showToast('Vacancy status updated');
     } catch (e) {
@@ -523,17 +522,7 @@ window.toggleVacancyStatus = async (id) => {
     }
 };
 
-window.deleteVacancy = async (id) => {
-    if (confirm('Delete this vacancy?')) {
-        try {
-            await apiCall(`/vacancies/${id}`, 'DELETE');
-            loadModule('careers'); // Changed from 'vacancies'
-            showToast('Vacancy deleted');
-        } catch (e) {
-            alert('Error deleting vacancy: ' + e.message);
-        }
-    }
-};
+// deleteVacancy removed, using event delegation
 
 function renderCareerRow(app) {
     let statusBadge = `<span class="badge badge-info is-light">${app.status || 'New'}</span>`;
@@ -564,7 +553,7 @@ function renderCareerRow(app) {
                         <a href="#" class="dropdown-item" onclick="updateCareerStatus('${app.id}', 'Interview'); return false;">Mark Interview</a>
                         <a href="#" class="dropdown-item" onclick="updateCareerStatus('${app.id}', 'Rejected'); return false;">Mark Rejected</a>
                         <div class="dropdown-divider" style="border-top:1px solid #eee; margin:5px 0;"></div>
-                        <a href="#" class="dropdown-item text-danger" onclick="deleteCareer('${app.id}'); return false;">Delete</a>
+                        <a href="#" class="dropdown-item text-danger js-delete-btn" data-id="${app.id}" data-type="careers">Delete</a>
                     </div>
                 </div>
             </td>
@@ -574,7 +563,7 @@ function renderCareerRow(app) {
 
 window.downloadCV = async (id) => {
     try {
-        const app = await StorageManager.getById('careers', id);
+        const app = await DataManager.getById('careers', id);
         if (!app || !app.cvData) {
             alert('File not available');
             return;
@@ -636,7 +625,7 @@ document.addEventListener('click', (e) => {
 
 window.updateCareerStatus = async (id, status) => {
     try {
-        await StorageManager.updateItem('careers', id, { status });
+        await DataManager.update('careers', id, { status });
         const app = cachedCareers.find(a => a.id === id);
         if (app) app.status = status;
         loadCareers(document.getElementById('content-area')); // Reload or re-render
@@ -646,20 +635,10 @@ window.updateCareerStatus = async (id, status) => {
     }
 };
 
-window.deleteCareer = async (id) => {
-    if (confirm('Are you sure you want to delete this application? This action cannot be undone.')) {
-        try {
-            await StorageManager.deleteItem('careers', id);
-            loadCareers(document.getElementById('content-area'));
-            showToast('Application deleted');
-        } catch (e) {
-            alert('Error deleting: ' + e.message);
-        }
-    }
-};
+// deleteCareer removed, using event delegation
 async function loadUsers(container) {
     try {
-        const users = await StorageManager.getData('users');
+        const users = await DataManager.getAll('users');
         container.innerHTML = `
             <button class="btn btn-primary" style="margin-bottom: 1rem;" onclick="showUserModal()">Add New Admin</button>
             <div class="card">
@@ -673,7 +652,7 @@ async function loadUsers(container) {
                                 <td>${u.userId}</td>
                                 <td>${u.role}</td>
                                 <td>
-                                    <button class="btn-sm btn-delete" onclick="deleteUser('${u.id}')"><i class="fas fa-trash"></i></button>
+                                    <button class="btn-sm btn-delete js-delete-btn" data-id="${u.id}" data-type="users"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -703,7 +682,7 @@ window.showUserModal = () => {
             const data = Object.fromEntries(formData.entries());
             data.role = 'ADMIN'; // Default
             try {
-                await StorageManager.addItem('users', data);
+                await DataManager.add('users', data);
                 closeModal();
                 showToast('User created');
                 loadModule('users');
@@ -715,23 +694,12 @@ window.showUserModal = () => {
     });
 };
 
-window.deleteUser = async (id) => {
-    if (confirm('Are you sure you want to delete this user?')) {
-        try {
-            await StorageManager.deleteItem('users', id);
-            showToast('User deleted');
-            loadModule('users');
-        } catch (err) {
-            console.error(err);
-            alert('Error deleting user: ' + (err.message || 'Unknown error'));
-        }
-    }
-};
+// deleteUser removed, using event delegation
 
 // 2. Reviews
 async function loadReviews(container) {
     try {
-        const allReviews = await StorageManager.getData('reviews');
+        const allReviews = await DataManager.getAll('reviews');
 
         // Data Normalization (Fix Existing Stored Data)
         window.cachedReviews = allReviews.map(r => {
@@ -764,7 +732,7 @@ async function loadReviews(container) {
                         <td><span style="color: ${statusColor}; font-weight: 600; text-transform: capitalize;">${r.status}</span></td>
                         <td>
                             <button class="btn-sm btn-edit" title="View Details" onclick="viewReviewDetails('${r.id}')"><i class="fas fa-eye"></i></button>
-                            <button class="btn-sm btn-delete" title="Delete" onclick="deleteReview('${r.id}')"><i class="fas fa-trash"></i></button>
+                            <button class="btn-sm btn-delete js-delete-btn" title="Delete" data-id="${r.id}" data-type="reviews"><i class="fas fa-trash"></i></button>
                         </td>
                     </tr>
                 `;
@@ -885,10 +853,11 @@ window.viewReviewDetails = (id) => {
 window.updateReviewStatus = async (id, status) => {
     if (confirm(`Are you sure you want to mark this review as ${status}?`)) {
         try {
-            await StorageManager.updateItem('reviews', id, { status });
+            await DataManager.update('reviews', id, { status });
             closeModal();
             showToast(`Review successfully ${status}`);
-            loadModule('reviews');
+            const v = document.getElementById('reviewStatusFilter') ? document.getElementById('reviewStatusFilter').value : 'all';
+            loadModule('reviews'); // refresh
         } catch (err) {
             alert('Error updating status: ' + (err.message || 'Unknown error'));
         }
@@ -969,7 +938,7 @@ window.showReviewModal = () => {
                 }
                 delete data.reviewImages; // Clean up old key
 
-                await StorageManager.addItem('reviews', data);
+                await DataManager.add('reviews', data);
                 closeModal();
                 showToast('Review saved');
                 loadModule('reviews');
@@ -981,17 +950,7 @@ window.showReviewModal = () => {
     });
 };
 
-window.deleteReview = async (id) => {
-    if (confirm('Are you sure you want to delete this review?')) {
-        try {
-            await StorageManager.deleteItem('reviews', id);
-            showToast('Review deleted');
-            loadModule('reviews');
-        } catch (err) {
-            alert('Error deleting: ' + err.message);
-        }
-    }
-};
+// deleteReview removed, using event delegation
 
 // 3. Contact Queries
 let cachedQueries = [];
@@ -999,7 +958,7 @@ let cachedQueries = [];
 async function loadQueries(container) {
     try {
         // Use DataManager
-        cachedQueries = await StorageManager.getData('contact');
+        cachedQueries = await DataManager.getAll('contact');
         // Sort newest first if not already
         cachedQueries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -1063,7 +1022,7 @@ function renderQueryTable(queries) {
             <td>${q.message.substring(0, 50)}...</td>
             <td>
                 <button class="btn-sm btn-edit" onclick="viewQuery('${q.id}')"><i class="fas fa-eye"></i></button>
-                <button class="btn-sm btn-delete" onclick="deleteQuery('${q.id}')"><i class="fas fa-trash"></i></button>
+                <button class="btn-sm btn-delete js-delete-btn" data-id="${q.id}" data-type="contact"><i class="fas fa-trash"></i></button>
             </td>
         </tr>
     `).join('');
@@ -1075,7 +1034,7 @@ window.viewQuery = async (id) => {
 
     if (query.status === 'Unread') {
         try {
-            await StorageManager.updateItem('contact', id, { status: 'Read' });
+            await DataManager.update('contact', id, { status: 'Read' });
             query.status = 'Read';
             renderQueryTable(cachedQueries);
         } catch (e) { console.error('Failed to mark read', e); }
@@ -1097,31 +1056,20 @@ window.viewQuery = async (id) => {
             </div>
         </div>
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1rem;">
-             <button class="btn btn-danger" onclick="deleteQuery('${query.id}', true)">Delete</button>
+             <button class="btn btn-danger js-delete-btn" data-id="${query.id}" data-type="contact">Delete</button>
              <button class="btn btn-secondary" onclick="closeModal()">Close</button>
         </div>
     `);
 };
 
-window.deleteQuery = async (id, fromModal = false) => {
-    if (confirm('Are you sure you want to delete this query?')) {
-        try {
-            await StorageManager.deleteItem('contact', id);
-            if (fromModal) closeModal();
-            loadModule('queries');
-            showToast('Query deleted');
-        } catch (e) {
-            alert('Error deleting query: ' + e.message);
-        }
-    }
-};
+// deleteQuery removed, using event delegation
 
 // 4. Projects
 let cachedProjects = []; // Store for filtering
 
 async function loadProjects(container) {
     try {
-        cachedProjects = await StorageManager.getData('projects');
+        cachedProjects = await DataManager.getAll('projects');
         container.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                  <div class="filter-bar" style="margin-bottom: 0;">
@@ -1186,7 +1134,7 @@ function renderProjectTable(projects) {
             <td><span style="color: ${p.status === 'Completed' ? 'var(--success)' : 'var(--warning)'}">${p.status}</span></td>
             <td>
                 <button class="btn-sm btn-edit" onclick="openEditProject('${p.id}')"><i class="fas fa-edit"></i></button>
-                <button class="btn-sm btn-delete" onclick="deleteProject('${p.id}')"><i class="fas fa-trash"></i></button>
+                <button class="btn-sm btn-delete js-delete-btn" data-id="${p.id}" data-type="projects"><i class="fas fa-trash"></i></button>
             </td>
         </tr>
     `).join('');
@@ -1334,9 +1282,9 @@ window.showProjectModal = (project = null) => {
                 data.image = data.images.length > 0 ? data.images[0] : null;
 
                 if (project) {
-                    await StorageManager.updateItem('projects', project.id, data);
+                    await DataManager.update('projects', project.id, data);
                 } else {
-                    await StorageManager.addItem('projects', data);
+                    await DataManager.add('projects', data);
                 }
 
                 closeModal();
@@ -1350,17 +1298,7 @@ window.showProjectModal = (project = null) => {
     });
 };
 
-window.deleteProject = async (id) => {
-    if (confirm('Are you sure you want to delete this project?')) {
-        try {
-            await StorageManager.deleteItem('projects', id);
-            showToast('Project deleted');
-            loadModule('projects');
-        } catch (err) {
-            alert('Error deleting project: ' + err.message);
-        }
-    }
-};
+// deleteProject removed, using event delegation
 
 // 5. Careers (Vacancies + Applications)
 async function loadCareers(container) {
@@ -1387,7 +1325,7 @@ let cachedVacancies = [];
 
 async function renderVacancies(container) {
     try {
-        cachedVacancies = await StorageManager.getData('vacancies');
+        cachedVacancies = await DataManager.getAll('vacancies');
         container.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                  <div class="filter-bar" style="margin-bottom: 0;">
@@ -1504,9 +1442,9 @@ window.showVacancyModal = (vacancy = null) => {
 
             try {
                 if (vacancy) {
-                    await StorageManager.updateItem('vacancies', vacancy.id, data);
+                    await DataManager.update('vacancies', vacancy.id, data);
                 } else {
-                    await StorageManager.addItem('vacancies', data);
+                    await DataManager.add('vacancies', data);
                 }
 
                 closeModal();
@@ -1528,9 +1466,9 @@ window.openEditVacancy = (id) => {
 
 window.toggleVacancyStatus = async (id) => {
     try {
-        const v = await StorageManager.getById('vacancies', id);
+        const v = await DataManager.getById('vacancies', id);
         if (v) {
-            await StorageManager.updateItem('vacancies', id, { status: v.status === 'Open' ? 'Closed' : 'Open' });
+            await DataManager.update('vacancies', id, { status: v.status === 'Open' ? 'Closed' : 'Open' });
             showToast('Status updated');
             renderVacancies(document.getElementById('vacancies-container'));
         }
@@ -1542,7 +1480,7 @@ window.toggleVacancyStatus = async (id) => {
 window.deleteVacancy = async (id) => {
     if (confirm('Are you sure you want to delete this vacancy?')) {
         try {
-            await StorageManager.deleteItem('vacancies', id);
+            await DataManager.delete('vacancies', id);
             showToast('Vacancy deleted');
             renderVacancies(document.getElementById('vacancies-container'));
         } catch (err) {
@@ -1554,7 +1492,7 @@ window.deleteVacancy = async (id) => {
 // --- Applications Sub-module (Existing Logic moved here) ---
 async function renderApplications(container) {
     try {
-        const apps = await StorageManager.getData('careers');
+        const apps = await DataManager.getAll('careers');
         container.innerHTML = `
             <div class="card">
                 <table class="data-table">
@@ -1586,7 +1524,7 @@ async function renderApplications(container) {
 window.deleteApplication = async (id) => {
     if (confirm('Are you sure you want to delete this application?')) {
         try {
-            await StorageManager.deleteItem('careers', id);
+            await DataManager.delete('careers', id);
             showToast('Application deleted');
             // Refresh applications list
             renderApplications(document.getElementById('applications-container'));
@@ -1623,4 +1561,33 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Start
+
+// --- Global Event Delegation for Delete Buttons ---
+document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.js-delete-btn');
+    if (!btn) return;
+    
+    const id = btn.getAttribute('data-id');
+    const type = btn.getAttribute('data-type');
+    
+    if (confirm(`Are you sure you want to delete this ${type}?`)) {
+        try {
+            await DataManager.delete(type, id);
+            showToast(`${type} deleted successfully`);
+            
+            // Re-render module immediately
+            if (type === 'reviews') loadModule('reviews');
+            else if (type === 'contact') loadModule('queries');
+            else if (type === 'projects') loadModule('projects');
+            else if (type === 'vacancies' || type === 'careers') loadModule('careers');
+            else if (type === 'users') loadModule('users');
+            
+            // closeModal just in case we are inside a modal
+            closeModal();
+        } catch (err) {
+            alert('Error deleting: ' + err.message);
+        }
+    }
+});
+
 init();
