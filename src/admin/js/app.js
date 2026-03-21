@@ -851,7 +851,8 @@ window.viewReviewDetails = (id) => {
 };
 
 window.updateReviewStatus = async (id, status) => {
-    if (confirm(`Are you sure you want to mark this review as ${status}?`)) {
+    window.customConfirm(`Are you sure you want to mark this review as ${status}?`, async (confirmed) => {
+        if (!confirmed) return;
         try {
             await DataManager.update('reviews', id, { status });
             closeModal();
@@ -861,7 +862,7 @@ window.updateReviewStatus = async (id, status) => {
         } catch (err) {
             alert('Error updating status: ' + (err.message || 'Unknown error'));
         }
-    }
+    });
 };
 
 window.showReviewModal = () => {
@@ -1478,7 +1479,8 @@ window.toggleVacancyStatus = async (id) => {
 };
 
 window.deleteVacancy = async (id) => {
-    if (confirm('Are you sure you want to delete this vacancy?')) {
+    window.customConfirm('Are you sure you want to delete this vacancy?', async (confirmed) => {
+        if (!confirmed) return;
         try {
             await DataManager.delete('vacancies', id);
             showToast('Vacancy deleted');
@@ -1486,7 +1488,7 @@ window.deleteVacancy = async (id) => {
         } catch (err) {
             alert('Error deleting vacancy: ' + err.message);
         }
-    }
+    });
 };
 
 // --- Applications Sub-module (Existing Logic moved here) ---
@@ -1522,7 +1524,8 @@ async function renderApplications(container) {
 }
 
 window.deleteApplication = async (id) => {
-    if (confirm('Are you sure you want to delete this application?')) {
+    window.customConfirm('Are you sure you want to delete this application?', async (confirmed) => {
+        if (!confirmed) return;
         try {
             await DataManager.delete('careers', id);
             showToast('Application deleted');
@@ -1531,7 +1534,7 @@ window.deleteApplication = async (id) => {
         } catch (err) {
             alert('Error deleting application: ' + err.message);
         }
-    }
+    });
 };
 
 // --- Modal Helper ---
@@ -1562,6 +1565,23 @@ document.addEventListener('keydown', (e) => {
 
 // Start
 
+window.customConfirm = (msg, callback) => {
+    const div = document.createElement('div');
+    div.style = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    div.innerHTML = `
+        <div style="background:white;padding:2rem;border-radius:8px;text-align:center;box-shadow:0 4px 6px rgba(0,0,0,0.1);max-width:400px;width:90%;">
+            <p style="margin-bottom:1.5rem;font-size:1.1rem;color:#333;">${msg}</p>
+            <div style="display:flex;gap:10px;justify-content:center;">
+                <button id="custom-confirm-yes" class="btn btn-danger">Yes, Delete</button>
+                <button id="custom-confirm-no" class="btn btn-secondary">Cancel</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(div);
+    document.getElementById('custom-confirm-yes').onclick = () => { div.remove(); callback(true); };
+    document.getElementById('custom-confirm-no').onclick = () => { div.remove(); callback(false); };
+};
+
 // --- Global Event Delegation for Delete Buttons ---
 document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.js-delete-btn');
@@ -1570,7 +1590,8 @@ document.addEventListener('click', async (e) => {
     const id = btn.getAttribute('data-id');
     const type = btn.getAttribute('data-type');
     
-    if (confirm(`Are you sure you want to delete this ${type}?`)) {
+    window.customConfirm(`Are you sure you want to delete this ${type}?`, async (confirmed) => {
+        if (!confirmed) return;
         try {
             await DataManager.delete(type, id);
             showToast(`${type} deleted successfully`);
@@ -1587,7 +1608,7 @@ document.addEventListener('click', async (e) => {
         } catch (err) {
             alert('Error deleting: ' + err.message);
         }
-    }
+    });
 });
 
 init();

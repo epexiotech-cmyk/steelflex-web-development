@@ -51,12 +51,83 @@ app.get(/^\/admin($|\/)/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// --- NEW DATA API ROUTES ---
+const apiRouter = express.Router();
+app.use('/api/data', apiRouter);
+
+const getDataFilePath = (type) => {
+    const fileMap = {
+        'reviews': 'reviews.json',
+        'contact': 'contact_queries.json',
+        'projects': 'projects.json',
+        'careers': 'careers.json',
+        'vacancies': 'vacancies.json',
+        'users': 'users.json'
+    };
+    return path.join(__dirname, 'public/data', fileMap[type] || `${type}.json`);
+};
+
+apiRouter.get('/:type', async (req, res) => {
+    const filePath = getDataFilePath(req.params.type);
+    if (!fs.existsSync(filePath)) return res.json([]);
+    try {
+        const data = await fs.promises.readFile(filePath, 'utf8');
+        res.json(JSON.parse(data || '[]'));
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+apiRouter.post('/:type', async (req, res) => {
+    const filePath = getDataFilePath(req.params.type);
+    try {
+        let items = [];
+        if (fs.existsSync(filePath)) {
+            items = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
+        }
+        items.push(req.body);
+        fs.writeFileSync(filePath, JSON.stringify(items, null, 2));
+        res.json({ success: true, item: req.body });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+apiRouter.put('/:type/:id', async (req, res) => {
+    const filePath = getDataFilePath(req.params.type);
+    try {
+        if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Data not found' });
+        let items = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
+        const index = items.findIndex(i => i.id == req.params.id);
+        if (index !== -1) items[index] = { ...items[index], ...req.body, updatedAt: new Date().toISOString() };
+        fs.writeFileSync(filePath, JSON.stringify(items, null, 2));
+        res.json({ success: true, item: items[index] });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+apiRouter.delete('/:type/:id', async (req, res) => {
+    const filePath = getDataFilePath(req.params.type);
+    try {
+        if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Data not found' });
+        let items = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
+        items = items.filter(i => i.id != req.params.id);
+        fs.writeFileSync(filePath, JSON.stringify(items, null, 2));
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+// ----------------------------
+
+
 // Start Server
 async function startServer() {
     try {
-        // Ensure data directories exist
+        // Ensure upload directories exist
         const dirsToCreate = [
-            path.join(__dirname, 'data'),
+            path.join(__dirname, 'public/data'),
             path.join(__dirname, 'public/uploads/projects'),
             path.join(__dirname, 'public/uploads/cvs'),
             path.join(__dirname, 'public/uploads/reviews')
@@ -67,20 +138,7 @@ async function startServer() {
             }
         });
 
-        // Initialize JSON files if they don't exist
-        const initFile = async (filePath, defaultData) => {
-            if (!fs.existsSync(filePath)) {
-                fs.writeFileSync(filePath, JSON.stringify(defaultData, null, 2));
-                console.log(`Created ${filePath}`);
-            }
-        };
-
-        await initFile(path.join(__dirname, 'data/users.json'), []);
-        await initFile(path.join(__dirname, 'data/reviews.json'), []);
-        await initFile(path.join(__dirname, 'data/contact_queries.json'), []);
-        await initFile(path.join(__dirname, 'data/projects.json'), []);
-        await initFile(path.join(__dirname, 'data/careers.json'), []);
-
+        // Legacy JSON file initialization removed for static mode
         // Legacy backups and seeders removed for static mode
 
         app.listen(PORT, () => {
