@@ -2,17 +2,20 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us | SteelFlex Structures</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SteelFlex Structures (I) Pvt. Ltd. | Premier PEB Manufacturer</title>
     <meta name="description"
-        content="Learn about SteelFlex Structures - a leader in industrial engineering and steel construction.">
+        content="SteelFlex Structures - End-to-end Pre-Engineered Building (PEB) solutions. Faster, Stronger, Smarter Steel Structures based in Central India.">
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <script src="/src/shared/storage.js"></script>
 </head>
 
 <body>
-
     <!-- Header -->
     <header class="main-header">
         <div class="container nav-container">
@@ -22,7 +25,7 @@
             <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html" class="active">About Us</a></li>
+                    <li><a href="about-us.html">About Us</a></li>
                     <li><a href="products-structures.html">Products & Structures</a></li>
                     <li><a href="capabilities.html">Capabilities</a></li>
                     <li><a href="machineries.html">Machineries</a></li>
@@ -34,814 +37,328 @@
         </div>
     </header>
 
-    <!-- Background Shapes -->
-    <div class="bg-shape-circle shape-top-right"></div>
+    <main class="index-page-wrapper">
+        <!-- 1. Hero Section (Exact Design) -->
+        <section id="hero" class="hero-exact">
+            <div class="hero-top-white-swoop"></div>
 
-    <!-- SECTION 1: HERO + IMAGE GRID (FREE FLOW) -->
-    <section class="hero-section">
-        <div class="hero-grid">
-            <div class="hero-content">
-                <h1 class="reveal-on-scroll">You can always count on <span>us</span> for excellence.</h1>
-                <p class="subheading reveal-on-scroll delay-1">Delivering reliable, technology-driven engineering
-                    solutions backed
-                    by experience,
-                    precision, and trust.</p>
-                <div style="margin-top: 40px;">
-                    <a href="capabilities.html" class="btn">Explore Capabilities</a>
-                    <!-- <button class="btn btn-secondary">Our Projects</button> -->
-                </div>
+            <div class="hero-yellow-shape"></div>
+            <div class="hero-image-shape">
+                <div class="hero-unskew-image"></div>
             </div>
 
-            <!-- Asymmetric Collage (Custom Depth Carousel) -->
-            <!-- About Us hero depth carousel -->
-            <div class="collage-container" id="heroCarousel">
-                <!-- Image Pool (6 Images) -->
-                <!-- 1. Start Main -->
-                <div class="collage-img img-main">
-                    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=800&q=80"
-                        alt="Industrial Engineer" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <!-- 2. Start Small (Front) -->
-                <div class="collage-img img-small-1">
-                    <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=400&q=80"
-                        alt="Steel Construction" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <!-- 3. Start Back (Behind Main) -->
-                <div class="collage-img img-small-2">
-                    <img src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&q=80"
-                        alt="Factory Detail" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <!-- 4. Hidden Pool -->
-                <div class="collage-img img-out">
-                    <img src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=800&q=80"
-                        alt="Steel Structure" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <!-- 5. Hidden Pool -->
-                <div class="collage-img img-out">
-                    <img src="https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80"
-                        alt="Rafters" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-                <!-- 6. Hidden Pool -->
-                <div class="collage-img img-out">
-                    <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
-                        alt="Warehouse" style="width:100%; height:100%; object-fit:cover;">
-                </div>
-            </div>
-
-            <script>
-                // Custom Depth Carousel Logic
-                (function () {
-                    const container = document.getElementById('heroCarousel');
-                    const images = Array.from(container.querySelectorAll('.collage-img'));
-
-                    // State Definitions based on CSS classes
-                    // Order: Back -> Main -> Small -> Out -> Out -> Out
-                    // We rotate these states to the right to simulate forward flow?
-                    // Let's trace:
-                    // Current: [Main, Small1, Small2, Out, Out, Out] relative to indices provided in HTML
-                    // HTML Order: 0:Main, 1:Small1, 2:Small2, 3:Out, 4:Out, 5:Out
-
-                    // Desired Flow:
-                    // Small2 (Back) -> moves to Main
-                    // Main -> moves to Small1
-                    // Small1 -> moves to Out
-                    // Out -> moves to Small2 (Back)
-
-                    // So, if we list the classes in "flow order": 
-                    // [img-small-2, img-main, img-small-1, img-out, img-out, img-out]
-
-                    // At Step 0:
-                    // Image 2 has img-small-2
-                    // Image 0 has img-main
-                    // Image 1 has img-small-1
-                    // Images 3,4,5 have img-out
-
-                    // At Step 1:
-                    // Image 2 should have img-main
-                    // Image 0 should have img-small-1
-                    // Image 1 should have img-out
-
-                    // It seems the assignment of classes shifts to the "next image in logical queue".
-                    // But effectively, we can just maintain an array of state classes and shift it.
-
-                    // Initial Map corresponding to DOM order [0, 1, 2, 3, 4, 5]:
-                    let stateClasses = [
-                        'img-main',     // DOM 0
-                        'img-small-1',  // DOM 1
-                        'img-small-2',  // DOM 2
-                        'img-out',      // DOM 3
-                        'img-out',      // DOM 4
-                        'img-out'       // DOM 5
-                    ];
-
-                    let interval;
-                    const DURATION = 4500;
-
-                    function rotateCarousel() {
-                        // We want 
-                        // DOM 0 (Main) -> becomes Small-1
-                        // DOM 1 (Small-1) -> becomes Out
-                        // DOM 2 (Small-2/Back) -> becomes Main
-                        // DOM 3 (Out) -> becomes Small-2/Back ?? (If it was next in line)
-
-                        // We need to define the "Predecessor" chain.
-                        // Main comes from Back.
-                        // Back comes from Out.
-                        // Small comes from Main.
-                        // Out comes from Small.
-
-                        // Let's shift the array of classes.
-                        // If we shift the assignment:
-                        // 'img-main' goes to the element that WAS 'img-small-2'.
-                        // 'img-small-1' goes to the element that WAS 'img-main'.
-                        // 'img-out' goes to the element that WAS 'img-small-1'.
-                        // 'img-small-2' goes to the element that WAS 'img-out'.
-
-                        // This means the class `img-main` moves to a specific target.
-                        // But simpler: just cycle the array of classes relative to the DOM elements.
-                        // If we Unshift (add to front) and Pop (remove from end)?
-                        // Let's test:
-                        // Current: [Main, Small1, Small2, Out, Out, Out]
-                        // Pop -> Out. Unshift -> [Out, Main, Small1, Small2, Out, Out]
-                        // DOM 0 gets Out. (Main -> Out). Wait, Main should go to Small1.
-
-                        // Let's try Shift (remove first) and Push (add to end)?
-                        // Remove Main. Shifted: [Small1, Small2, Out, Out, Out]. Push Main -> [Small1, Small2, Out, Out, Out, Main].
-                        // DOM 0 gets Small1. (Main -> Small1). YES.
-                        // DOM 1 gets Small2. (Small1 -> Small2). NO. Small1 should go to Out.
-
-                        // Okay, the array shouldn't be mapped 1:1 to DOM index if the sequence isn't linear in DOM.
-                        // But we can just enforce the sequence via the array.
-                        // Sequence of lifecycle: Back -> Main -> Front -> Out -> Out -> Out...
-                        // Cycle: img-small-2 -> img-main -> img-small-1 -> img-out -> img-out -> img-out
-
-                        // We want the element that HAS `img-small-2` to GET `img-main`.
-                        // The element that HAS `img-main` to GET `img-small-1`.
-
-                        // So the state transforms:
-                        // img-small-2 => img-main
-                        // img-main => img-small-1
-                        // img-small-1 => img-out
-                        // img-out (last) => img-small-2
-
-                        // Update the array `stateClasses`.
-                        // We need to find the index of each class type and swap them? No.
-                        // We have 6 elements. Each currently holds a state.
-                        // Let's compute next state for each element.
-
-                        // Transformation Map:
-                        // 'img-main' -> 'img-small-1'
-                        // 'img-small-1' -> 'img-out'
-                        // 'img-small-2' -> 'img-main'
-                        // 'img-out' -> 'img-out' (stay out) until... queue?
-
-                        // This implies a queue.
-                        // Images in pool: [0, 1, 2, 3, 4, 5]
-                        // Slots: [Back, Main, Front, Out1, Out2, Out3]
-                        // Slot 0 (Back): Holds Image X
-                        // Slot 1 (Main): Holds Image Y
-                        // Slot 2 (Front): Holds Image Z
-                        // ...
-
-                        // Rotation:
-                        // Slot 1 (Main) content moves to Slot 2 (Front).
-                        // Slot 2 (Front) content moves to Slot 3 (Out).
-                        // Slot 0 (Back) content moves to Slot 1 (Main).
-                        // Slot 5 (Last Out) content moves to Slot 0 (Back).
-
-                        // So we rotate the CONTENT of the slots.
-                        // `slots` array holds the Images (DOM Elements).
-                        // `[ImgAtBack, ImgAtMain, ImgAtFront, ImgOut1, ImgOut2, ImgOut3]`
-
-                        // Initial Slots based on HTML:
-                        // ImgAtBack = DOM 2
-                        // ImgAtMain = DOM 0
-                        // ImgAtFront = DOM 1
-                        // ImgOut... = DOM 3, 4, 5
-
-                        let slots = [
-                            images[2], // Back
-                            images[0], // Main
-                            images[1], // Front (Small-1)
-                            images[3], // Out
-                            images[4], // Out
-                            images[5]  // Out
-                        ];
-
-                        // Rotate slots array: Shift right?
-                        // New Back = Old Last Out (Slot 5)
-                        // New Main = Old Back (Slot 0)
-                        // New Front = Old Main (Slot 1)
-                        // ...
-
-                        // So: [5, 0, 1, 2, 3, 4]
-                        // Pop last element, Unshift to front.
-                        const last = slots.pop();
-                        slots.unshift(last);
-
-                        // Now Apply Classes based on new Slot Roles
-                        // Slot 0: 'img-small-2' (Back)
-                        // Slot 1: 'img-main'
-                        // Slot 2: 'img-small-1' (Front)
-                        // Slot 3+: 'img-out'
-
-                        slots.forEach((img, index) => {
-                            // Reset classes
-                            img.className = 'collage-img';
-
-                            if (index === 0) img.classList.add('img-small-2');
-                            else if (index === 1) img.classList.add('img-main');
-                            else if (index === 2) img.classList.add('img-small-1');
-                            else img.classList.add('img-out');
-                        });
-                    }
-
-                    function startRotation() {
-                        interval = setInterval(rotateCarousel, DURATION);
-                    }
-
-                    function stopRotation() {
-                        clearInterval(interval);
-                    }
-
-                    // Start
-                    startRotation();
-
-                    // Hover Events
-                    container.addEventListener('mouseenter', stopRotation);
-                    container.addEventListener('mouseleave', startRotation);
-
-                    // Initial Setup (to sync our logic var with reality)
-                    // We constructed `slots` manually above.
-                    // But `rotateCarousel` relies on the `slots` variable being persistent.
-                    // So we must hoist `slots` to outer scope.
-
-                    // Let's redefine `slots` in the outer scope.
-                    // RE-INIT SLOTS Correctly:
-                    // DOM: 0=Main, 1=Front, 2=Back.
-                    // Slots desired: [Back, Main, Front, Out, Out, Out]
-                    // So: [images[2], images[0], images[1], images[3], images[4], images[5]]
-
-                    // We need to store this persistent array.
-                    container.slots = [
-                        images[2],
-                        images[0],
-                        images[1],
-                        images[3],
-                        images[4],
-                        images[5]
-                    ];
-
-                    // Overwrite local function to use container.slots
-                    container.rotateFn = function () {
-                        const s = container.slots;
-                        const last = s.pop();
-                        s.unshift(last);
-
-                        s.forEach((img, index) => {
-                            img.className = 'collage-img'; // reset base
-                            if (index === 0) img.classList.add('img-small-2');
-                            else if (index === 1) img.classList.add('img-main');
-                            else if (index === 2) img.classList.add('img-small-1');
-                            else img.classList.add('img-out');
-                        });
-                    };
-
-                    interval = setInterval(container.rotateFn, DURATION);
-
-                    container.addEventListener('mouseenter', () => clearInterval(interval));
-                    container.addEventListener('mouseleave', () => interval = setInterval(container.rotateFn, DURATION));
-                })();
-            </script>
-        </div>
-    </section>
-    </div>
-    </section>
-
-    <!-- SECTION 2: TRUSTED BY PARTNERS (CAROUSEL) -->
-    <section class="partners-section">
-        <div class="container">
-            <h3 class="partners-title reveal-on-scroll">Trusted by partners across industries</h3>
-
-            <div class="logo-carousel">
-                <div class="logo-track">
-                    <!-- Original Set -->
-                    <!-- Replace with actual partner logo -->
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=AeroDynamics" alt="AeroDynamics"
-                        class="partner-logo">
-                    <!-- Replace with actual partner logo -->
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=BuildCorp" alt="BuildCorp"
-                        class="partner-logo">
-                    <!-- Replace with actual partner logo -->
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=SteelWorks" alt="SteelWorks"
-                        class="partner-logo">
-                    <!-- Replace with actual partner logo -->
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=InfraTech" alt="InfraTech"
-                        class="partner-logo">
-                    <!-- Replace with actual partner logo -->
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=MegaConstruct" alt="MegaConstruct"
-                        class="partner-logo">
-                    <!-- Replace with actual partner logo -->
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=GlobalGrid" alt="GlobalGrid"
-                        class="partner-logo">
-                    <!-- Replace with actual partner logo -->
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=UrbanForge" alt="UrbanForge"
-                        class="partner-logo">
-
-                    <!-- Duplicated Set for Infinite Loop -->
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=AeroDynamics" alt="AeroDynamics"
-                        class="partner-logo">
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=BuildCorp" alt="BuildCorp"
-                        class="partner-logo">
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=SteelWorks" alt="SteelWorks"
-                        class="partner-logo">
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=InfraTech" alt="InfraTech"
-                        class="partner-logo">
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=MegaConstruct" alt="MegaConstruct"
-                        class="partner-logo">
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=GlobalGrid" alt="GlobalGrid"
-                        class="partner-logo">
-                    <img src="https://placehold.co/200x80/e2e6ed/264796?text=UrbanForge" alt="UrbanForge"
-                        class="partner-logo">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION 3: COMPANY SNAPSHOT / STATS (FLOATING LINE) -->
-    <!-- SECTION 3: COMPANY SNAPSHOT / ARC METRICS (STORY) -->
-    <section class="arc-section">
-        <div class="container arc-container">
-            <!-- The Dotted Semi-Circle Track -->
-            <div class="arc-track reveal-on-scroll"></div>
-
-            <!-- Center Anchor -->
-            <div class="arc-center-anchor-v2 reveal-on-scroll">
-                <!-- Visual Anchor -->
-                <div class="arc-center-image">
-                    <img id="arcCenterImg"
-                        src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=400&q=80"
-                        alt="Engineering Excellence">
-                </div>
-                <h3 id="arcCenterTitle">Engineering Excellence</h3>
-                <p id="arcCenterDesc">Experience, execution, and expertise.</p>
-            </div>
-
-            <!-- Item 1: 20+ Years -->
-            <div class="arc-item pos-1 reveal-on-scroll delay-1" data-center-title="Built on Experience"
-                data-center-desc="Over two decades of hands-on industrial engineering, project execution, and continuous learning."
-                data-center-img="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=400&q=80">
-                <span class="arc-emoji">🕰️</span>
-                <span class="arc-num">20+</span>
-                <span class="arc-label">Years of Exp.</span>
-                <!-- Kept small story for local context if needed, but Center is now main -->
-                <p class="arc-story">Decades of industrial expertise.</p>
-            </div>
-
-            <!-- Item 2: 500+ Projects -->
-            <div class="arc-item pos-2 reveal-on-scroll delay-2" data-center-title="Proven at Scale"
-                data-center-desc="Successfully delivered 500+ projects across diverse industrial and infrastructure environments."
-                data-center-img="https://images.unsplash.com/photo-1541976544383-304bd921d429?auto=format&fit=crop&w=400&q=80">
-                <span class="arc-emoji">🏗️</span>
-                <span class="arc-num">500+</span>
-                <span class="arc-label">Projects</span>
-                <p class="arc-story">Executed across diverse sectors.</p>
-            </div>
-
-            <!-- Item 3: 12 Industries -->
-            <div class="arc-item pos-3 reveal-on-scroll delay-3" data-center-title="Industry Versatility"
-                data-center-desc="Engineering solutions tailored for manufacturing, infrastructure, energy, logistics, and more."
-                data-center-img="https://images.unsplash.com/photo-1581091226825-c6a89e7e4801?auto=format&fit=crop&w=400&q=80">
-                <span class="arc-emoji">🏭</span>
-                <span class="arc-num">12</span>
-                <span class="arc-label">Industries</span>
-                <p class="arc-story">Manufacturing to infrastructure.</p>
-            </div>
-
-            <!-- Item 4: 50+ Experts -->
-            <div class="arc-item pos-4 reveal-on-scroll delay-4" data-center-title="People Who Engineer"
-                data-center-desc="A multidisciplinary team of engineers, designers, and specialists driving precision."
-                data-center-img="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=400&q=80">
-                <span class="arc-emoji">👷</span>
-                <span class="arc-num">50+</span>
-                <span class="arc-label">Experts</span>
-                <p class="arc-story">Multidisciplinary precision team.</p>
-            </div>
-
-            <!-- Item 5: 1000+ MT Monthly Capacity -->
-            <div class="arc-item pos-5 reveal-on-scroll delay-5" data-center-title="Production Power"
-                data-center-desc="State-of-the-art manufacturing facility with a monthly capacity of over 1000 MT."
-                data-center-img="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=400&q=80">
-                <span class="arc-emoji">⚙️</span>
-                <span class="arc-num">1000+ MT</span>
-                <span class="arc-label">Monthly Capacity</span>
-                <p class="arc-story">High-volume monthly production.</p>
-            </div>
-
-            <!-- Item 6: Pan India Presence -->
-            <div class="arc-item pos-6 reveal-on-scroll delay-1" data-center-title="Nationwide Reach"
-                data-center-desc="Delivering excellence across the country with a robust pan-India logistics and support network."
-                data-center-img="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=400&q=80">
-                <span class="arc-emoji">🇮🇳</span>
-                <span class="arc-num">Pan India</span>
-                <span class="arc-label">Presence</span>
-                <p class="arc-story">Serving clients nationwide.</p>
-            </div>
-        </div>
-
-        <script>
-            (function () {
-                const centerTitle = document.getElementById('arcCenterTitle');
-                const centerDesc = document.getElementById('arcCenterDesc');
-                const centerImg = document.getElementById('arcCenterImg');
-                const arcItems = document.querySelectorAll('.arc-item');
-
-                // Store defaults
-                const defaultTitle = centerTitle.innerText;
-                const defaultDesc = centerDesc.innerText;
-                const defaultImgSrc = centerImg.src;
-
-                function updateCenter(title, desc, imgSrc) {
-                    // Mobile check: No interaction on small screens
-                    if (window.innerWidth < 900) return;
-
-                    // Fade Out Elements
-                    centerTitle.style.opacity = '0';
-                    centerDesc.style.opacity = '0';
-                    centerImg.style.opacity = '0.5'; // Don't full hide image, just dim
-
-                    centerTitle.style.transform = 'translateY(5px)';
-                    centerDesc.style.transform = 'translateY(5px)';
-
-                    setTimeout(() => {
-                        // Update Content
-                        centerTitle.innerText = title;
-                        centerDesc.innerText = desc;
-                        if (imgSrc) centerImg.src = imgSrc;
-
-                        // Fade In
-                        centerTitle.style.opacity = '1';
-                        centerDesc.style.opacity = '1';
-                        centerImg.style.opacity = '1';
-
-                        centerTitle.style.transform = 'translateY(0)';
-                        centerDesc.style.transform = 'translateY(0)';
-                    }, 250); // Wait for transition
-                }
-
-                // Hover Events
-                arcItems.forEach(item => {
-                    item.addEventListener('mouseenter', () => {
-                        const newTitle = item.getAttribute('data-center-title');
-                        const newDesc = item.getAttribute('data-center-desc');
-                        const newImg = item.getAttribute('data-center-img');
-                        if (newTitle && newDesc) {
-                            updateCenter(newTitle, newDesc, newImg);
-                        }
-                    });
-
-                    item.addEventListener('mouseleave', () => {
-                        // Revert to default
-                        updateCenter(defaultTitle, defaultDesc, defaultImgSrc);
-                    });
-                });
-
-            })();
-        </script>
-    </section>
-
-    <!-- SECTION 4: WHO WE ARE (TECH REDESIGN) -->
-    <section class="container who-section-tech">
-        <!-- Section Header -->
-        <div class="who-header">
-            <h2 class="reveal-on-scroll">Know Steelflex Structures</h2>
-            <p class="reveal-on-scroll delay-1">Where innovation meets reliability in the world of pre-engineered steel
-                buildings.
-            </p>
-        </div>
-
-        <!-- Redesigned Grid Layout -->
-        <div class="intro-centered reveal-on-scroll">
-            <h3>Redefining excellence in manufacturing.</h3>
-            <p>
-                Based in <strong>Vadodara-Por</strong>, our world-class facility drives the industry forward.
-                We combine cutting-edge technology with a client-centric philosophy to deliver future-proof steel
-                solutions.
-            </p>
-            <p style="margin-top: 20px;">
-                At the core of Steelflex Structures are our values—<strong>Integrity, Innovation, and Customer
-                    Satisfaction</strong>.
-                Innovation is more than a buzzword for us; it’s a way of life. We invest in the latest methodologies to
-                ensure
-                our clients receive solutions that are not only state-of-the-art but also sustainable and reliable.
-            </p>
-        </div>
-
-        <div class="facts-grid" data-stagger>
-            <!-- Fact Card 1 -->
-            <div class="fact-card reveal-on-scroll">
-                <div class="fact-icon">🏭</div>
-                <h4>Massive Capacity</h4>
-                <div class="fact-number">16,000 MT</div>
-                <p>Annual Production Capacity</p>
-                <ul class="fact-list">
-                    <li>8,000 MT Primary Members</li>
-                    <li>4,000 MT Secondary Structure</li>
-                    <li>4,000 MT Color Coated</li>
-                </ul>
-            </div>
-
-            <!-- Fact Card 2 -->
-            <div class="fact-card highlight-card">
-                <div class="fact-icon">🏛️</div>
-                <h4>Decades of Legacy</h4>
-                <div class="fact-number">50+ Years</div>
-                <p>Trust & Excellence</p>
-                <div class="fact-desc">
-                    Backed by <br><strong>ISKO Group</strong> (50+ Years) & <br><strong>Samirika Group</strong> (13+
-                    Years).
-                </div>
-            </div>
-
-            <!-- Fact Card 3 -->
-            <div class="fact-card reveal-on-scroll">
-                <div class="fact-icon">🧱</div>
-                <h4>Robust Stock</h4>
-                <div class="fact-number">3,000 MT</div>
-                <p>Raw Material Ready Stock</p>
-                <div class="fact-desc">
-                    Uninterrupted supply chain ensuring smooth, timely execution for urgent demands.
-                </div>
-            </div>
-        </div>
-
-        </div>
-    </section>
-
-    <!-- SECTION 5: WHAT POWERS US (NEW SECTION) -->
-    <section class="powers-section">
-        <div class="container">
-            <div class="powers-header reveal-on-scroll">
-                <h2 class="what-powers-title">What Powers Us</h2>
-            </div>
-
-            <div class="powers-grid" data-stagger>
-                <!-- Power 1 -->
-                <div class="power-block power-item reveal-on-scroll">
-                    <div class="power-line">
-                        <span class="power-line-fill"></span>
-                    </div>
-                    <span class="power-icon power-emoji">🤖</span>
-                    <span class="power-title">Advanced Robotics</span>
-                    <span class="power-desc">Automated precision fabrication for zero-error components.</span>
-                </div>
-                <!-- Power 2 -->
-                <div class="power-block power-item reveal-on-scroll">
-                    <div class="power-line">
-                        <span class="power-line-fill"></span>
-                    </div>
-                    <span class="power-icon power-emoji">🧩</span>
-                    <span class="power-title">4D Simulation</span>
-                    <span class="power-desc">Virtual construction planning to optimize erection timelines.</span>
-                </div>
-                <!-- Power 3 -->
-                <div class="power-block power-item reveal-on-scroll">
-                    <div class="power-line">
-                        <span class="power-line-fill"></span>
-                    </div>
-                    <span class="power-icon power-emoji">♻️</span>
-                    <span class="power-title">Sustainable Steel</span>
-                    <span class="power-desc">Commitment to 100% recyclable materials and green processes.</span>
-                </div>
-                <!-- Power 4 -->
-                <div class="power-block power-item reveal-on-scroll">
-                    <div class="power-line">
-                        <span class="power-line-fill"></span>
-                    </div>
-                    <span class="power-icon power-emoji">🦺</span>
-                    <span class="power-title">Global Safety Standards</span>
-                    <span class="power-desc">A zero-accident philosophy woven into every operation.</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION 5: STRATEGIC BLOCK (VISION, MISSION, GOALS) -->
-    <section class="container strategic-section">
-
-        <!-- VISION: Visual Left, Content Right -->
-        <div class="vm-block reveal-on-scroll">
-            <div class="vm-visual vm-img-hover">
-                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80"
-                    alt="Future Vision">
-            </div>
-            <div class="vm-content">
-                <h3 class="vm-title"><span class="title-emoji"></span>🚀</span> Our Vision</h3>
-                <div class="mission-list">
-                    <div class="mission-item">
-                        <span>🏗️</span> Provide fast, easy, and unique pre-engineered steel structures.
-                    </div>
-                    <div class="mission-item">
-                        <span>⚙️</span> Implement manufacturing strategies to meet personalized infrastructural needs.
-                    </div>
-                    <div class="mission-item">
-                        <span>♻️</span> Steel is 100% recyclable, contributing to a circular economy.
-                    </div>
-                    <div class="mission-item">
-                        <span>🌐</span> Establish a global engineering footprint with localized expertise.
-                    </div>
-                    <div class="mission-item">
-                        <span>🧠</span> Pioneer the integration of AI and smart automation in structural design.
-                    </div>
-                    <div class="mission-item">
-                        <span>🏛️</span> Create iconic, durable structures that define modern industrial skylines.
+            <div class="container hero-container">
+                <div class="hero-text-content">
+                    <h1><span class="highlight-yellow">PREMIUM STEEL</span><br />& FABRICATION<br />SOLUTIONS</h1>
+                    <p class="hero-sub">Custom Design • Precision Work • Reliable Execution. Leading the industry
+                        with unmatched quality and structural integrity.</p>
+                    <div class="hero-buttons">
+                        <a href="contact-us.html" class="btn btn-yellow-exact">Get Started</a>
+                        <a href="capabilities.html" class="btn-text-link">Learn More</a>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- MISSION: Content Left, Visual Right -->
-        <div class="vm-block reversed reveal-on-scroll">
-            <div class="vm-content">
-                <h3 class="vm-title"><span class="title-emoji">🎯</span> Our Mission</h3>
-                <div class="mission-list">
-                    <div class="mission-item">
-                        <span>🏢</span> Replace conventional structures with green, sustainable buildings.
+        <!-- Why Choose PEB — Apple Sticky Scroll -->
+        <section class="peb-apple">
+
+            <!-- Sticky viewport: full 100vh, always visible while scrolling -->
+            <div class="peb-sticky">
+                <div class="peb-sticky-label">Why Choose PEB?</div>
+
+                <!-- Left: full-height image -->
+                <img id="peb-img" src="/uploads/projects/1771593106869-458283185.webp" alt="PEB Construction">
+                <div class="peb-img-overlay"></div>
+
+                <!-- Right: text panel, all steps stacked here -->
+                <div class="peb-text-panel">
+
+                    <div class="peb-step active" data-img="/uploads/projects/1771593106869-458283185.webp">
+                        <span class="peb-step-num">01</span>
+                        <h2>Faster Construction</h2>
+                        <p>Pre-Engineered Buildings are designed and manufactured off-site, reducing on-site
+                            construction time by up to 60% compared to conventional structural steel. Earlier occupancy
+                            means faster return on investment.</p>
                     </div>
-                    <div class="mission-item">
-                        <span>⏱️</span> Ensure products and services are delivered on time, every time.
+
+                    <div class="peb-step" data-img="/uploads/projects/1771593146852-276015895.webp">
+                        <span class="peb-step-num">02</span>
+                        <h2>Cost Efficiency</h2>
+                        <p>Through optimized structural designs, automated factory production, and minimal on-site
+                            material waste, PEB systems dramatically lower raw material costs and reduce heavy labor
+                            expenses.</p>
                     </div>
-                    <div class="mission-item">
-                        <span>🌍</span> Conform to international standards and zero environmental damage.
+
+                    <div class="peb-step" data-img="/uploads/projects/1771593146882-860268963.webp">
+                        <span class="peb-step-num">03</span>
+                        <h2>Flexible Design</h2>
+                        <p>Our steel buildings offer clear-span architecture without interior columns. This highly
+                            adaptable framework allows for seamless future expansions and fully customized interior
+                            layouts.</p>
                     </div>
-                    <div class="mission-item">
-                        <span>🛡️</span> Prioritize a zero-accident culture in manufacturing and erection.
+
+                    <div class="peb-step" data-img="/uploads/projects/1771593146943-6072997.webp">
+                        <span class="peb-step-num">04</span>
+                        <h2>Structural Strength</h2>
+                        <p>Engineered using high-tensile premium steel, our PEB frameworks offer maximum resilience
+                            against severe weather conditions, heavy wind loads, and high-impact seismic activity.</p>
                     </div>
-                    <div class="mission-item">
-                        <span>💰</span> Optimize structural designs for maximum cost-efficiency and durability.
+
+                    <div class="peb-step" data-img="/uploads/projects/1771593328511-817269548.webp">
+                        <span class="peb-step-num">05</span>
+                        <h2>Sustainability</h2>
+                        <p>Steel is 100% recyclable. From energy-efficient insulated panels to dry-construction methods,
+                            PEB significantly reduces carbon footprint and long-term environmental impact.</p>
                     </div>
-                    <div class="mission-item">
-                        <span>🤝</span> Foster long-term collaborative partnerships with every client.
+
+                    <div class="peb-step" data-img="/uploads/projects/1771593328630-474459650.webp">
+                        <span class="peb-step-num">06</span>
+                        <h2>Low Maintenance</h2>
+                        <p>Featuring corrosion-resistant coatings and heavy-duty steel panels, our buildings are built
+                            for longevity — eliminating the need for routine upkeep and costly maintenance cycles.</p>
                     </div>
+
                 </div>
             </div>
-            <div class="vm-visual vm-img-hover">
-                <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=800&q=80"
-                    alt="Mission Execution">
-            </div>
-        </div>
 
-        <!-- GOALS: New Horizontal Block -->
-        <div class="goals-block">
-            <div class="goals-header">
-                <h3 class="vm-title"><span class="title-emoji">🏆</span> Our Goals</h3>
-            </div>
-            <div class="goals-grid" data-stagger>
-                <!-- Goal 1 -->
-                <div class="goal-card goal-card-interaction reveal-on-scroll">
-                    <span class="goal-emoji">📈</span>
-                    <span class="goal-title">Sustainable Growth</span>
-                    <span class="goal-desc">Expand capacity while maintaining quality and efficiency.</span>
-                </div>
-                <!-- Goal 2 -->
-                <div class="goal-card goal-card-interaction reveal-on-scroll">
-                    <span class="goal-emoji">🧠</span>
-                    <span class="goal-title">Technology Leadership</span>
-                    <span class="goal-desc">Adopt smarter tools, automation, and data-driven processes.</span>
-                </div>
-                <!-- Goal 3 -->
-                <div class="goal-card goal-card-interaction reveal-on-scroll">
-                    <span class="goal-emoji">🌍</span>
-                    <span class="goal-title">Industry Impact</span>
-                    <span class="goal-desc">Deliver infrastructure that supports long-term development.</span>
-                </div>
-                <!-- Goal 4 -->
-                <div class="goal-card goal-card-interaction reveal-on-scroll">
-                    <span class="goal-emoji">🤝</span>
-                    <span class="goal-title">Client Trust</span>
-                    <span class="goal-desc">Building relationships based on transparency and reliability.</span>
-                </div>
-            </div>
-        </div>
+            <!-- Invisible scroll spacer — drives scroll progress for JS -->
+            <div class="peb-content" aria-hidden="true"></div>
 
-    </section>
+        </section>
 
-    <!-- SECTION 6: WHY CHOOSE US (REDESIGN) -->
-    <section class="why-section-redesign">
-        <div class="container">
-            <div class="why-header">
-                <h2>Why Choose Us</h2>
-                <p class="why-subtext">What sets Steelflex apart in industrial engineering.</p>
-            </div>
-
-            <div class="why-grid-new" data-stagger>
-                <!-- Differentiator 1 -->
-                <div class="why-card-new reveal-on-scroll">
-                    <span class="why-emoji">🏆</span>
-                    <span class="why-title-new">Unmatched Expertise</span>
-                    <span class="why-desc-new">Over 20 years of specialized experience in heavy industrial fabrication
-                        and turnkey project management.</span>
-                </div>
-                <!-- Differentiator 2 -->
-                <div class="why-card-new reveal-on-scroll">
-                    <span class="why-emoji">📐</span>
-                    <span class="why-title-new">Precision Engineering</span>
-                    <span class="why-desc-new">State-of-the-art manufacturing facilities ensuring millimeter-perfect
-                        accuracy in every component.</span>
-                </div>
-                <!-- Differentiator 3 -->
-                <div class="why-card-new reveal-on-scroll">
-                    <span class="why-emoji">⏱️</span>
-                    <span class="why-title-new">Timely Delivery</span>
-                    <span class="why-desc-new">A proven track record of adhering to strict timelines without
-                        compromising on quality or safety.</span>
-                </div>
-                <!-- Differentiator 4 -->
-                <div class="why-card-new reveal-on-scroll">
-                    <span class="why-emoji">🤝</span>
-                    <span class="why-title-new">Comprehensive Support</span>
-                    <span class="why-desc-new">From initial design and consultation to erection and final handover, we
-                        are with you every step of the way.</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION 7: LEADERSHIP / PEOPLE SECTION -->
-    <section class="container people-section">
-        <h2>Driven by People. Powered by Engineering.</h2>
-        <p class="people-description">Experienced professionals committed to quality, safety, and execution.</p>
-
-        <div class="leadership-grid">
-            <!-- Person 1 -->
-            <div class="person-card">
-                <!-- Replace with actual Steelflex team member -->
-                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80"
-                    alt="Arjun Mehta" class="person-img">
-                <span class="person-name">Arjun Mehta</span>
-                <span class="person-role">Head of Engineering</span>
-                <p class="person-quote">"Ensuring engineering excellence across every project."</p>
-            </div>
-
-            <!-- Person 2 -->
-            <div class="person-card">
-                <!-- Replace with actual Steelflex team member -->
-                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80"
-                    alt="Priya Sharma" class="person-img">
-                <span class="person-name">Priya Sharma</span>
-                <span class="person-role">Project Manager</span>
-                <p class="person-quote">"Delivering timelines without compromising safety."</p>
-            </div>
-
-            <!-- Person 3 -->
-            <div class="person-card">
-                <!-- Replace with actual Steelflex team member -->
-                <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=400&q=80"
-                    alt="Vikram Singh" class="person-img">
-                <span class="person-name">Vikram Singh</span>
-                <span class="person-role">Lead Architect</span>
-                <p class="person-quote">"Designing structures that stand the test of time."</p>
-            </div>
-
-            <!-- Person 4 -->
-            <div class="person-card">
-                <!-- Replace with actual Steelflex team member -->
-                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
-                    alt="Rohan Das" class="person-img">
-                <span class="person-name">Rohan Das</span>
-                <span class="person-role">Safety Officer</span>
-                <p class="person-quote">"Zero compromises on operational safety standards."</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- MODERN FOOTER (3 PARTS) -->
-    <footer class="site-footer-redesign">
-        <!-- Part 1: CTA Bridge -->
-        <div class="footer-cta-bridge">
+        <!-- 2. Services Section -->
+        <section id="services" class="section services">
             <div class="container">
-                <h2 class="footer-cta-title">Let’s build reliable engineering solutions together.</h2>
-                <a href="contact-us.html" class="btn-footer-cta">Contact Our Team</a>
-            </div>
-        </div>
+                <h2 class="section-title">Our Services</h2>
+                <div class="service-grid">
+                    <div class="card">
+                        <div class="icon">📦</div>
+                        <h3>Warehousing and Logistics</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🏭</div>
+                        <h3>Industrial Facilities</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🏢</div>
+                        <h3>Commercial Buildings</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🎓</div>
+                        <h3>Educational Institutions</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🏟️</div>
+                        <h3>Sports Complexes</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🏥</div>
+                        <h3>Healthcare Facilities</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">✈️</div>
+                        <h3>Aviation and Transportation</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🔑</div>
+                        <h3>EPC Turnkey Solutions</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">🌿</div>
+                        <h3>Smart and Green Buildings</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">📐</div>
+                        <h3>Design Evaluation and Vetting</h3>
+                    </div>
+                    <div class="card">
+                        <div class="icon">✂️</div>
+                        <h3>Laser Cutting</h3>
+                    </div>
+                </div>
 
-        <!-- Part 2: Main Footer Content -->
+            </div>
+        </section>
+
+        <!-- 3. Project Showcase -->
+        <section id="projects" class="section projects">
+            <div class="container">
+                <h2 class="section-title">Project Showcase</h2>
+                <div id="home-completed-projects" class="projects-grid" data-stagger>
+                    <div style="grid-column: 1/-1; text-align: center; color: #888;">Loading projects...</div>
+                </div>
+                <div class="view-more-container" style="text-align: center; margin-top: 3rem;">
+                    <a href="projects.html" class="btn btn-primary">View More</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Client Reviews -->
+        <section id="reviews" class="section reviews"
+            style="padding: 5rem 0; background-color: #f4f7fb; text-align: center;">
+            <div class="container" style="display: flex; flex-direction: column; align-items: center;">
+                <h2 class="section-title">Client Reviews</h2>
+                <p style="font-size: 1.15rem; color: #555; max-width: 650px; margin: 0 auto 2.5rem; line-height: 1.6;">
+                    Hear what our trusted partners and clients say about our commitment to quality, speed, and precision
+                    in steel structural development.
+                </p>
+
+                <!-- Reviews Carousel -->
+                <div class="reviews-carousel-container"
+                    style="width: 100%; max-width: 1100px; margin: 0 auto 2.5rem; position: relative;">
+                    <div style="overflow: hidden; padding-top: 40px; padding-bottom: 80px;" id="reviews-viewport">
+                        <div id="reviews-track" class="reviews-track"
+                            style="display: grid; place-items: center; width: 100%;">
+                            <div style="width: 100%; flex-shrink: 0; text-align: center; color: #888;">Loading
+                                reviews...</div>
+                        </div>
+                    </div>
+
+                    <div id="reviews-dots" class="reviews-dots"
+                        style="display: flex; justify-content: center; gap: 8px;"></div>
+                </div>
+
+                <a href="review.html" class="btn btn-primary">Give Us Your Precious Review</a>
+            </div>
+        </section>
+
+
+
+        <!-- 5. Manufacturing Strength -->
+        <section id="manufacturing" class="section manufacturing bg-dark text-white">
+            <div class="container">
+                <h2 class="section-title">Manufacturing Strength</h2>
+                <div class="manufacturing-content">
+                    <p>Our world-class manufacturing facility in Vadodara, Gujarat is equipped to handle complex steel
+                        structures
+                        with precision and speed.</p>
+                    <ul class="manufacturing-list">
+                        <li>⚙️ CNC automated machines for precision</li>
+                        <li>🔨 In-house fabrication & welding excellence</li>
+                        <li>🏗️ High crane handling capacity</li>
+                        <li>👷‍♂️ Certified welders & fitters</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Experience Highlights -->
+        <section id="experience" class="section experience">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-number">15+</span>
+                        <span class="stat-label">Years Experience</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">1200+</span>
+                        <span class="stat-label">MT Monthly Capacity</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100+</span>
+                        <span class="stat-label">Projects Delivered</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">Pan-India</span>
+                        <span class="stat-label">Presence</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Sustainability -->
+        <section id="sustainability" class="section sustainability bg-light">
+            <div class="container">
+                <h2 class="section-title">Committed to Sustainability</h2>
+                <div class="sustainability-content">
+                    <p>We believe in building for the future responsibly.</p>
+                    <ul class="sustainability-list">
+                        <li>Steel is 100% recyclable</li>
+                        <li>Energy-efficient building designs to reduce carbon footprint</li>
+                        <li>Environment-friendly dry construction process</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Contact Section -->
+        <section id="contact" class="section contact">
+            <div class="container">
+                <h2 class="section-title">Get in Touch</h2>
+                <div class="contact-content-centered">
+                    <!-- Google Map Link -->
+                    <a href="https://maps.app.goo.gl/dznDyxB7VmNPSYTB8" target="_blank" class="map-link">
+                        📍 View Location on Google Maps
+                    </a>
+                    <p class="address-text">Plant Location : Plot No. 72 & 73, Aatmiya-2 Industrial Park, Bamangam, Por,
+                        Vadodara
+                        - 391243, Gujarat, India</p>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="https://wa.me/919426443442" class="btn-action btn-whatsapp" target="_blank">
+                            <img src="/src/website/assets/Whatsapp_icon.ico" alt="WhatsApp" class="btn-icon-img"
+                                style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
+                            <span class="btn-text">Chat on WhatsApp</span>
+                        </a>
+                        <a href="mailto:Md@Steelflexstructures.com" class="btn-action btn-email">
+                            <img src="/src/website/assets/Email_icon.ico" alt="Email" class="btn-icon-img"
+                                style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
+                            <span class="btn-text">Send Email</span>
+                        </a>
+                    </div>
+
+                    <!-- Additional Contact Info -->
+                    <div class="contact-details-row">
+                        <p class="contact-detail">
+                            <span>📞</span> <a href="tel:+919426443442">+91 94264 43442</a>
+                        </p>
+                        <p class="contact-detail">
+                            <span>📞</span> <a href="tel:+918238999916">+91 82389 99916</a>
+                        </p>
+                        <p class="contact-detail">
+                            <span>📞</span> <a href="tel:+918238999909">+91 82389 99909</a>
+                        </p>
+                        <p class="contact-detail">
+                            <span>📧</span> <a
+                                href="mailto:Md@Steelflexstructures.com">Md@Steelflexstructures.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 9. CTA Section -->
+        <section class="section cta"
+            style="background-color: #2F528F; color: #fff; text-align: center; padding: 5rem 2rem; margin-top: 40px;">
+            <div class="container">
+                <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: #fff;">Have a Project in Mind?</h2>
+                <p
+                    style="font-size: 1.15rem; max-width: 650px; margin: 0 auto 2.5rem; color: #e1e9fc; line-height: 1.6;">
+                    Let's build something exceptional together. Our team of experts is ready to discuss your structural
+                    needs and deliver premium fabrication solutions.
+                </p>
+                <a href="contact-us.html" class="btn btn-primary"
+                    style="background-color: #fff; color: #2F528F; font-weight: bold; padding: 14px 35px; font-size: 1.1rem; border-radius: 30px; border: none;">Contact
+                    Us Today</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer-redesign" style="margin-top: 50px;">
         <div class="footer-main">
             <div class="container">
                 <div class="footer-grid-modern">
-                    <!-- Column 1: Brand -->
                     <div class="footer-col">
                         <span class="footer-brand-title"><img src="Logo/Steelflex Logo.png" alt="SteelFlex"
                                 style="height: 50px;"></span>
                         <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
                             steel construction solutions.</p>
                     </div>
-
-                    <!-- Column 2: Quick Links -->
                     <div class="footer-col">
                         <h4 class="footer-col-title">Quick Links</h4>
                         <ul class="footer-links-list">
-                            <li><a href="index.html">About Us</a></li>
+                            <li><a href="about-us.html">About Us</a></li>
                             <li><a href="products-structures.html">Products</a></li>
                             <li><a href="capabilities.html">Capabilities</a></li>
                             <li><a href="machineries.html">Machineries</a></li>
@@ -850,8 +367,6 @@
                             <li><a href="contact-us.html">Contact Us</a></li>
                         </ul>
                     </div>
-
-                    <!-- Column 3: Contact Info -->
                     <div class="footer-col">
                         <h4 class="footer-col-title">Contact</h4>
                         <div class="footer-contact-item">
@@ -867,26 +382,248 @@
                             Vadodara, Gujarat
                         </div>
                         <a href="review.html" class="btn-footer-review">Add Review</a>
-
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="footer-legal">
+            <div class="container">
+                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
-            <!-- Part 3: Legal Strip -->
-            <div class="footer-legal">
-                <div class="container">
-                    <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
+    <!-- Project Detail Modal -->
+    <div id="project-modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-modal" onclick="closeModal(event)">×</button>
+
+            <div class="modal-body-grid">
+                <!-- Carousel -->
+                <div class="modal-carousel">
+                    <button class="carousel-btn prev" onclick="moveSlide(-1)">❮</button>
+                    <div class="carousel-track-container">
+                        <img id="modal-img" src="" alt="Project Detail" class="modal-main-image">
+                    </div>
+                    <button class="carousel-btn next" onclick="moveSlide(1)">❯</button>
+                </div>
+
+                <!-- Details -->
+                <div class="modal-details">
+                    <h2 id="modal-title" style="color: var(--primary-color); margin-bottom: 20px;">Project Title</h2>
+                    <div class="modal-info-grid">
+                        <div class="info-item">
+                            <span class="label">Location</span>
+                            <span id="modal-location" class="value">Location</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Area</span>
+                            <span id="modal-area" class="value">0000 Sqft</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Weight</span>
+                            <span id="modal-weight" class="value">000 Tons</span>
+                        </div>
+                    </div>
+                    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+                    <p id="modal-desc" style="line-height: 1.6; color: #555;">
+                        Detailed project description goes here.
+                    </p>
                 </div>
             </div>
-    </footer>
+        </div>
+    </div>
 
     <script>
         document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
             document.querySelector('.main-nav').classList.toggle('active');
         });
-    </script>
-</body>
 
-<script src="animations.js"></script>
+        // Handle smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector('.main-nav').classList.remove('active');
+
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId !== '#') {
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+    </script>
+    <script src="animations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.loadProjects) {
+                window.loadProjects('Completed', 'home-completed-projects', 3);
+            }
+        });
+
+        // Reviews Carousel Initialization
+        document.addEventListener('DOMContentLoaded', async () => {
+            const track = document.getElementById('reviews-track');
+            const dotsContainer = document.getElementById('reviews-dots');
+            if (track && window.StorageManager) {
+                try {
+                    const allReviews = await StorageManager.getData('reviews');
+                    const reviews = allReviews.filter(r => r.status === 'Active' || r.status === 'Accepted');
+
+                    if (reviews.length === 0) {
+                        track.innerHTML = '<div style="width: 100%; flex-shrink: 0; padding: 20px; color: #777;">No reviews available at the moment.</div>';
+                        return;
+                    }
+
+                    track.innerHTML = '';
+                    dotsContainer.innerHTML = '';
+
+                    // Convert track to grid for stacked flow effect
+                    track.style.display = 'grid';
+                    track.style.placeItems = 'center';
+
+                    const themes = [
+                        { main: '#ED3A53', dark: '#C4243A', light: 'rgba(237, 58, 83, 0.3)' }, // Red
+                        { main: '#23BFA3', dark: '#19947D', light: 'rgba(35, 191, 163, 0.3)' }, // Teal
+                        { main: '#B2319A', dark: '#8C2378', light: 'rgba(178, 49, 154, 0.3)' }  // Purple
+                    ];
+
+                    reviews.forEach((review, index) => {
+                        let ratingValue = parseInt(review.rating) || 5;
+                        let starsHtml = '';
+                        for (let i = 0; i < 5; i++) {
+                            starsHtml += i < ratingValue ? '★' : '<span style="color:#eee">★</span>';
+                        }
+
+                        const theme = themes[index % themes.length];
+                        const dateStr = review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'N/A';
+                        const companyLogo = review.companyLogo || 'https://via.placeholder.com/80?text=No+Logo';
+                        const reviewerPhoto = review.reviewerPhoto ? review.reviewerPhoto : 'https://via.placeholder.com/80?text=No+Photo';
+
+                        const slideWrapper = document.createElement('div');
+                        slideWrapper.style.cssText = 'grid-area: 1 / 1; width: 100%; max-width: 480px; box-sizing: border-box; padding: 0 15px; cursor: pointer;';
+                        slideWrapper.onclick = () => window.goToReviewSlide(index);
+
+                        // Clean up text
+                        let reviewText = review.reviewText || '';
+                        if (reviewText.length > 200) reviewText = reviewText.substring(0, 197) + '...';
+
+                        slideWrapper.innerHTML = `
+                            <div class="review-creative-card" style="--theme-main: ${theme.main}; --theme-dark: ${theme.dark}; --theme-light: ${theme.light}; margin-bottom: 20px;">
+                                <div class="creative-tr-ribbon"></div>
+                                <div class="creative-tr-fold"></div>
+                                <div class="creative-bl-ribbon"></div>
+                                <div class="creative-bl-fold"></div>
+
+                                <div class="creative-white-box">
+                                    <div class="creative-quote-icon">“</div>
+                                    <div class="creative-quote-bg">”</div>
+                                    
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; z-index: 8;">
+                                        <div style="font-size: 0.85rem; color: #888; font-weight: 500;">
+                                            Date: <span style="color: #444;">${dateStr}</span>
+                                        </div>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="font-size: 0.75rem; color: #aaa;">Company Logo</span>
+                                            <img src="${companyLogo}" title="Company Logo" alt="Company Logo" style="height: 40px; width: 40px; border-radius: 50%; object-fit: contain; border: 1px solid #ddd; background: #fff; padding: 2px;">
+                                        </div>
+                                    </div>
+
+                                    <p class="creative-text">${reviewText}</p>
+                                    <div class="creative-stars" style="text-align: center; margin-top: 15px;">${starsHtml}</div>
+                                </div>
+                                
+                                <div class="creative-client-container">
+                                    <img src="${reviewerPhoto}" class="creative-client-photo" alt="Client">
+                                    <div class="creative-client-info">
+                                        <h4 class="creative-client-name">${review.clientName}</h4>
+                                        <p class="creative-client-desig">${review.companyName}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        track.appendChild(slideWrapper);
+
+                        const dot = document.createElement('button');
+                        dot.style.cssText = `width: 10px; height: 10px; border-radius: 50%; border: none; background: ${index === 0 ? '#2F528F' : '#ccc'}; cursor: pointer; transition: all 0.3s; padding: 0; outline: none;`;
+                        dot.onclick = () => window.goToReviewSlide(index);
+                        dotsContainer.appendChild(dot);
+                    });
+
+                    let currentIndex = 0;
+                    const totalSlides = reviews.length;
+
+                    window.goToReviewSlide = function (index) {
+                        currentIndex = index;
+                        const slides = Array.from(track.children);
+                        const isMobile = window.innerWidth <= 768;
+                        const xOffset = isMobile ? 100 : 70; // percentage to shift sideways
+
+                        slides.forEach((slide, i) => {
+                            let diff = i - currentIndex;
+                            if (diff < -totalSlides / 2) diff += totalSlides;
+                            if (diff > totalSlides / 2) diff -= totalSlides;
+                            if (totalSlides % 2 === 0 && diff === totalSlides / 2) diff = -totalSlides / 2;
+
+                            slide.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
+
+                            if (diff === 0) {
+                                slide.style.transform = 'translateX(0) scale(1)';
+                                slide.style.opacity = '1';
+                                slide.style.zIndex = '5';
+                                slide.style.pointerEvents = 'auto';
+                                slide.style.filter = 'blur(0px)';
+                            } else if (diff === -1 || (diff < 0 && totalSlides === 2)) {
+                                slide.style.transform = `translateX(-${xOffset}%) scale(0.7)`;
+                                slide.style.opacity = isMobile ? '0' : '0.6';
+                                slide.style.zIndex = '4';
+                                slide.style.pointerEvents = 'auto';
+                                slide.style.filter = isMobile ? 'blur(0px)' : 'blur(1.5px)';
+                            } else if (diff === 1 || (diff > 0 && totalSlides === 2)) {
+                                slide.style.transform = `translateX(${xOffset}%) scale(0.7)`;
+                                slide.style.opacity = isMobile ? '0' : '0.6';
+                                slide.style.zIndex = '4';
+                                slide.style.pointerEvents = 'auto';
+                                slide.style.filter = isMobile ? 'blur(0px)' : 'blur(1.5px)';
+                            } else {
+                                slide.style.transform = `translateX(${diff > 0 ? (xOffset + 30) : -(xOffset + 30)}%) scale(0.5)`;
+                                slide.style.opacity = '0';
+                                slide.style.zIndex = '1';
+                                slide.style.pointerEvents = 'none';
+                                slide.style.filter = 'blur(4px)';
+                            }
+                        });
+
+                        Array.from(dotsContainer.children).forEach((dot, i) => {
+                            dot.style.background = i === currentIndex ? '#2F528F' : '#ccc';
+                            dot.style.transform = i === currentIndex ? 'scale(1.2)' : 'scale(1)';
+                        });
+                    };
+
+                    // Initial Setup
+                    window.goToReviewSlide(0);
+                    window.addEventListener('resize', () => window.goToReviewSlide(currentIndex));
+
+                    if (totalSlides > 1) {
+                        let autoPlay = setInterval(() => { window.goToReviewSlide((currentIndex + 1) % totalSlides); }, 6000);
+
+                        // Pause on hover
+                        track.addEventListener('mouseenter', () => clearInterval(autoPlay));
+                        track.addEventListener('mouseleave', () => {
+                            autoPlay = setInterval(() => { window.goToReviewSlide((currentIndex + 1) % totalSlides); }, 6000);
+                        });
+                    }
+
+                } catch (err) {
+                    console.error('Error loading reviews:', err);
+                    track.innerHTML = '<div style="width: 100%; flex-shrink: 0; padding: 20px; color: red;">Failed to load reviews.</div>';
+                }
+            }
+        });
+    </script>
+    <script src="/src/website/animations.js"></script>
+</body>
 
 </html>

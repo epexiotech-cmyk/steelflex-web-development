@@ -209,9 +209,71 @@ const initProjects = () => {
     }
 };
 
+const initPebAppleScroll = () => {
+    const section = document.querySelector('.peb-apple');
+    const panel   = document.querySelector('.peb-sticky');
+    const steps   = document.querySelectorAll('.peb-text-panel .peb-step');
+    const img     = document.getElementById('peb-img');
+
+    if (!section || !panel || !steps.length || !img) return;
+
+    // Activate step by index + crossfade image
+    const showStep = (index) => {
+        steps.forEach((s, i) => {
+            if (i === index) {
+                s.classList.add('active');
+                const newSrc = s.getAttribute('data-img');
+                if (newSrc && img.src.indexOf(newSrc) === -1) {
+                    img.classList.add('fade');
+                    setTimeout(() => {
+                        img.src = newSrc;
+                        img.classList.remove('fade');
+                    }, 200);
+                }
+            } else {
+                s.classList.remove('active');
+            }
+        });
+    };
+
+    // Show step 1 immediately
+    showStep(0);
+
+    const onScroll = () => {
+        const rect          = section.getBoundingClientRect(); // always viewport-relative
+        const sectionTop    = rect.top;
+        const sectionBottom = rect.bottom;
+        const vh            = window.innerHeight;
+
+        if (sectionTop > 0) {
+            // Section hasn't entered viewport yet — panel sits at top of section
+            panel.classList.remove('is-fixed', 'is-bottom');
+        } else if (sectionBottom < vh) {
+            // Section has fully scrolled past — pin panel to bottom
+            panel.classList.remove('is-fixed');
+            panel.classList.add('is-bottom');
+        } else {
+            // Section is in view — fix panel to viewport
+            panel.classList.add('is-fixed');
+            panel.classList.remove('is-bottom');
+
+            // Calculate progress through the section (0 → 1)
+            const scrolled = -sectionTop;                       // px into section
+            const travel   = section.offsetHeight - vh;         // total scrollable distance
+            const progress = Math.min(Math.max(scrolled / travel, 0), 1);
+            const index    = Math.min(Math.floor(progress * steps.length), steps.length - 1);
+            showStep(index);
+        }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll(); // run once on init
+};
+
 // Main Initialization
 document.addEventListener('DOMContentLoaded', () => {
     initScrollReveal();
+    initPebAppleScroll();
     initFormsAndVacancies();
     initProjects();
 });
@@ -244,12 +306,44 @@ window.switchTab = function (tabName) {
     }
 };
 
-window.loadProjects = async function (status, containerId) {
+window.cachedProjects = window.cachedProjects || {};
+window.currentImages = window.currentImages || [];
+window.currentSlide = window.currentSlide || 0;
+
+window.openModal = function(id) {
+    const project = window.cachedProjects[id];
+    if (!project) return;
+    document.getElementById('project-modal').style.display = 'flex';
+    document.getElementById('modal-title').textContent = project.title;
+    document.getElementById('modal-location').textContent = project.location || '-';
+    document.getElementById('modal-area').textContent = project.area || '-';
+    document.getElementById('modal-weight').textContent = project.weight || '-';
+    document.getElementById('modal-desc').textContent = project.description || 'No description available.';
+    window.currentImages = project.images && project.images.length > 0 ? project.images : [];
+    if (window.currentImages.length === 0 && project.image) window.currentImages.push(project.image);
+    window.currentSlide = 0;
+    window.updateSlide();
+};
+
+window.closeModal = function(e) {
+    if (e) e.preventDefault();
+    document.getElementById('project-modal').style.display = 'none';
+};
+
+window.moveSlide = function(dir) {
+    window.currentSlide += dir;
+    if (window.currentSlide >= window.currentImages.length) window.currentSlide = 0;
+    if (window.currentSlide < 0) window.currentSlide = window.currentImages.length - 1;
+    window.updateSlide();
+};
+
+window.updateSlide = function() {
+    document.getElementById('modal-img').src = window.currentImages[window.currentSlide];
+};
+
+window.loadProjects = async function (status, containerId, limit = null) {
     const container = document.getElementById(containerId);
     if (!container) return;
-
-    // Optional: Show loading state if empty?
-    // container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px;">Loading...</div>';
 
     try {
         let projects = await StorageManager.getData('projects');
@@ -257,6 +351,10 @@ window.loadProjects = async function (status, containerId) {
         // Local filtering
         if (status && status !== 'ALL') {
             projects = projects.filter(p => p.status === status);
+        }
+
+        if (limit) {
+            projects = projects.slice(0, limit);
         }
 
         container.innerHTML = '';
@@ -267,10 +365,8 @@ window.loadProjects = async function (status, containerId) {
         }
 
         projects.forEach(p => {
-            // Update global cache for modal if it exists (defined in projects.html)
-            if (typeof cachedProjects !== 'undefined') {
-                cachedProjects[p.id] = p;
-            }
+            // Update global cache for modal
+            window.cachedProjects[p.id] = p;
 
             const card = document.createElement('article');
             card.className = 'project-card reveal-on-scroll in-view';
