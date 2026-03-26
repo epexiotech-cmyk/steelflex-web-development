@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Review | SteelFlex Structures</title>
+    <title>Review | SteelFlex Structures | Premier PEB Manufacturer in India</title>
     <meta name="description"
         content="Share your experience working with SteelFlex Structures. Your feedback helps us build stronger relationships.">
     <link rel="stylesheet" href="styles.css">
@@ -193,7 +193,17 @@
             }
         }
     </style>
-    <script src="/src/shared/storage.js"></script>
+    <script src="/src/shared/storage.js" defer></script>
+
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://steelflexstructures.com/review" />
+    <meta property="og:title" content="SteelFlex Structures | Review" />
+    <meta property="og:description" content="Learn more about Review at SteelFlex Structures, providing end-to-end Pre-Engineered Building (PEB) solutions in Gujarat, India." />
+    <meta property="og:image" content="https://steelflexstructures.com/Logo/Steelflex Logo.png" />
+    <meta property="og:url" content="https://steelflexstructures.com/review" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href="/Logo/Steelflex Logo.png" />
 </head>
 
 <body>
@@ -202,18 +212,18 @@
     <header class="main-header">
         <div class="container nav-container">
             <div class="logo">
-                <a href="index.html"><img src="Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
+                <a href="/"><img loading="lazy" src="/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
             </div>
             <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="index.html">About Us</a></li>
-                    <li><a href="products-structures.html">Products & Structures</a></li>
-                    <li><a href="capabilities.html">Capabilities</a></li>
-                    <li><a href="machineries.html">Machineries</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="careers.html">Careers</a></li>
-                    <li><a href="contact-us.html">Contact</a></li>
+                    <li><a href="/about-us">About Us</a></li>
+                    <li><a href="/products-structures">Products & Structures</a></li>
+                    <li><a href="/capabilities">Capabilities</a></li>
+                    <li><a href="/machineries">Machineries</a></li>
+                    <li><a href="/projects">Projects</a></li>
+                    <li><a href="/careers">Careers</a></li>
+                    <li><a href="/contact-us">Contact</a></li>
                 </ul>
             </nav>
         </div>
@@ -330,7 +340,7 @@
             <div class="container">
                 <div class="footer-grid-modern">
                     <div class="footer-col">
-                        <span class="footer-brand-title"><img src="Logo/Steelflex Logo.png" alt="SteelFlex"
+                        <span class="footer-brand-title"><img loading="lazy" src="/Logo/Steelflex Logo.png" alt="SteelFlex"
                                 style="height: 50px;"></span>
                         <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
                             steel construction solutions.</p>
@@ -338,13 +348,14 @@
                     <div class="footer-col">
                         <h4 class="footer-col-title">Quick Links</h4>
                         <ul class="footer-links-list">
-                            <li><a href="index.html">About Us</a></li>
-                            <li><a href="products-structures.html">Products</a></li>
-                            <li><a href="capabilities.html">Capabilities</a></li>
-                            <li><a href="machineries.html">Machineries</a></li>
-                            <li><a href="projects.html">Projects</a></li>
-                            <li><a href="careers.html">Careers</a></li>
-                            <li><a href="contact-us.html">Contact Us</a></li>
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/about-us">About Us</a></li>
+                            <li><a href="/products-structures">Products</a></li>
+                            <li><a href="/capabilities">Capabilities</a></li>
+                            <li><a href="/machineries">Machineries</a></li>
+                            <li><a href="/projects">Projects</a></li>
+                            <li><a href="/careers">Careers</a></li>
+                            <li><a href="/contact-us">Contact Us</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">
@@ -352,7 +363,7 @@
                         <div class="footer-contact-item"><span>Phone</span> +91 94264 43442</div>
                         <div class="footer-contact-item"><span>Email</span> md@steelflexstructures.com</div>
                         <div class="footer-contact-item"><span>Location</span> Vadodara, Gujarat</div>
-                        <a href="review.html" class="btn-footer-review">Add Review</a>
+                        <a href="/review" class="btn-footer-review">Add Review</a>
                     </div>
                 </div>
             </div>
@@ -475,10 +486,10 @@
                 }
                 reviews.forEach(review => {
                     const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-                    const photo = review.reviewerPhoto ? `<img src="${review.reviewerPhoto}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">` : '';
-                    const logo = review.companyLogo ? `<img src="${review.companyLogo}" style="max-height: 40px; max-width: 100px; object-fit: contain;">` : '';
+                    const photo = review.reviewerPhoto ? `<img loading="lazy" src="${review.reviewerPhoto}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">` : '';
+                    const logo = review.companyLogo ? `<img loading="lazy" src="${review.companyLogo}" style="max-height: 40px; max-width: 100px; object-fit: contain;">` : '';
                     const projImages = (review.projectImages && review.projectImages.length > 0) ?
-                        `<div style="display: flex; gap: 5px; margin-top: 10px;">${review.projectImages.map(img => `<img src="${img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">`).join('')}</div>` : '';
+                        `<div style="display: flex; gap: 5px; margin-top: 10px;">${review.projectImages.map(img => `<img loading="lazy" src="${img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">`).join('')}</div>` : '';
 
                     grid.innerHTML += `<div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 4px solid var(--primary-color);">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
@@ -494,6 +505,6 @@
         loadAcceptedReviews();
     </script>
 </body>
-<script src="animations.js"></script>
+<script src="animations.js" defer></script>
 
 </html>

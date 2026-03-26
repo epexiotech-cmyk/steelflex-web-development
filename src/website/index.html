@@ -4,34 +4,71 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SteelFlex Structures (I) Pvt. Ltd. | Premier PEB Manufacturer</title>
-    <meta name="description"
-        content="SteelFlex Structures - End-to-end Pre-Engineered Building (PEB) solutions. Faster, Stronger, Smarter Steel Structures based in Central India.">
+    <title>SteelFlex Structures | Premier PEB Manufacturer in India</title>
+    <meta name="description" content="SteelFlex Structures provides end-to-end Pre-Engineered Building (PEB) solutions. Faster, stronger, and smarter steel structures based in Gujarat, India." />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://steelflexstructures.com/" />
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="SteelFlex Structures | Premier PEB Manufacturer" />
+    <meta property="og:description" content="End-to-end Pre-Engineered Building (PEB) solutions in Gujarat, India." />
+    <meta property="og:image" content="https://steelflexstructures.com/Logo/Steelflex Logo.png" />
+    <meta property="og:url" content="https://steelflexstructures.com/" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SteelFlex Structures | Premier PEB Manufacturer" />
+    <meta name="twitter:description" content="End-to-end Pre-Engineered Building (PEB) solutions in Gujarat, India." />
+    <meta name="twitter:image" content="https://steelflexstructures.com/Logo/Steelflex Logo.png" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/Logo/Steelflex Logo.png" />
+
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script src="/src/shared/storage.js"></script>
+    <script src="/src/shared/storage.js" defer></script>
+
+    <!-- JSON-LD Organization Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "SteelFlex Structures (I) Pvt. Ltd.",
+      "url": "https://steelflexstructures.com",
+      "logo": "https://steelflexstructures.com/Logo/Steelflex Logo.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+91 94264 43442",
+        "contactType": "customer service",
+        "email": "md@steelflexstructures.com",
+        "areaServed": "IN",
+        "availableLanguage": ["en", "hi"]
+      }
+    }
+    </script>
 </head>
 
-<body>
+<body class="home-page">
     <!-- Header -->
     <header class="main-header">
         <div class="container nav-container">
             <div class="logo">
-                <a href="index.html"><img src="Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
+                <a href="/"><img loading="lazy" src="/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
             </div>
             <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="about-us.html">About Us</a></li>
-                    <li><a href="products-structures.html">Products & Structures</a></li>
-                    <li><a href="capabilities.html">Capabilities</a></li>
-                    <li><a href="machineries.html">Machineries</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="careers.html">Careers</a></li>
-                    <li><a href="contact-us.html">Contact</a></li>
+                    <li><a href="/about-us">About Us</a></li>
+                    <li><a href="/products-structures">Products & Structures</a></li>
+                    <li><a href="/capabilities">Capabilities</a></li>
+                    <li><a href="/machineries">Machineries</a></li>
+                    <li><a href="/projects">Projects</a></li>
+                    <li><a href="/careers">Careers</a></li>
+                    <li><a href="/contact-us">Contact</a></li>
                 </ul>
             </nav>
         </div>
@@ -53,8 +90,8 @@
                     <p class="hero-sub">Custom Design • Precision Work • Reliable Execution. Leading the industry
                         with unmatched quality and structural integrity.</p>
                     <div class="hero-buttons">
-                        <a href="contact-us.html" class="btn btn-yellow-exact">Get Started</a>
-                        <a href="capabilities.html" class="btn-text-link">Learn More</a>
+                        <a href="/contact-us" class="btn btn-yellow-exact">Get Started</a>
+                        <a href="/capabilities" class="btn-text-link">Learn More</a>
                     </div>
                 </div>
             </div>
@@ -65,14 +102,13 @@
 
             <!-- Sticky viewport: full 100vh, always visible while scrolling -->
             <div class="peb-sticky">
-                <div class="peb-sticky-label">Why Choose PEB?</div>
-
                 <!-- Left: full-height image -->
-                <img id="peb-img" src="/uploads/projects/1771593106869-458283185.webp" alt="PEB Construction">
+                <img loading="lazy" id="peb-img" src="/uploads/projects/1771593106869-458283185.webp" alt="PEB Construction">
                 <div class="peb-img-overlay"></div>
 
-                <!-- Right: text panel, all steps stacked here -->
+                <!-- Right: text panel -->
                 <div class="peb-text-panel">
+                    <div class="peb-sticky-label">Why Choose PEB?</div>
 
                     <div class="peb-step active" data-img="/uploads/projects/1771593106869-458283185.webp">
                         <span class="peb-step-num">01</span>
@@ -133,6 +169,10 @@
                 <h2 class="section-title">Our Services</h2>
                 <div class="service-grid">
                     <div class="card">
+                        <div class="icon">🏗️</div>
+                        <h3>Pre-Engineered Buildings (PEB)</h3>
+                    </div>
+                    <div class="card">
                         <div class="icon">📦</div>
                         <h3>Warehousing and Logistics</h3>
                     </div>
@@ -173,11 +213,32 @@
                         <h3>Design Evaluation and Vetting</h3>
                     </div>
                     <div class="card">
-                        <div class="icon">✂️</div>
-                        <h3>Laser Cutting</h3>
+                        <div class="icon">🌍</div>
+                        <h3>Structural Engineering Exports</h3>
                     </div>
                 </div>
 
+            </div>
+        </section>
+
+
+        <!-- 5. Manufacturing Strength -->
+        <section id="manufacturing" class="section manufacturing-new">
+            <div class="container">
+                <h2 class="section-title">Manufacturing Strength</h2>
+                <div class="manufacturing-grid">
+                    <div class="mfg-info">
+                        <p class="mfg-lead">Our world-class manufacturing facility in Vadodara, Gujarat is equipped to
+                            handle complex steel
+                            structures with precision and speed.</p>
+                        <ul class="mfg-features">
+                            <li><span class="mfg-icon">⚙️</span> CNC automated machines for precision</li>
+                            <li><span class="mfg-icon">🔨</span> In-house fabrication & welding excellence</li>
+                            <li><span class="mfg-icon">🏗️</span> High crane handling capacity</li>
+                            <li><span class="mfg-icon">👷‍♂️</span> Certified welders & fitters</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -189,7 +250,7 @@
                     <div style="grid-column: 1/-1; text-align: center; color: #888;">Loading projects...</div>
                 </div>
                 <div class="view-more-container" style="text-align: center; margin-top: 3rem;">
-                    <a href="projects.html" class="btn btn-primary">View More</a>
+                    <a href="/projects" class="btn btn-primary">View More</a>
                 </div>
             </div>
         </section>
@@ -219,115 +280,93 @@
                         style="display: flex; justify-content: center; gap: 8px;"></div>
                 </div>
 
-                <a href="review.html" class="btn btn-primary">Give Us Your Precious Review</a>
+                <a href="/review" class="btn btn-primary">Give Us Your Precious Review</a>
             </div>
         </section>
 
 
 
-        <!-- 5. Manufacturing Strength -->
-        <section id="manufacturing" class="section manufacturing bg-dark text-white">
-            <div class="container">
-                <h2 class="section-title">Manufacturing Strength</h2>
-                <div class="manufacturing-content">
-                    <p>Our world-class manufacturing facility in Vadodara, Gujarat is equipped to handle complex steel
-                        structures
-                        with precision and speed.</p>
-                    <ul class="manufacturing-list">
-                        <li>⚙️ CNC automated machines for precision</li>
-                        <li>🔨 In-house fabrication & welding excellence</li>
-                        <li>🏗️ High crane handling capacity</li>
-                        <li>👷‍♂️ Certified welders & fitters</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
 
-        <!-- 6. Experience Highlights -->
-        <section id="experience" class="section experience">
-            <div class="container">
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-number">15+</span>
-                        <span class="stat-label">Years Experience</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">1200+</span>
-                        <span class="stat-label">MT Monthly Capacity</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">100+</span>
-                        <span class="stat-label">Projects Delivered</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">Pan-India</span>
-                        <span class="stat-label">Presence</span>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- 7. Sustainability -->
-        <section id="sustainability" class="section sustainability bg-light">
+        <!-- 7. Sustainability Redesign -->
+        <section id="sustainability" class="section sustainability-v2">
             <div class="container">
                 <h2 class="section-title">Committed to Sustainability</h2>
-                <div class="sustainability-content">
-                    <p>We believe in building for the future responsibly.</p>
-                    <ul class="sustainability-list">
-                        <li>Steel is 100% recyclable</li>
-                        <li>Energy-efficient building designs to reduce carbon footprint</li>
-                        <li>Environment-friendly dry construction process</li>
-                    </ul>
+
+                <div class="sustainability-lead">
+                    <p>At SteelFlex Structures, we prioritize <strong>Sustainable Construction</strong> by delivering
+                        high-performance <strong>Pre-Engineered Buildings (PEB)</strong> and robust <strong>Steel
+                            Structures</strong>. Our dedication to building <strong>Eco-Friendly Infrastructure</strong>
+                        ensures that every project contributes to a greener future. By integrating <strong>Energy
+                            Efficient Buildings</strong> and dry-construction methodologies, we minimize environmental
+                        impact and optimize resource usage. Our steel solutions are 100% recyclable, supporting a
+                        circular economy while providing durable, long-lasting industrial spaces. We are committed to
+                        engineering excellence that balances industrial growth with environmental stewardship, creating
+                        value for both our clients and the planet.</p>
+                </div>
+
+                <div class="sustainability-features-grid">
+                    <div class="sf-item">
+                        <div class="sf-icon">♻️</div>
+                        <h3>100% Recyclable</h3>
+                        <p>Our steel components are infinitely recyclable without loss of structural integrity or
+                            quality.</p>
+                    </div>
+                    <div class="sf-item">
+                        <div class="sf-icon">💡</div>
+                        <h3>Energy Efficient</h3>
+                        <p>Advanced insulation and smart designs significantly reduce long-term operational energy
+                            costs.</p>
+                    </div>
+                    <div class="sf-item">
+                        <div class="sf-icon">💧</div>
+                        <h3>Dry Construction</h3>
+                        <p>Zero water-usage on-site processes prevent local water pollution and preserve vital
+                            resources.</p>
+                    </div>
+                    <div class="sf-item">
+                        <div class="sf-icon">📉</div>
+                        <h3>Low Carbon</h3>
+                        <p>Precision engineering and optimized logistics result in a significantly lower overall carbon
+                            footprint.</p>
+                    </div>
+                </div>
+
+                <div class="sustainability-details-row">
+                    <div class="sd-col">
+                        <h3>Our Approach</h3>
+                        <ul>
+                            <li>Precision <strong>sustainable building designs</strong></li>
+                            <li><strong>Low-impact construction</strong> methodologies</li>
+                            <li><strong>Resource optimization</strong> in fabrication</li>
+                        </ul>
+                    </div>
+                    <div class="sd-col">
+                        <h3>Our Impact</h3>
+                        <ul>
+                            <li>Significant reduction in <strong>CO2 emissions</strong></li>
+                            <li>Minimized waste through <strong>accurate engineering</strong></li>
+                            <li>Longevity of <strong>eco-friendly infrastructure</strong></li>
+                        </ul>
+                    </div>
+                    <div class="sd-col">
+                        <h3>Our Commitment</h3>
+                        <ul>
+                            <li>Innovation in <strong>energy-efficient PEB</strong></li>
+                            <li>Strict <strong>global environmental compliance</strong></li>
+                            <li>Supporting a <strong>circular steel economy</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="sustainability-cta-container">
+                    <a href="/contact-us" class="btn-sustainability-cta">Learn More About Our Sustainable
+                        Solutions</a>
                 </div>
             </div>
         </section>
 
-        <!-- 8. Contact Section -->
-        <section id="contact" class="section contact">
-            <div class="container">
-                <h2 class="section-title">Get in Touch</h2>
-                <div class="contact-content-centered">
-                    <!-- Google Map Link -->
-                    <a href="https://maps.app.goo.gl/dznDyxB7VmNPSYTB8" target="_blank" class="map-link">
-                        📍 View Location on Google Maps
-                    </a>
-                    <p class="address-text">Plant Location : Plot No. 72 & 73, Aatmiya-2 Industrial Park, Bamangam, Por,
-                        Vadodara
-                        - 391243, Gujarat, India</p>
-
-                    <!-- Action Buttons -->
-                    <div class="action-buttons">
-                        <a href="https://wa.me/919426443442" class="btn-action btn-whatsapp" target="_blank">
-                            <img src="/src/website/assets/Whatsapp_icon.ico" alt="WhatsApp" class="btn-icon-img"
-                                style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
-                            <span class="btn-text">Chat on WhatsApp</span>
-                        </a>
-                        <a href="mailto:Md@Steelflexstructures.com" class="btn-action btn-email">
-                            <img src="/src/website/assets/Email_icon.ico" alt="Email" class="btn-icon-img"
-                                style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px;">
-                            <span class="btn-text">Send Email</span>
-                        </a>
-                    </div>
-
-                    <!-- Additional Contact Info -->
-                    <div class="contact-details-row">
-                        <p class="contact-detail">
-                            <span>📞</span> <a href="tel:+919426443442">+91 94264 43442</a>
-                        </p>
-                        <p class="contact-detail">
-                            <span>📞</span> <a href="tel:+918238999916">+91 82389 99916</a>
-                        </p>
-                        <p class="contact-detail">
-                            <span>📞</span> <a href="tel:+918238999909">+91 82389 99909</a>
-                        </p>
-                        <p class="contact-detail">
-                            <span>📧</span> <a
-                                href="mailto:Md@Steelflexstructures.com">Md@Steelflexstructures.com</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <!-- Contact section removed -->
         <!-- 9. CTA Section -->
         <section class="section cta"
             style="background-color: #2F528F; color: #fff; text-align: center; padding: 5rem 2rem; margin-top: 40px;">
@@ -338,60 +377,13 @@
                     Let's build something exceptional together. Our team of experts is ready to discuss your structural
                     needs and deliver premium fabrication solutions.
                 </p>
-                <a href="contact-us.html" class="btn btn-primary"
+                <a href="/contact-us" class="btn btn-primary"
                     style="background-color: #fff; color: #2F528F; font-weight: bold; padding: 14px 35px; font-size: 1.1rem; border-radius: 30px; border: none;">Contact
                     Us Today</a>
             </div>
         </section>
     </main>
 
-    <footer class="site-footer-redesign" style="margin-top: 50px;">
-        <div class="footer-main">
-            <div class="container">
-                <div class="footer-grid-modern">
-                    <div class="footer-col">
-                        <span class="footer-brand-title"><img src="Logo/Steelflex Logo.png" alt="SteelFlex"
-                                style="height: 50px;"></span>
-                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
-                            steel construction solutions.</p>
-                    </div>
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Quick Links</h4>
-                        <ul class="footer-links-list">
-                            <li><a href="about-us.html">About Us</a></li>
-                            <li><a href="products-structures.html">Products</a></li>
-                            <li><a href="capabilities.html">Capabilities</a></li>
-                            <li><a href="machineries.html">Machineries</a></li>
-                            <li><a href="projects.html">Projects</a></li>
-                            <li><a href="careers.html">Careers</a></li>
-                            <li><a href="contact-us.html">Contact Us</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Contact</h4>
-                        <div class="footer-contact-item">
-                            <span>Phone</span>
-                            +91 94264 43442
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Email</span>
-                            md@steelflexstructures.com
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Location</span>
-                            Vadodara, Gujarat
-                        </div>
-                        <a href="review.html" class="btn-footer-review">Add Review</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="footer-legal">
-            <div class="container">
-                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <!-- Project Detail Modal -->
     <div id="project-modal" class="modal-overlay" onclick="closeModal(event)">
@@ -403,7 +395,7 @@
                 <div class="modal-carousel">
                     <button class="carousel-btn prev" onclick="moveSlide(-1)">❮</button>
                     <div class="carousel-track-container">
-                        <img id="modal-img" src="" alt="Project Detail" class="modal-main-image">
+                        <img loading="lazy" id="modal-img" src="" alt="Project Detail" class="modal-main-image">
                     </div>
                     <button class="carousel-btn next" onclick="moveSlide(1)">❯</button>
                 </div>
@@ -455,7 +447,7 @@
             });
         });
     </script>
-    <script src="animations.js"></script>
+    <script src="animations.js" defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (window.loadProjects) {
@@ -527,7 +519,7 @@
                                         </div>
                                         <div style="display: flex; align-items: center; gap: 8px;">
                                             <span style="font-size: 0.75rem; color: #aaa;">Company Logo</span>
-                                            <img src="${companyLogo}" title="Company Logo" alt="Company Logo" style="height: 40px; width: 40px; border-radius: 50%; object-fit: contain; border: 1px solid #ddd; background: #fff; padding: 2px;">
+                                            <img loading="lazy" src="${companyLogo}" title="Company Logo" alt="Company Logo" style="height: 40px; width: 40px; border-radius: 50%; object-fit: contain; border: 1px solid #ddd; background: #fff; padding: 2px;">
                                         </div>
                                     </div>
 
@@ -536,7 +528,7 @@
                                 </div>
                                 
                                 <div class="creative-client-container">
-                                    <img src="${reviewerPhoto}" class="creative-client-photo" alt="Client">
+                                    <img loading="lazy" src="${reviewerPhoto}" class="creative-client-photo" alt="Client">
                                     <div class="creative-client-info">
                                         <h4 class="creative-client-name">${review.clientName}</h4>
                                         <p class="creative-client-desig">${review.companyName}</p>
@@ -623,7 +615,71 @@
             }
         });
     </script>
-    <script src="/src/website/animations.js"></script>
+    <footer class="site-footer-redesign">
+        <!-- Part 1: CTA Bridge -->
+        <div class="footer-cta-bridge">
+            <div class="container reveal-on-scroll">
+                <h2 class="footer-cta-title">Let’s build reliable engineering solutions together.</h2>
+            </div>
+        </div>
+
+        <!-- Part 2: Main Footer Content -->
+        <div class="footer-main">
+            <div class="container">
+                <div class="footer-grid-modern">
+                    <!-- Column 1: Brand -->
+                    <div class="footer-col">
+                        <span class="footer-brand-title"><img loading="lazy" src="/Logo/Steelflex Logo.png" alt="SteelFlex"
+                                style="height: 50px;"></span>
+                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
+                            steel construction solutions.</p>
+                    </div>
+
+                    <!-- Column 2: Quick Links -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Quick Links</h4>
+                        <ul class="footer-links-list">
+                            <li><a href="/" class="active">Home</a></li>
+                            <li><a href="/about-us">About Us</a></li>
+                            <li><a href="/products-structures">Products</a></li>
+                            <li><a href="/capabilities">Capabilities</a></li>
+                            <li><a href="/machineries">Machineries</a></li>
+                            <li><a href="/projects">Projects</a></li>
+                            <li><a href="/careers">Careers</a></li>
+                            <li><a href="/contact-us">Contact Us</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 3: Contact Info -->
+                    <div class="footer-col">
+                        <h4 class="footer-col-title">Contact</h4>
+                        <div class="footer-contact-item">
+                            <span>Phone</span>
+                            +91 94264 43442
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Email</span>
+                            md@steelflexstructures.com
+                        </div>
+                        <div class="footer-contact-item">
+                            <span>Location</span>
+                            Vadodara, Gujarat
+                        </div>
+                        <a href="/review" class="btn-footer-review">Add Review</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part 3: Legal Strip -->
+        <div class="footer-legal">
+            <div class="container">
+                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="animations.js" defer></script>
 </body>
 
 </html>
