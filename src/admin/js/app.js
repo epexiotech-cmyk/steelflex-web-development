@@ -1220,6 +1220,7 @@ window.showProjectModal = (project = null) => {
         <h3>${project ? 'Edit Project' : 'Add Project'}</h3>
         <form id="project-form">
             <div class="form-group"><label>Title</label><input type="text" name="title" class="form-control" value="${project ? project.title : ''}" required></div>
+            <div class="form-group"><label>Category</label><input type="text" name="category" class="form-control" placeholder="e.g. Industrial Warehouse" value="${project ? project.category || '' : ''}" required></div>
             <div class="form-group"><label>Location</label><input type="text" name="location" class="form-control" value="${project ? project.location : ''}" required></div>
             <div class="form-group"><label>Area (SqFt)</label><input type="text" name="area" class="form-control" value="${project ? project.area || '' : ''}"></div>
             <div class="form-group"><label>Weight</label><input type="text" name="weight" class="form-control" value="${project ? project.weight || '' : ''}"></div>
@@ -1255,45 +1256,54 @@ window.showProjectModal = (project = null) => {
                 return;
             }
 
-            const formData = new FormData(e.target);
-
-            // Append Images
-            // 1. Existing paths as strings
-            existingImages.forEach(path => formData.append('existingImages', path));
-            // 2. New Files
-            newFiles.forEach(file => formData.append('images', file));
-
-            // Clean up FormData (remove 'image' from file input if it exists or duplicate names)
-            // Note: FormData(e.target) automatically grabs named inputs. 
-            // My file input has id='file-input' but NO name attribute, so it won't double add.
-            // But I have text inputs.
+            const rawFormData = new FormData(e.target);
+            const projectData = Object.fromEntries(rawFormData.entries());
+            
+            showToast('Uploading and optimizing images...', 'info');
 
             try {
-                const data = Object.fromEntries(formData.entries());
-
-                const getBase64 = (f) => new Promise(res => {
-                    const r = new FileReader(); r.onload = () => res(r.result); r.readAsDataURL(f);
-                });
-
-                data.images = [...existingImages];
+                // 1. Upload new files sequentially to the SEO endpoint
+                const uploadedUrls = [];
                 for (const file of newFiles) {
-                    const b64 = await getBase64(file);
-                    data.images.push(b64);
-                }
-                data.image = data.images.length > 0 ? data.images[0] : null;
+                    const uploadFormData = new FormData();
+                    uploadFormData.append('image', file);
+                    uploadFormData.append('project', projectData.title);
+                    uploadFormData.append('location', projectData.location);
+                    uploadFormData.append('category', projectData.category);
 
+                    // Use fetch directly for /upload
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: uploadFormData
+                    });
+                    
+                    if (!response.ok) throw new Error('Failed to upload image');
+                    const uploadResult = await response.json();
+                    uploadedUrls.push(uploadResult.optimizedUrl);
+                }
+
+                // 2. Finalize project object
+                const finalProject = {
+                    ...projectData,
+                    id: project ? project.id : 'proj_' + Date.now(),
+                    images: [...existingImages, ...uploadedUrls],
+                    image: (existingImages.length > 0) ? existingImages[0] : (uploadedUrls.length > 0 ? uploadedUrls[0] : null),
+                    updatedAt: new Date().toISOString()
+                };
+
+                // 3. Save via DataManager
                 if (project) {
-                    await DataManager.update('projects', project.id, data);
+                    await DataManager.update('projects', project.id, finalProject);
                 } else {
-                    await DataManager.add('projects', data);
+                    await DataManager.add('projects', finalProject);
                 }
-
+                
                 closeModal();
                 showToast(project ? 'Project updated' : 'Project saved');
                 loadModule('projects');
             } catch (err) {
                 console.error(err);
-                alert('Error processing request: ' + (err.message || 'Unknown error'));
+                showToast('Error processing request: ' + err.message, 'error');
             }
         };
     });
