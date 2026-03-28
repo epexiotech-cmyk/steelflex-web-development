@@ -54,11 +54,22 @@
 </head>
 
 <body class="home-page">
+    <div id="splash">
+        <!-- Video -->
+        <video id="splashVideo" autoplay muted playsinline preload="auto">
+            <source src="/assets/Splash Screen/Splash screen.mp4" type="video/mp4">
+        </video>
+
+        <!-- Fallback Logo -->
+        <img id="fallbackLogo" src="/Logo/Steelflex Logo.png" alt="SteelFlex Logo" />
+    </div>
+
+    <div id="mainContent">
     <!-- Header -->
     <header class="main-header">
         <div class="container nav-container">
             <div class="logo">
-                <a href="/"><img loading="lazy" src="/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
+                <a href="/"><img loading="lazy" src="/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img" style="opacity: 0; transition: opacity 0.4s ease;"></a>
             </div>
             <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
             <nav class="main-nav">
@@ -104,15 +115,15 @@
             <!-- Sticky viewport: full 100vh, always visible while scrolling -->
             <div class="peb-sticky">
                 <!-- Left: full-height image -->
-                <img loading="lazy" id="peb-img" src="/uploads/projects/1771593106869-458283185.webp"
-                    alt="PEB Construction">
+                <img loading="lazy" id="peb-img" src="/src/website/assets/Why Choose PEB/Faster Construction.webp"
+                    alt="Faster Construction PEB">
                 <div class="peb-img-overlay"></div>
 
                 <!-- Right: text panel -->
                 <div class="peb-text-panel">
                     <div class="peb-sticky-label">Why Choose PEB?</div>
 
-                    <div class="peb-step active" data-img="/uploads/projects/1771593106869-458283185.webp">
+                    <div class="peb-step active" data-img="/src/website/assets/Why Choose PEB/Faster Construction.webp">
                         <span class="peb-step-num">01</span>
                         <h2>Faster Construction</h2>
                         <p>Pre-Engineered Buildings are designed and manufactured off-site, reducing on-site
@@ -120,7 +131,7 @@
                             means faster return on investment.</p>
                     </div>
 
-                    <div class="peb-step" data-img="/uploads/projects/1771593146852-276015895.webp">
+                    <div class="peb-step" data-img="/src/website/assets/Why Choose PEB/Cost Efficiency.webp">
                         <span class="peb-step-num">02</span>
                         <h2>Cost Efficiency</h2>
                         <p>Through optimized structural designs, automated factory production, and minimal on-site
@@ -128,7 +139,7 @@
                             expenses.</p>
                     </div>
 
-                    <div class="peb-step" data-img="/uploads/projects/1771593146882-860268963.webp">
+                    <div class="peb-step" data-img="/src/website/assets/Why Choose PEB/Flexible Design.webp">
                         <span class="peb-step-num">03</span>
                         <h2>Flexible Design</h2>
                         <p>Our steel buildings offer clear-span architecture without interior columns. This highly
@@ -136,21 +147,21 @@
                             layouts.</p>
                     </div>
 
-                    <div class="peb-step" data-img="/uploads/projects/1771593146943-6072997.webp">
+                    <div class="peb-step" data-img="/src/website/assets/Why Choose PEB/Structural Strength.webp">
                         <span class="peb-step-num">04</span>
                         <h2>Structural Strength</h2>
                         <p>Engineered using high-tensile premium steel, our PEB frameworks offer maximum resilience
                             against severe weather conditions, heavy wind loads, and high-impact seismic activity.</p>
                     </div>
 
-                    <div class="peb-step" data-img="/uploads/projects/1771593328511-817269548.webp">
+                    <div class="peb-step" data-img="/src/website/assets/Why Choose PEB/Sustainability.webp">
                         <span class="peb-step-num">05</span>
                         <h2>Sustainability</h2>
                         <p>Steel is 100% recyclable. From energy-efficient insulated panels to dry-construction methods,
                             PEB significantly reduces carbon footprint and long-term environmental impact.</p>
                     </div>
 
-                    <div class="peb-step" data-img="/uploads/projects/1771593328630-474459650.webp">
+                    <div class="peb-step" data-img="/src/website/assets/Why Choose PEB/Low Maintenance.webp">
                         <span class="peb-step-num">06</span>
                         <h2>Low Maintenance</h2>
                         <p>Featuring corrosion-resistant coatings and heavy-duty steel panels, our buildings are built
@@ -168,53 +179,53 @@
         <!-- 2. Services Section -->
         <section id="services" class="section services">
             <div class="container">
-                <h2 class="section-title">Our Services</h2>
-                <div class="service-grid">
-                    <div class="card">
+                <h2 class="section-title reveal-on-scroll">Our Services</h2>
+                <div class="service-grid" data-stagger>
+                    <div class="card reveal-on-scroll">
                         <div class="icon">🏗️</div>
                         <h3>Pre-Engineered Buildings (PEB)</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">📦</div>
                         <h3>Warehousing and Logistics</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">🏭</div>
                         <h3>Industrial Facilities</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">🏢</div>
                         <h3>Commercial Buildings</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">🎓</div>
                         <h3>Educational Institutions</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">🏟️</div>
                         <h3>Sports Complexes</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">🏥</div>
                         <h3>Healthcare Facilities</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">✈️</div>
                         <h3>Aviation and Transportation</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">🔑</div>
                         <h3>EPC Turnkey Solutions</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">🌿</div>
                         <h3>Smart and Green Buildings</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">📐</div>
                         <h3>Design Evaluation and Vetting</h3>
                     </div>
-                    <div class="card">
+                    <div class="card reveal-on-scroll">
                         <div class="icon">🌍</div>
                         <h3>Structural Engineering Exports</h3>
                     </div>
@@ -227,17 +238,17 @@
         <!-- 5. Manufacturing Strength -->
         <section id="manufacturing" class="section manufacturing-new">
             <div class="container">
-                <h2 class="section-title">Manufacturing Strength</h2>
+                <h2 class="section-title reveal-on-scroll">Manufacturing Strength</h2>
                 <div class="manufacturing-grid">
-                    <div class="mfg-info">
+                    <div class="mfg-info reveal-on-scroll delay-1">
                         <p class="mfg-lead">Our world-class manufacturing facility in Vadodara, Gujarat is equipped to
                             handle complex steel
                             structures with precision and speed.</p>
-                        <ul class="mfg-features">
-                            <li><span class="mfg-icon">⚙️</span> CNC automated machines for precision</li>
-                            <li><span class="mfg-icon">🔨</span> In-house fabrication & welding excellence</li>
-                            <li><span class="mfg-icon">🏗️</span> High crane handling capacity</li>
-                            <li><span class="mfg-icon">👷‍♂️</span> Certified welders & fitters</li>
+                        <ul class="mfg-features" data-stagger>
+                            <li class="reveal-on-scroll"><span class="mfg-icon">⚙️</span> CNC automated machines for precision</li>
+                            <li class="reveal-on-scroll"><span class="mfg-icon">🔨</span> In-house fabrication & welding excellence</li>
+                            <li class="reveal-on-scroll"><span class="mfg-icon">🏗️</span> High crane handling capacity</li>
+                            <li class="reveal-on-scroll"><span class="mfg-icon">👷‍♂️</span> Certified welders & fitters</li>
                         </ul>
                     </div>
                 </div>
@@ -247,11 +258,11 @@
         <!-- 3. Project Showcase -->
         <section id="projects" class="section projects">
             <div class="container">
-                <h2 class="section-title">Project Showcase</h2>
+                <h2 class="section-title reveal-on-scroll">Project Showcase</h2>
                 <div id="home-completed-projects" class="projects-grid" data-stagger>
                     <div style="grid-column: 1/-1; text-align: center; color: #888;">Loading projects...</div>
                 </div>
-                <div class="view-more-container" style="text-align: center; margin-top: 3rem;">
+                <div class="view-more-container reveal-on-scroll" style="text-align: center; margin-top: 3rem;">
                     <a href="/projects" class="btn btn-primary">View More</a>
                 </div>
             </div>
@@ -261,14 +272,14 @@
         <section id="reviews" class="section reviews"
             style="padding: 5rem 0; background-color: #f4f7fb; text-align: center;">
             <div class="container" style="display: flex; flex-direction: column; align-items: center;">
-                <h2 class="section-title">Client Reviews</h2>
-                <p style="font-size: 1.15rem; color: #555; max-width: 650px; margin: 0 auto 2.5rem; line-height: 1.6;">
+                <h2 class="section-title reveal-on-scroll">Client Reviews</h2>
+                <p class="reveal-on-scroll delay-1" style="font-size: 1.15rem; color: #555; max-width: 650px; margin: 0 auto 2.5rem; line-height: 1.6;">
                     Hear what our trusted partners and clients say about our commitment to quality, speed, and precision
                     in steel structural development.
                 </p>
 
                 <!-- Reviews Carousel -->
-                <div class="reviews-carousel-container"
+                <div class="reviews-carousel-container reveal-on-scroll delay-2"
                     style="width: 100%; max-width: 1100px; margin: 0 auto 2.5rem; position: relative;">
                     <div style="overflow: hidden; padding-top: 40px; padding-bottom: 80px;" id="reviews-viewport">
                         <div id="reviews-track" class="reviews-track"
@@ -282,7 +293,7 @@
                         style="display: flex; justify-content: center; gap: 8px;"></div>
                 </div>
 
-                <a href="/review" class="btn btn-primary">Give Us Your Precious Review</a>
+                <a href="/review" class="btn btn-primary reveal-on-scroll delay-3">Give Us Your Precious Review</a>
             </div>
         </section>
 
@@ -293,9 +304,9 @@
         <!-- 7. Sustainability Redesign -->
         <section id="sustainability" class="section sustainability-v2">
             <div class="container">
-                <h2 class="section-title">Committed to Sustainability</h2>
+                <h2 class="section-title reveal-on-scroll">Committed to Sustainability</h2>
 
-                <div class="sustainability-lead">
+                <div class="sustainability-lead reveal-on-scroll delay-1">
                     <p>At SteelFlex Structures, we prioritize <strong>Sustainable Construction</strong> by delivering
                         high-performance <strong>Pre-Engineered Buildings (PEB)</strong> and robust <strong>Steel
                             Structures</strong>. Our dedication to building <strong>Eco-Friendly Infrastructure</strong>
@@ -307,26 +318,26 @@
                         value for both our clients and the planet.</p>
                 </div>
 
-                <div class="sustainability-features-grid">
-                    <div class="sf-item">
+                <div class="sustainability-features-grid" data-stagger>
+                    <div class="sf-item reveal-on-scroll">
                         <div class="sf-icon">♻️</div>
                         <h3>100% Recyclable</h3>
                         <p>Our steel components are infinitely recyclable without loss of structural integrity or
                             quality.</p>
                     </div>
-                    <div class="sf-item">
+                    <div class="sf-item reveal-on-scroll">
                         <div class="sf-icon">💡</div>
                         <h3>Energy Efficient</h3>
                         <p>Advanced insulation and smart designs significantly reduce long-term operational energy
                             costs.</p>
                     </div>
-                    <div class="sf-item">
+                    <div class="sf-item reveal-on-scroll">
                         <div class="sf-icon">💧</div>
                         <h3>Dry Construction</h3>
                         <p>Zero water-usage on-site processes prevent local water pollution and preserve vital
                             resources.</p>
                     </div>
-                    <div class="sf-item">
+                    <div class="sf-item reveal-on-scroll">
                         <div class="sf-icon">📉</div>
                         <h3>Low Carbon</h3>
                         <p>Precision engineering and optimized logistics result in a significantly lower overall carbon
@@ -334,7 +345,7 @@
                     </div>
                 </div>
 
-                <div class="sustainability-details-row">
+                <div class="sustainability-details-row reveal-on-scroll">
                     <div class="sd-col">
                         <h3>Our Approach</h3>
                         <ul>
@@ -361,7 +372,7 @@
                     </div>
                 </div>
 
-                <div class="sustainability-cta-container">
+                <div class="sustainability-cta-container reveal-on-scroll">
                     <a href="/contact-us" class="btn-sustainability-cta">Learn More About Our Sustainable
                         Solutions</a>
                 </div>
@@ -373,13 +384,13 @@
         <section class="section cta"
             style="background-color: #2F528F; color: #fff; text-align: center; padding: 5rem 2rem; margin-top: 40px;">
             <div class="container">
-                <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: #fff;">Have a Project in Mind?</h2>
-                <p
+                <h2 class="reveal-on-scroll" style="font-size: 2.5rem; margin-bottom: 1rem; color: #fff;">Have a Project in Mind?</h2>
+                <p class="reveal-on-scroll delay-1"
                     style="font-size: 1.15rem; max-width: 650px; margin: 0 auto 2.5rem; color: #e1e9fc; line-height: 1.6;">
                     Let's build something exceptional together. Our team of experts is ready to discuss your structural
                     needs and deliver premium fabrication solutions.
                 </p>
-                <a href="/contact-us" class="btn btn-primary"
+                <a href="/contact-us" class="btn btn-primary reveal-on-scroll delay-2"
                     style="background-color: #fff; color: #2F528F; font-weight: bold; padding: 14px 35px; font-size: 1.1rem; border-radius: 30px; border: none;">Contact
                     Us Today</a>
             </div>
@@ -448,6 +459,38 @@
                 }
             });
         });
+    </script>
+    <script>
+        // PEB Mobile: inject per-step images on small screens
+        function initPebMobile() {
+            if (window.innerWidth > 768) return;
+
+            document.querySelectorAll('.peb-step').forEach(function (step) {
+                var imgSrc = step.getAttribute('data-img');
+                if (!imgSrc) return;
+
+                // Skip if already injected
+                if (step.querySelector('.peb-mobile-img')) return;
+
+                // Create and inject the step image at the very top
+                var img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = step.querySelector('h2') ? step.querySelector('h2').textContent.trim() : 'PEB';
+                img.className = 'peb-mobile-img';
+                img.loading = 'lazy';
+                step.insertBefore(img, step.firstChild);
+
+                // Wrap remaining text children in .peb-step-content
+                var contentDiv = document.createElement('div');
+                contentDiv.className = 'peb-step-content';
+                Array.from(step.childNodes).forEach(function (child) {
+                    if (child !== img) contentDiv.appendChild(child);
+                });
+                step.appendChild(contentDiv);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initPebMobile);
     </script>
     <script src="animations.js" defer></script>
     <script>
@@ -684,7 +727,110 @@
             </div>
         </div>
     </footer>
+    </div>
 
+    <script>
+        const splash = document.getElementById("splash");
+        const video = document.getElementById("splashVideo");
+        const logo = document.getElementById("fallbackLogo");
+        const main = document.getElementById("mainContent");
+
+        // Prevent scrolling while splash is active
+        document.body.style.overflow = "hidden";
+
+        let fallbackTriggered = false;
+
+        // 👉 If video plays successfully
+        video.onplaying = () => {
+            fallbackTriggered = false;
+        };
+
+        // 👉 If video ends → go to site
+        video.onended = () => {
+            endSplash();
+        };
+
+        // 👉 If video fails or takes too long → show logo fallback
+        setTimeout(() => {
+            if (!video.currentTime || video.readyState < 3) {
+                triggerFallback();
+            }
+        }, 2000); // wait 2 sec max for video
+
+        // 👉 Fallback logic
+        function triggerFallback() {
+            fallbackTriggered = true;
+            video.style.display = "none";
+            logo.style.opacity = "1";
+
+            setTimeout(() => {
+                endSplash();
+            }, 3000); // 3 sec logo display
+        }
+
+        function endSplash() {
+            if (fallbackTriggered) {
+                // Freeze fallback logo at its current size and position
+                const startRect = logo.getBoundingClientRect();
+                logo.style.animation = "none";
+                logo.style.position = "fixed";
+                logo.style.left = startRect.left + "px";
+                logo.style.top = startRect.top + "px";
+                logo.style.width = startRect.width + "px";
+                logo.style.height = startRect.height + "px";
+                logo.style.transform = "none";
+                logo.style.margin = "0";
+                
+                // Allow page scrolling so the target logo shifts to its final pos (scrollbars)
+                document.body.style.overflow = "auto";
+                
+                const targetLogo = document.querySelector(".logo-img");
+                if (targetLogo) {
+                    const targetRect = targetLogo.getBoundingClientRect();
+                    
+                    // Force reflow so starting positions are calculated frame 1
+                    void logo.offsetWidth;
+
+                    // Apply smooth transition
+                    logo.style.transition = "all 0.8s cubic-bezier(0.25, 1, 0.5, 1)";
+                    
+                    // Animate to destination
+                    logo.style.left = targetRect.left + "px";
+                    logo.style.top = targetRect.top + "px";
+                    logo.style.width = targetRect.width + "px";
+                    logo.style.height = targetRect.height + "px";
+                    
+                    // Fade out only the background, and allow clicks through
+                    splash.style.transition = "background-color 0.8s ease";
+                    splash.style.backgroundColor = "transparent";
+                    splash.style.pointerEvents = "none";
+                    
+                    setTimeout(() => {
+                        splash.style.display = "none";
+                        targetLogo.style.opacity = "1";
+                    }, 800);
+                } else {
+                    // Safety check if no target logo exists on page
+                    splash.classList.add("fade-out");
+                    setTimeout(() => {
+                        splash.style.display = "none";
+                    }, 1000);
+                }
+            } else {
+                // Standard video finish fade out
+                splash.style.pointerEvents = "none";
+                splash.classList.add("fade-out");
+                document.body.style.overflow = "auto";
+                
+                const targetLogo = document.querySelector(".logo-img");
+                if (targetLogo) targetLogo.style.opacity = "1";
+                
+                setTimeout(() => {
+                    splash.style.display = "none";
+                }, 1000);
+            }
+        }
+    </script>
     <script src="animations.js" defer></script>
 </body>
 

@@ -3803,12 +3803,12 @@ section {
     bottom: 0;
 }
 
-/* Image: left 55%, full height */
+/* Image: left side, now 100px wider */
 #peb-img {
     position: absolute;
     top: 0;
     left: 0;
-    width: 55%;
+    width: calc(55% + 100px);
     height: 100%;
     object-fit: cover;
     display: block;
@@ -3820,14 +3820,14 @@ section {
     opacity: 0;
 }
 
-/* Right-edge gradient */
+/* Right-edge gradient — shifted 100px right */
 .peb-img-overlay {
     position: absolute;
     top: 0;
     left: 0;
-    width: 62%;
+    width: calc(62% + 100px);
     height: 100%;
-    background: linear-gradient(to right, transparent 55%, #0b1120 100%);
+    background: linear-gradient(to right, transparent calc(55% + 100px), #0b1120 100%);
     z-index: 2;
     pointer-events: none;
 }
@@ -3849,12 +3849,12 @@ section {
     /* Solid Title */
 }
 
-/* Right text panel */
+/* Right text panel — shifted 100px right */
 .peb-text-panel {
     position: absolute;
     top: 0;
     right: 0;
-    width: 45%;
+    width: calc(45% - 100px);
     height: 100%;
     z-index: 3;
 }
@@ -3916,53 +3916,123 @@ section {
     margin: 0;
 }
 
-/* Mobile */
+/* Mobile — vertical stacked layout (image per step) */
 @media (max-width: 768px) {
+
+    /* Section: remove scroll-height trick, auto-height for stacking */
     .peb-apple {
-        height: auto;
+        height: auto !important;
+        padding: 0 0 20px;
     }
 
+    /* Sticky panel: become a static flex column container */
     .peb-sticky,
     .peb-sticky.is-fixed,
     .peb-sticky.is-bottom {
         position: relative !important;
         top: auto !important;
         bottom: auto !important;
-        height: auto;
-        overflow: visible;
+        left: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+        display: flex;
+        flex-direction: column;
+        background: #0b1120;
     }
 
+    /* Hide the desktop shared image — each step gets its own */
     #peb-img {
-        position: relative;
-        width: 100%;
-        height: 55vw;
-        max-height: 280px;
+        display: none !important;
     }
 
+    /* Hide desktop gradient overlay */
     .peb-img-overlay {
+        display: none !important;
+    }
+
+    /* Section label: stays at top */
+    .peb-sticky-label {
+        position: relative !important;
+        top: auto !important;
+        width: 100%;
+        padding: 2.5rem 1rem 1.5rem;
+        font-size: clamp(1.5rem, 6vw, 2rem);
+        text-align: center;
+        letter-spacing: 0.15em;
+    }
+
+    /* Text panel: full width, static, just wraps steps */
+    .peb-text-panel {
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        z-index: auto;
+    }
+
+    /* Each step: full-width vertical card */
+    .peb-step {
+        position: relative !important;
+        inset: auto !important;
+        opacity: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 0;
+        margin: 0 12px 28px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    /* Remove the desktop cyan bar — replaced by image */
+    .peb-step::before {
         display: none;
     }
 
-    .peb-text-panel {
-        position: relative;
+    /* Injected mobile image (added by JS) */
+    .peb-mobile-img {
+        display: block;
         width: 100%;
-        height: auto;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 0;
+        flex-shrink: 0;
     }
 
-    .peb-step {
-        position: relative;
-        inset: auto;
-        opacity: 1;
-        padding: 2.5rem 6%;
-        border-top: 1px solid rgba(255, 255, 255, 0.07);
+    /* Text area inside each card */
+    .peb-step-content {
+        padding: 18px 15px 20px;
     }
 
+    /* Step number */
     .peb-step-num {
-        font-size: 2.8rem;
+        display: block;
+        font-size: 2rem !important;
+        -webkit-text-stroke: 1px rgba(0, 242, 255, 0.5);
+        margin-bottom: 6px;
     }
 
+    /* Step heading */
     .peb-step h2 {
-        font-size: 1.5rem;
+        font-size: 1.3rem !important;
+        margin: 0 0 10px !important;
+        color: #00f2ff;
+    }
+
+    /* Step paragraph */
+    .peb-step p {
+        font-size: 0.95rem !important;
+        line-height: 1.65 !important;
+        color: #94a3b8;
+        max-width: 100%;
+        margin: 0;
+    }
+
+    /* Scroll spacer: collapse on mobile */
+    .peb-content {
+        display: none !important;
     }
 }
 
@@ -4025,13 +4095,13 @@ section {
 
 .hero-unskew-image {
     position: absolute;
-    top: -10%;
-    left: -20%;
+    top: 0;
+    left: -10%;
     width: 120%;
     height: 120%;
     background-image: url('/src/website/assets/hero-bg.webp');
     background-size: cover;
-    background-position: center;
+    background-position: center center;
     transform: skewX(20deg);
     /* Reverses skew to keep image straight */
     transform-origin: center center;
@@ -4153,8 +4223,16 @@ section {
         left: 0;
     }
 
+    /* Mobile: counter-unskew must match parent skewY(-10deg) */
     .hero-unskew-image {
+        top: -15%;
+        left: -10%;
+        width: 120%;
+        height: 130%;
+        background-size: cover;
+        background-position: center top;
         transform: skewY(10deg);
+        transform-origin: center center;
     }
 
     .hero-buttons {
@@ -4473,4 +4551,55 @@ img {
     .sustainability-details-row {
         padding: 2.5rem 1.5rem;
     }
+}
+
+/* =========================================
+   Splash Screen
+   ========================================= */
+#splash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0a0f1a; /* dark premium background */
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Video full screen */
+#splash video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Logo fallback */
+#fallbackLogo {
+  width: 180px;
+  opacity: 0;
+  position: absolute;
+  transition: opacity 0.5s ease;
+  animation: pulse 2s infinite;
+}
+
+/* Fade animation */
+.fade-out {
+  animation: fadeOut 1s ease forwards;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
 }
