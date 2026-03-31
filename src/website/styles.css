@@ -407,10 +407,11 @@ section {
 }
 
 /* Center Image (Significantly Larger ~50% increase) */
-/* Center Image (320px Wide - Scaled Up) */
+/* Center Image (384px Wide - Scaled Up by 20%) */
+
 .arc-center-image {
-    width: 320px;
-    height: 200px;
+    width: 384px;
+    height: 240px;
     margin: 0 auto 15px;
     border-radius: 16px;
     overflow: hidden;
@@ -419,7 +420,6 @@ section {
     background: #fff;
     pointer-events: auto;
 }
-
 .arc-center-image img {
     width: 100%;
     height: 100%;
@@ -1620,17 +1620,14 @@ section {
 }
 
 /* =========================================
-   PARTNERS SECTION (LOGO CAROUSEL)
+   PARTNERS SECTION (STATIC GRID)
    ========================================= */
 .partners-section {
     padding: 60px 0;
     background-color: #FFFFFF;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
-    /* Subtle top divider */
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    /* Subtle bottom divider */
     overflow: hidden;
-    /* Hide overflow for carousel */
 }
 
 .partners-title {
@@ -1639,67 +1636,70 @@ section {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: #898989;
-    /* Monochrome grey */
     margin-bottom: 40px;
     font-weight: 600;
 }
 
-.logo-carousel {
-    position: relative;
-    width: 100%;
+.partners-grid {
     display: flex;
-    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
-}
-
-.logo-track {
-    display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 60px;
-    /* Space between logos */
-    animation: scroll 30s linear infinite;
-    width: max-content;
-    padding: 20px 0;
+    gap: 80px;
+    flex-wrap: wrap;
+    margin-top: 20px;
 }
 
-.logo-track:hover {
-    animation-play-state: paused;
+.partner-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+    max-width: 250px;
 }
 
-.partner-logo {
-    height: 40px;
-    /* Consistent height */
+.partner-item:hover {
+    transform: translateY(-5px);
+}
+
+.partner-logo-img {
+    height: 60px;
     width: auto;
     object-fit: contain;
-    filter: grayscale(100%) opacity(0.6);
-    transition: all 0.3s ease;
-    cursor: pointer;
+    filter: grayscale(100%) opacity(0.8);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    margin-bottom: 20px;
 }
 
-.partner-logo:hover {
+.partner-item:hover .partner-logo-img {
     filter: grayscale(0%) opacity(1);
     transform: scale(1.05);
 }
 
-@keyframes scroll {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(-50%);
-        /* Move half way (assuming 2 sets) */
-    }
+.partner-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    letter-spacing: 0.5px;
+    line-height: 1.3;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-    .logo-track {
-        gap: 40px;
+@media (max-width: 900px) {
+    .partners-grid {
+        gap: 50px;
     }
+}
 
-    .partner-logo {
-        height: 30px;
+@media (max-width: 768px) {
+    .partners-grid {
+        gap: 40px;
+        flex-direction: column;
+    }
+    
+    .partner-logo-img {
+        height: 50px;
     }
 }
 

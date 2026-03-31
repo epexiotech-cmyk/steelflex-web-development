@@ -485,7 +485,7 @@
                 const reviews = allReviews.filter(r => (r.status || '').toLowerCase() === 'approved' || (r.status || '').toLowerCase() === 'accepted');
                 grid.innerHTML = '';
                 if (reviews.length === 0) {
-                    grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #777;">Be the first to leave a review!</p>';
+                    document.getElementById('testimonials-section').style.display = 'none';
                     return;
                 }
                 reviews.forEach(review => {

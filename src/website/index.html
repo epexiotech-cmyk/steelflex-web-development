@@ -510,7 +510,7 @@
                     const reviews = allReviews.filter(r => r.status === 'Active' || r.status === 'Accepted');
 
                     if (reviews.length === 0) {
-                        track.innerHTML = '<div style="width: 100%; flex-shrink: 0; padding: 20px; color: #777;">No reviews available at the moment.</div>';
+                        document.getElementById('reviews').style.display = 'none';
                         return;
                     }
 
