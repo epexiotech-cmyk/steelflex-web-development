@@ -420,6 +420,7 @@ section {
     background: #fff;
     pointer-events: auto;
 }
+
 .arc-center-image img {
     width: 100%;
     height: 100%;
@@ -1697,7 +1698,7 @@ section {
         gap: 40px;
         flex-direction: column;
     }
-    
+
     .partner-logo-img {
         height: 50px;
     }
@@ -2948,7 +2949,8 @@ section {
 
     .service-grid {
         display: grid;
-        gap: 3rem 2.5rem; /* Increased vertical gap for vertical flow */
+        gap: 3rem 2.5rem;
+        /* Increased vertical gap for vertical flow */
         /* Mobile: 1 Column */
         grid-template-columns: 1fr;
     }
@@ -2960,7 +2962,8 @@ section {
         border-radius: 28px;
         /* Softer, more organic corners */
         text-align: center;
-        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.04); /* Ultra-soft shadow */
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.04);
+        /* Ultra-soft shadow */
         transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s ease, background 0.6s ease;
         height: 100%;
         border: 1px solid rgba(0, 0, 0, 0.03);
@@ -2989,14 +2992,16 @@ section {
         font-size: 1.25rem;
         font-weight: 600;
         margin-bottom: 0;
-        color: var(--primary-color); /* Brand color integration */
+        color: var(--primary-color);
+        /* Brand color integration */
     }
 
     /* Hover Effects */
     .card:hover {
         transform: translateY(-5px) scale(1.02);
         background: #ffffff;
-        box-shadow: 0 25px 60px rgba(47, 82, 143, 0.12); /* Branded soft glow */
+        box-shadow: 0 25px 60px rgba(47, 82, 143, 0.12);
+        /* Branded soft glow */
         z-index: 10;
         border-color: var(--button-color);
     }
@@ -3023,7 +3028,8 @@ section {
     @media (min-width: 1024px) {
         .service-grid {
             grid-template-columns: repeat(4, 1fr);
-            padding-bottom: 40px; /* Space for staggered overlap */
+            padding-bottom: 40px;
+            /* Space for staggered overlap */
         }
     }
 
@@ -4117,12 +4123,12 @@ section {
 }
 
 .hero-text-content {
-    max-width: 520px;
+    max-width: 580px;
     padding-left: 50px;
 }
 
 .hero-text-content h1 {
-    font-size: clamp(3rem, 5vw, 4.8rem);
+    font-size: clamp(2.7rem, 4.5vw, 3.8rem);
     font-weight: 800;
     line-height: 1.15;
     color: #fff;
@@ -4131,6 +4137,7 @@ section {
 
 .highlight-yellow {
     color: #ffb703;
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
 }
 
 .hero-sub {
@@ -4284,6 +4291,11 @@ body {
     overflow-x: hidden;
 }
 
+.text-primary-bold {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
 /* 4. Responsive Grid System Upgrade */
 .hero-grid,
 .content-split,
@@ -4317,6 +4329,7 @@ img {
 
 /* 7. Viewport Width Adjustments for Ultra-Wide Screens */
 @media (min-width: 1400px) {
+
     /* Homepage remains full-width */
     .home-page .container,
     .home-page .hero-container {
@@ -4333,6 +4346,7 @@ img {
 }
 
 @media (min-width: 1600px) {
+
     .home-page .container,
     .home-page .hero-container {
         max-width: 100% !important;
@@ -4341,6 +4355,7 @@ img {
 
 /* 8. Mobile Tight Optimization */
 @media (max-width: 768px) {
+
     .container,
     .hero-container,
     .nav-container,
@@ -4350,6 +4365,7 @@ img {
         padding-right: 16px !important;
     }
 }
+
 /* 9. Manufacturing Strength Section Styles */
 .manufacturing-new {
     background: linear-gradient(135deg, #f8faff 0%, #ffffff 100%);
@@ -4557,49 +4573,61 @@ img {
    Splash Screen
    ========================================= */
 #splash {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #0a0f1a; /* dark premium background */
-  z-index: 9999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #0a0f1a;
+    /* dark premium background */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 
 /* Video full screen */
 #splash video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* Logo fallback */
 #fallbackLogo {
-  width: 180px;
-  opacity: 0;
-  position: absolute;
-  transition: opacity 0.5s ease;
-  animation: pulse 2s infinite;
+    width: 180px;
+    opacity: 0;
+    position: absolute;
+    transition: opacity 0.5s ease;
+    animation: pulse 2s infinite;
 }
 
 /* Fade animation */
 .fade-out {
-  animation: fadeOut 1s ease forwards;
+    animation: fadeOut 1s ease forwards;
 }
 
 @keyframes fadeOut {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 0.8; }
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
 }
