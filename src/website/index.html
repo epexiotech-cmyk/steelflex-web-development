@@ -117,9 +117,15 @@
 
                 <!-- Sticky viewport: full 100vh, always visible while scrolling -->
                 <div class="peb-sticky">
-                    <!-- Left: full-height image -->
-                    <img loading="lazy" id="peb-img" src="assets/Why Choose PEB/Faster Construction.webp"
-                        alt="Faster Construction PEB">
+                    <!-- Left: stacked images for smooth crossfade -->
+                    <div id="peb-img-container">
+                        <img loading="lazy" class="peb-bg-img active" src="assets/Why Choose PEB/Faster Construction.webp" alt="Faster Construction">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Cost Efficiency.webp" alt="Cost Efficiency">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Flexible Design.webp" alt="Flexible Design">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Structural Strength.webp" alt="Structural Strength">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Sustainability.webp" alt="Sustainability">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Low Maintenance.webp" alt="Low Maintenance">
+                    </div>
                     <div class="peb-img-overlay"></div>
 
                     <!-- Right: text panel -->

@@ -213,25 +213,25 @@ const initPebAppleScroll = () => {
     const section = document.querySelector('.peb-apple');
     const panel   = document.querySelector('.peb-sticky');
     const steps   = document.querySelectorAll('.peb-text-panel .peb-step');
-    const img     = document.getElementById('peb-img');
+    const bgImages = document.querySelectorAll('.peb-bg-img');
 
-    if (!section || !panel || !steps.length || !img) return;
+    if (!section || !panel || !steps.length || !bgImages.length) return;
 
-    // Activate step by index + crossfade image
+    // Activate step by index + crossfade images via class toggling
     const showStep = (index) => {
         steps.forEach((s, i) => {
             if (i === index) {
                 s.classList.add('active');
-                const newSrc = s.getAttribute('data-img');
-                if (newSrc && img.src.indexOf(newSrc) === -1) {
-                    img.classList.add('fade');
-                    setTimeout(() => {
-                        img.src = newSrc;
-                        img.classList.remove('fade');
-                    }, 200);
-                }
             } else {
                 s.classList.remove('active');
+            }
+        });
+
+        bgImages.forEach((img, i) => {
+            if (i === index) {
+                img.classList.add('active');
+            } else {
+                img.classList.remove('active');
             }
         });
     };
@@ -270,10 +270,76 @@ const initPebAppleScroll = () => {
     onScroll(); // run once on init
 };
 
+const initEpcPushScroll = () => {
+    const section = document.querySelector('.epc-sticky-section');
+    const track   = document.querySelector('.epc-horizontal-track');
+    const items   = document.querySelectorAll('.epc-item');
+
+    if (!section || !track || !items.length) return;
+
+    const onScroll = () => {
+        const rect          = section.getBoundingClientRect();
+        const vh            = window.innerHeight;
+        const sectionTop    = rect.top;
+        const sectionHeight = section.offsetHeight;
+
+        if (sectionTop > vh || rect.bottom < 0) return;
+
+        // Progress 0 to 1
+        const travel = sectionHeight - vh;
+        let progress = Math.min(Math.max(-sectionTop / travel, 0), 1);
+        
+        // Add 15% buffer at start and end
+        const buffer = 0.15;
+        let mappedProgress = 0;
+        if (progress > buffer && progress < (1 - buffer)) {
+            mappedProgress = (progress - buffer) / (1 - 2 * buffer);
+        } else if (progress >= (1 - buffer)) {
+            mappedProgress = 1;
+        }
+
+        // Calculate horizontal translation
+        const totalWidth = track.scrollWidth;
+        const visibleWidth = window.innerWidth;
+        const maxTranslate = totalWidth - visibleWidth;
+        const translateX = mappedProgress * maxTranslate;
+        
+        track.style.transform = `translateX(${-translateX}px)`;
+
+        // Individual item physics
+        items.forEach((item) => {
+            const card = item.querySelector('.epc-card');
+            if (!card) return;
+
+            const itemRect = item.getBoundingClientRect();
+            const centerX = window.innerWidth / 2;
+            const itemCenterX = itemRect.left + itemRect.width / 2;
+            const distFromCenter = itemCenterX - centerX;
+            const normDist = distFromCenter / (window.innerWidth / 2);
+
+            const absDist = Math.abs(normDist);
+            if (absDist < 1.2) {
+                // Settle logic: tighter focus
+                const scale = 1 - (absDist * 0.08);
+                const rotate = normDist * 8;
+                const brightness = 1 - (absDist * 0.15);
+                
+                card.style.transform = `scale(${scale}) rotateY(${-rotate}deg)`;
+                card.style.opacity = Math.max(0.4, 1 - absDist);
+                card.style.filter = `brightness(${brightness})`;
+            }
+        });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+};
+
 // Main Initialization
 document.addEventListener('DOMContentLoaded', () => {
     initScrollReveal();
     initPebAppleScroll();
+    initEpcPushScroll();
     initFormsAndVacancies();
     initProjects();
 });
