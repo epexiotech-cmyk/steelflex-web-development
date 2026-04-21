@@ -4646,10 +4646,13 @@ img {
    ========================================= */
 .epc-sticky-section {
     position: relative;
-    height: 700vh; /* Scroll duration */
+    height: 700vh;
+    /* Scroll duration */
     background: #ffffff;
-    overflow: visible !important; /* Required for sticky children */
-    padding: 0; /* Remove default section padding to avoid gaps */
+    overflow: visible !important;
+    /* Required for sticky children */
+    padding: 0;
+    /* Remove default section padding to avoid gaps */
 }
 
 .epc-sticky-wrapper {
@@ -4660,7 +4663,8 @@ img {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Space out header, track, and footer */
+    justify-content: space-between;
+    /* Space out header, track, and footer */
     background: linear-gradient(135deg, #ffffff 0%, #f9fbfe 100%);
 }
 
@@ -4688,15 +4692,17 @@ img {
 
 .epc-horizontal-track {
     display: flex;
-    height: 75vh;
+    gap: 40px;
+    padding: 20px 7.5vw;
+    /* (100vw - 85vw) / 2 = 7.5vw to center first/last cards */
+    width: max-content;
     will-change: transform;
-    padding: 0 7.5vw; /* (100vw - 85vw) / 2 = 7.5vw to center first/last cards */
     align-items: center;
-    transition: transform 0.1s linear;
 }
 
 .epc-item {
-    flex: 0 0 85vw; /* Each item takes up most of viewport width */
+    flex: 0 0 85vw;
+    /* Each item takes up most of viewport width */
     height: 100%;
     padding: 0 40px;
     display: flex;
@@ -4710,13 +4716,15 @@ img {
     width: 100%;
     max-width: 1200px;
     height: 100%;
-    border-radius: 40px; /* More rounded */
+    border-radius: 40px;
+    /* More rounded */
     display: flex;
     align-items: center;
     overflow: hidden;
     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(0, 0, 0, 0.03);
-    transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform, opacity, filter;
+    /* Removed transition to avoid conflict with JS physics loop */
 }
 
 .epc-img-box {
@@ -4735,7 +4743,8 @@ img {
 
 .epc-content {
     flex: 1;
-    padding: 80px; /* More padding */
+    padding: 80px;
+    /* More padding */
     background: #ffffff;
 }
 
@@ -4753,25 +4762,287 @@ img {
 }
 
 .epc-content li {
-    font-size: 18px;
-    line-height: 1.6;
+    font-size: 16px;
+    line-height: 1.55;
     color: #444;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     padding-left: 35px;
     position: relative;
 }
 
 .epc-content li::before {
-    content: '→';
+    content: "→";
     position: absolute;
     left: 0;
     color: var(--button-color);
-    font-weight: 800;
+    font-weight: bold;
+}
+
+/* Core Capabilities Reimagined Flow */
+.capabilities-flow-section {
+    position: relative;
+    padding: 120px 0;
+    background-color: #f8fafc;
+    overflow: hidden;
+}
+
+.capabilities-flow-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(var(--primary-color) 0.5px, transparent 0.5px);
+    background-size: 30px 30px;
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+.flow-header {
+    text-align: center;
+    margin-bottom: 100px;
+}
+
+.flow-title {
+    font-size: 3rem;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+}
+
+.flow-subtitle {
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.flow-container {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+/* Central Line */
+.flow-line-main {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(var(--primary-rgb, 38, 71, 150), 0.1);
+    transform: translateX(-50%);
+}
+
+.flow-line-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    /* Animated via JS */
+    background: var(--button-color);
+    box-shadow: 0 0 15px var(--button-color);
+    transition: height 0.1s linear;
+}
+
+/* Flow Items */
+.flow-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 120px;
+    width: 100%;
+}
+
+.flow-content {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    width: 100%;
+}
+
+.flow-item-left .flow-content {
+    flex-direction: row;
+}
+
+.flow-item-right .flow-content {
+    flex-direction: row-reverse;
+}
+
+.flow-text {
+    flex: 1;
+    max-width: 500px;
+    padding: 20px;
+}
+
+.flow-visual {
+    flex: 1.2;
+}
+
+.flow-number {
+    display: block;
+    font-size: 5rem;
+    font-weight: 900;
+    color: rgba(var(--primary-rgb, 38, 71, 150), 0.3);
+    line-height: 1;
+    margin-bottom: -15px;
+    letter-spacing: -2px;
+}
+
+.flow-item-title {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    transition: text-shadow 0.3s ease, color 0.3s ease;
+}
+
+.flow-text p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #4b5563;
+    margin-bottom: 25px;
+}
+
+.flow-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+}
+
+.flow-tags li {
+    padding: 6px 16px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 100px;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+/* Image Wrapper */
+.flow-image-wrapper {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+    background: #fff;
+    transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.flow-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+/* Node/Dot on Line */
+.flow-node {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border: 3px solid rgba(var(--primary-rgb, 38, 71, 150), 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    transition: all 0.4s ease;
+}
+
+.flow-node.active {
+    background: var(--button-color);
+    border-color: #fff;
+    box-shadow: 0 0 20px var(--button-color), 0 0 40px var(--button-color);
+    width: 20px;
+    height: 20px;
+}
+
+/* Interaction Effects */
+.flow-item:hover .flow-image-wrapper {
+    transform: scale(1.03) translateY(-5px);
+}
+
+.flow-item:hover .flow-image-wrapper img {
+    transform: scale(1.1);
+}
+
+.flow-item:hover .flow-item-title {
+    color: var(--button-color);
+    text-shadow: 0 0 10px rgba(var(--button-rgb, 230, 0, 0), 0.1);
+}
+
+/* Scroll Animations */
+.flow-item {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.flow-item-left.in-view {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+}
+
+.flow-item-right.in-view {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+}
+
+.flow-item-left {
+    transform: translateX(-50px);
+}
+
+.flow-item-right {
+    transform: translateX(50px);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .flow-line-main {
+        left: 30px;
+        transform: none;
+    }
+
+    .flow-node {
+        left: 30px;
+        transform: translate(-50%, -50%);
+    }
+
+    .flow-content {
+        flex-direction: column !important;
+        align-items: flex-start;
+        gap: 30px;
+        padding-left: 60px;
+    }
+
+    .flow-text {
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .flow-visual {
+        width: 100%;
+    }
+
+    .flow-item-left,
+    .flow-item-right {
+        transform: translateY(30px) !important;
+    }
 }
 
 .epc-footer-note {
     text-align: center;
-    padding: 40px 20px;
+    padding: 20px 20px 40px;
+    /* Adjusted padding */
     font-size: 14px;
     color: var(--secondary-color);
     opacity: 0.4;
@@ -4780,28 +5051,494 @@ img {
     text-transform: uppercase;
 }
 
+.epc-indicators {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Center vertically */
+    gap: 15px;
+    padding-top: 50px;
+    padding-bottom: 25px;
+    z-index: 100;
+}
+
+.epc-capsule {
+    width: 10px;
+    height: 10px;
+    background: rgba(38, 71, 150, 0.2);
+    border-radius: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.epc-capsule.active {
+    width: 60px;
+    /* Expand to capsule */
+    height: 8px;
+    /* Slightly thinner when active for elegance */
+    background: rgba(38, 71, 150, 0.1);
+}
+
+.epc-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: var(--button-color);
+    border-radius: 20px;
+    transition: width 0.1s linear;
+}
+
+.epc-capsule:not(.active):hover {
+    background: rgba(38, 71, 150, 0.4);
+    transform: scale(1.3);
+}
+
 /* Mobile Adjustments */
 @media (max-width: 1024px) {
     .epc-item {
         flex: 0 0 95vw;
         padding: 0 20px;
     }
+
     .epc-card {
         flex-direction: column;
     }
+
     .epc-img-box {
         width: 100%;
         height: 40%;
     }
+
     .epc-content {
         padding: 30px;
     }
+
     .epc-content h3 {
         font-size: 24px;
         margin-bottom: 15px;
     }
+
     .epc-content li {
         font-size: 16px;
         margin-bottom: 12px;
     }
 }
+
+/* ============================================================
+   PREMIUM HORIZONTAL WORKFLOW (PIPELINE)
+   ============================================================ */
+
+.workflow-h-section {
+    min-height: 100vh;
+    position: relative;
+    background: #ffffff !important;
+    color: var(--text-color);
+    overflow: visible;
+    padding: 0 !important;
+    /* Kill default padding */
+}
+
+.workflow-h-sticky {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background: #ffffff !important;
+}
+
+/* Workflow Indicators (Capsules) */
+.workflow-indicators {
+    position: absolute;
+    bottom: 50px; /* Moved up by 10px */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    z-index: 100;
+}
+
+.workflow-capsule {
+    width: 12px;
+    height: 12px;
+    background: rgba(38, 71, 150, 0.15);
+    border-radius: 20px;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.workflow-capsule.active {
+    width: 80px;
+    height: 8px;
+    background: rgba(38, 71, 150, 0.05);
+}
+
+.workflow-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background: var(--button-color);
+    border-radius: 20px;
+    transition: width 0.1s linear;
+}
+
+.workflow-capsule:not(.active):hover {
+    background: rgba(38, 71, 150, 0.3);
+    transform: scale(1.2);
+}
+
+/* Header Styles - Perfectly aligned to screenshot */
+.workflow-h-header {
+    padding-top: 51px;
+    padding-bottom: 20px;
+    text-align: center;
+    z-index: 20;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.workflow-main-title {
+    font-size: 3.2rem;
+    color: var(--primary-color);
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+.workflow-main-subtitle {
+    font-size: 1.1rem;
+    color: var(--secondary-color);
+    max-width: 650px;
+    margin: 0 auto;
+    opacity: 0.6;
+    letter-spacing: 1px;
+}
+
+/* Background Effects */
+.workflow-h-bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(38, 71, 150, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(38, 71, 150, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: 1;
+}
+
+.workflow-h-parallax-bg {
+    position: absolute;
+    inset: -10%;
+    background: radial-gradient(circle at 50% 50%, rgba(38, 71, 150, 0.05) 0%, transparent 70%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Mechanical Gear Track System */
+    .gear-track-system {
+        position: absolute;
+        top: 50%;
+        left: 10%;
+        width: 80%;
+        height: 40px;
+        background: linear-gradient(180deg, #e0e5ec 0%, #ffffff 100%);
+        border-radius: 20px;
+        box-shadow: inset 0 4px 8px rgba(38, 71, 150, 0.1), inset 0 -2px 4px rgba(255, 255, 255, 0.8), 0 10px 20px rgba(0, 0, 0, 0.05);
+        border: 1px solid rgba(38, 71, 150, 0.05);
+        transform: translateY(-50%);
+        z-index: 3;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding: 0 5%;
+    }
+
+    /* Light Sweep Highlight */
+    .track-highlight {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 150px;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 151, 211, 0.2), rgba(0, 151, 211, 0.4), rgba(0, 151, 211, 0.2), transparent);
+        transform: translateX(-150px);
+        z-index: 4;
+        pointer-events: none;
+        filter: blur(4px);
+    }
+
+    /* Gear Container & Icons */
+    .gear-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        z-index: 5;
+        position: relative;
+    }
+
+    .gear-icon {
+        color: #a0aabf;
+        opacity: 0.6;
+        transition: color 0.5s ease, opacity 0.5s ease, filter 0.5s ease;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+
+    .gear-icon.small {
+        width: 20px;
+        height: 20px;
+    }
+
+    .gear-icon.medium {
+        width: 28px;
+        height: 28px;
+    }
+
+    .gear-icon.large {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* Gear Rotation Animations */
+    @keyframes gear-spin-cw {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes gear-spin-ccw {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(-360deg);
+        }
+    }
+
+    .gear-icon.cw {
+        animation: gear-spin-cw 10s linear infinite;
+    }
+
+    .gear-icon.ccw {
+        animation: gear-spin-ccw 12s linear infinite;
+    }
+
+    /* Active Gear Glow */
+    .gear-track-system.glow-active .center-gear {
+        color: var(--button-color);
+        opacity: 1;
+        filter: drop-shadow(0 0 10px rgba(0, 151, 211, 0.6));
+        animation: gear-spin-cw 4s linear infinite;
+        /* Spin faster when active */
+    }
+
+    /* Content Container - Vertically centered below header */
+    .workflow-h-container {
+        height: 100vh;
+        display: flex;
+        padding: 0;
+        width: max-content;
+        align-items: center;
+        position: relative;
+        z-index: 5;
+        will-change: transform;
+    }
+
+    .workflow-h-station {
+        width: 100vw;
+        min-width: 100vw;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5vw;
+        padding: 0 5vw;
+        position: relative;
+        opacity: 0.15;
+        transform: scale(0.95);
+        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .workflow-h-station.active {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Station Visual - Back to left side */
+    .station-visual {
+        flex: 0 0 450px;
+        max-width: 450px;
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        aspect-ratio: 16 / 9;
+        background: #f0f4f8;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    }
+
+    .station-visual img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(0.5);
+        transition: transform 1.5s cubic-bezier(0.23, 1, 0.32, 1), filter 0.8s ease;
+    }
+
+    .workflow-h-station.active .station-visual img {
+        filter: grayscale(0);
+        transform: scale(1.05);
+    }
+
+    /* Station Info */
+    .station-info {
+        flex: 0 0 600px;
+        max-width: 600px;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .station-top {
+        height: 50vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: flex-start;
+        padding-bottom: 25px; /* 5px gap + 20px half track */
+    }
+
+    .station-bottom {
+        height: 50vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        padding-top: 30px; /* 10px gap + 20px half track */
+    }
+
+    .workflow-h-station.active .station-info {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+
+    .station-number {
+        display: block;
+        font-size: 5.5rem;
+        font-weight: 900;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        color: rgba(38, 71, 150, 0.15);
+        font-family: "Space Grotesk", sans-serif;
+    }
+
+    .station-title {
+        font-size: 2.8rem;
+        margin-bottom: 0;
+        color: var(--primary-color);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .station-desc {
+        font-size: 1.25rem;
+        color: var(--secondary-color);
+        line-height: 1.6;
+        max-width: 440px;
+    }
+
+    /* Taglines */
+    .workflow-taglines {
+        position: absolute;
+        bottom: 95px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        z-index: 10;
+        pointer-events: none;
+    }
+
+    .tagline-main {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        line-height: 1.2;
+    }
+
+    .tagline-main span {
+        color: var(--button-color);
+    }
+
+    .tagline-sub {
+        font-size: 0.9rem;
+        color: var(--secondary-color);
+        margin: 5px 0 0 0;
+        opacity: 0.7;
+        font-weight: 500;
+        letter-spacing: 1px;
+    }
+
+    /* Scroll Hint */
+    .workflow-h-scroll-hint {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        opacity: 0.4;
+        z-index: 10;
+    }
+
+    .hint-line {
+        width: 1px;
+        height: 30px;
+        background: var(--primary-color);
+        opacity: 0.3;
+    }
+
+    .hint-text {
+        font-size: 0.6rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    @media (max-width: 1024px) {
+        .workflow-h-station {
+            min-width: 95vw;
+            flex-direction: column;
+            text-align: center;
+        }
+    }

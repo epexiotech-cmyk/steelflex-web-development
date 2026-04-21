@@ -277,19 +277,57 @@ const initEpcPushScroll = () => {
 
     if (!section || !track || !items.length) return;
 
-    const onScroll = () => {
-        const rect          = section.getBoundingClientRect();
-        const vh            = window.innerHeight;
-        const sectionTop    = rect.top;
-        const sectionHeight = section.offsetHeight;
+    // State variables for physics
+    let currentX = 0;
+    let targetX = 0;
+    let velocity = 0;
+    let isAnimating = false;
+    let lastUserScroll = Date.now();
+    let lastActiveIndex = 0;
+    let autoScrollStartTime = Date.now();
+    let isProgrammaticScroll = false;
+    let isHoverPaused = false;
+    let lastFrameTime = Date.now();
+    let cumulativeTime = 0;
 
-        if (sectionTop > vh || rect.bottom < 0) return;
+    // Hover Detection
+    let isMouseOverActiveCard = false;
+    items.forEach((item) => {
+        const card = item.querySelector('.epc-card');
+        if (card) {
+            card.addEventListener('mouseenter', () => { isMouseOverActiveCard = true; });
+            card.addEventListener('mouseleave', () => { isMouseOverActiveCard = false; });
+        }
+    });
 
-        // Progress 0 to 1
-        const travel = sectionHeight - vh;
-        let progress = Math.min(Math.max(-sectionTop / travel, 0), 1);
+    // Indicators
+    const capsules = document.querySelectorAll('.epc-capsule');
+
+    // Physics Tuning Constants
+    const SPRING = 0.08;      
+    const FRICTION = 0.75;    
+    const JOLT_BOOST = 1.2;   
+    const TUG_RESISTANCE = 0.4; 
+
+    // Auto-Scroll Settings
+    const AUTO_SCROLL_DELAY = 5000; // 5 seconds per card
+
+    const updatePhysics = () => {
+        const now = Date.now();
+        const deltaTime = now - lastFrameTime;
+        lastFrameTime = now;
+
+        const rect = section.getBoundingClientRect();
+        const vh = window.innerHeight;
         
-        // Add 15% buffer at start and end
+        // Check if section is visible
+        const isVisible = rect.bottom > 0 && rect.top < vh;
+        if (!isVisible && !isAnimating) return;
+
+        const sectionHeight = section.offsetHeight;
+        const travel = sectionHeight - vh;
+        let progress = Math.min(Math.max(-rect.top / travel, 0), 1);
+
         const buffer = 0.15;
         let mappedProgress = 0;
         if (progress > buffer && progress < (1 - buffer)) {
@@ -298,50 +336,452 @@ const initEpcPushScroll = () => {
             mappedProgress = 1;
         }
 
-        // Calculate horizontal translation
+        const activeIndex = Math.round(mappedProgress * (items.length - 1));
+        
+        // Calculate settlement state for the active card
+        const activeItem = items[activeIndex];
+        const activeItemRect = activeItem.getBoundingClientRect();
+        const centerX = window.innerWidth / 2;
+        const itemCenterX = activeItemRect.left + activeItemRect.width / 2;
+        const distFromCenter = Math.abs(itemCenterX - centerX) / (window.innerWidth / 2);
+        
+        // Only pause if mouse is over AND card is settled (centered + low velocity)
+        isHoverPaused = isMouseOverActiveCard && (distFromCenter < 0.1) && (Math.abs(velocity) < 1);
+
+        // If hovering, "push" the start times forward so progress remains frozen
+        if (isHoverPaused) {
+            autoScrollStartTime += deltaTime;
+            lastUserScroll += deltaTime;
+        } else {
+            cumulativeTime += deltaTime;
+        }
+
+        // Sync Indicators & Fill Animation
+        // (activeIndex already calculated above)
+        
+        // Reset timer if card changed manually
+        if (activeIndex !== lastActiveIndex) {
+            lastActiveIndex = activeIndex;
+            autoScrollStartTime = Date.now();
+            capsules.forEach((capsule, i) => {
+                const fill = capsule.querySelector('.epc-fill');
+                if (fill) fill.style.width = '0%';
+                capsule.classList.toggle('active', i === activeIndex);
+            });
+        }
+
+        // AUTO-SCROLL TRIGGER (Inside Loop)
+        const timeSinceInteraction = now - lastUserScroll;
+        const timeSinceLastAuto = now - autoScrollStartTime;
+
+        // Only auto-scroll if:
+        // 1. We are in the sticky zone (rect.top <= 0)
+        // 2. User hasn't interacted for 3s
+        // 3. 5s has passed for current card
+        // 4. We are NOT currently mid-auto-scroll (isProgrammaticScroll)
+        if (rect.top <= 50 && rect.bottom >= vh - 50 && 
+            timeSinceInteraction > 3000 && 
+            timeSinceLastAuto >= AUTO_SCROLL_DELAY && 
+            !isProgrammaticScroll && !isHoverPaused) {
+            
+            let nextIndex = (activeIndex + 1) % items.length;
+            const targetMapped = nextIndex / (items.length - 1);
+            const targetProgress = targetMapped * (1 - 2 * buffer) + buffer;
+            const sectionScrollTop = window.scrollY + rect.top;
+            const targetScrollY = sectionScrollTop + (targetProgress * travel);
+
+            isProgrammaticScroll = true;
+            window.scrollTo({
+                top: targetScrollY,
+                behavior: 'smooth'
+            });
+            
+            autoScrollStartTime = now; // Reset timer for next card
+            setTimeout(() => { isProgrammaticScroll = false; }, 2000);
+        }
+
+        // Update active fill
+        const fillPercent = Math.min((timeSinceLastAuto / AUTO_SCROLL_DELAY) * 100, 100);
+        const activeCapsule = capsules[activeIndex];
+        if (activeCapsule) {
+            const fill = activeCapsule.querySelector('.epc-fill');
+            if (fill) fill.style.width = `${fillPercent}%`;
+        }
+
         const totalWidth = track.scrollWidth;
         const visibleWidth = window.innerWidth;
-        const maxTranslate = totalWidth - visibleWidth;
-        const translateX = mappedProgress * maxTranslate;
         
-        track.style.transform = `translateX(${-translateX}px)`;
+        // Calculate item centers relative to the track
+        const itemCenters = Array.from(items).map(item => item.offsetLeft + item.offsetWidth / 2);
+        
+        // Interpolate ideal center based on mapped progress
+        const floatIndex = mappedProgress * (items.length - 1);
+        const i1 = Math.floor(floatIndex);
+        const i2 = Math.ceil(floatIndex);
+        const f = floatIndex - i1;
+        const idealCenter = itemCenters[i1] + (itemCenters[i2] - itemCenters[i1]) * f;
+        
+        // rawTarget is the translation needed to put idealCenter at viewport center
+        let rawTarget = idealCenter - (visibleWidth / 2);
+        
+        const maxTranslate = totalWidth - visibleWidth;
+        
+        if (progress < buffer) {
+            targetX = rawTarget * TUG_RESISTANCE;
+        } else if (progress > (1 - buffer)) {
+            // Adjust boundary tug for centered logic
+            const over = rawTarget - maxTranslate;
+            targetX = maxTranslate + (over * TUG_RESISTANCE);
+        } else {
+            targetX = rawTarget;
+        }
 
-        // Individual item physics
+        const diff = targetX - currentX;
+        let acceleration = diff * SPRING;
+        if (Math.abs(diff) > 100) acceleration *= JOLT_BOOST;
+
+        velocity += acceleration;
+        velocity *= FRICTION;
+        currentX += velocity;
+
+        track.style.transform = `translateX(${-currentX}px)`;
+
         items.forEach((item) => {
             const card = item.querySelector('.epc-card');
             if (!card) return;
-
             const itemRect = item.getBoundingClientRect();
             const centerX = window.innerWidth / 2;
             const itemCenterX = itemRect.left + itemRect.width / 2;
             const distFromCenter = itemCenterX - centerX;
             const normDist = distFromCenter / (window.innerWidth / 2);
-
             const absDist = Math.abs(normDist);
-            if (absDist < 1.2) {
-                // Settle logic: tighter focus
-                const scale = 1 - (absDist * 0.08);
-                const rotate = normDist * 8;
-                const brightness = 1 - (absDist * 0.15);
-                
-                card.style.transform = `scale(${scale}) rotateY(${-rotate}deg)`;
-                card.style.opacity = Math.max(0.4, 1 - absDist);
-                card.style.filter = `brightness(${brightness})`;
+
+            if (absDist < 2) {
+                const scale = 1 - (absDist * 0.12);
+                const rotate = normDist * 12; 
+                const brightness = 1 - (absDist * 0.2);
+                const blur = absDist * 4;
+                const opacity = Math.max(0.2, 1 - absDist);
+                const floatY = Math.sin(cumulativeTime * 0.002) * 5 * absDist;
+
+                card.style.transform = `scale(${scale}) rotateY(${-rotate}deg) translateY(${floatY}px)`;
+                card.style.opacity = opacity;
+                card.style.filter = `brightness(${brightness}) blur(${blur}px)`;
+            }
+        });
+
+        if (Math.abs(velocity) > 0.01 || isVisible || isAnimating) {
+            requestAnimationFrame(updatePhysics);
+        } else {
+            isAnimating = false;
+        }
+    };
+
+    // Click on capsules to jump
+    capsules.forEach((capsule, index) => {
+        capsule.addEventListener('click', () => {
+            lastUserScroll = Date.now();
+            const rect = section.getBoundingClientRect();
+            const travel = section.offsetHeight - window.innerHeight;
+            const buffer = 0.15;
+            const targetProgress = (index / (items.length - 1)) * (1 - 2 * buffer) + buffer;
+            const sectionScrollTop = window.scrollY + rect.top;
+            const targetScrollY = sectionScrollTop + (targetProgress * travel);
+
+            isProgrammaticScroll = true;
+            window.scrollTo({
+                top: targetScrollY,
+                behavior: 'smooth'
+            });
+            setTimeout(() => { isProgrammaticScroll = false; }, 1200);
+        });
+    });
+
+    // Interaction detection
+    const handleManualInteraction = () => {
+        if (isProgrammaticScroll) return;
+        lastUserScroll = Date.now();
+        autoScrollStartTime = Date.now();
+    };
+
+    window.addEventListener('wheel', handleManualInteraction, { passive: true });
+    window.addEventListener('touchstart', handleManualInteraction, { passive: true });
+    window.addEventListener('touchmove', handleManualInteraction, { passive: true });
+    window.addEventListener('keydown', handleManualInteraction, { passive: true });
+
+    window.addEventListener('scroll', () => {
+        if (!isAnimating) {
+            isAnimating = true;
+            lastFrameTime = Date.now();
+            requestAnimationFrame(updatePhysics);
+        }
+    }, { passive: true });
+
+    // Hover Pause Listeners
+    section.addEventListener('mouseenter', () => { isHoverPaused = true; });
+    section.addEventListener('mouseleave', () => { isHoverPaused = false; });
+
+    // Start physics loop
+    isAnimating = true;
+    lastFrameTime = Date.now();
+    requestAnimationFrame(updatePhysics);
+};
+
+const initHeaderScroll = () => {
+    const header = document.querySelector('.main-header');
+    const logo = document.querySelector('.logo-img');
+    if (!header) return;
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+            if (logo) logo.style.opacity = '1';
+        } else {
+            header.classList.remove('scrolled');
+            if (logo && !document.body.classList.contains('home-page')) {
+                 // logo.style.opacity = '1'; // Keep visible on other pages
+            }
+        }
+    }, { passive: true });
+};
+
+const initProcessAnimations = () => {
+    // This is often handled in-page for the workflow, but we keep the hook for consistency
+    const processSection = document.querySelector('.process-section');
+    if (!processSection) return;
+    // Additional site-wide process logic can go here
+};
+
+// Core Capabilities Flow Animations
+const initFlowAnimations = () => {
+    const flowSection = document.getElementById('capabilities-flow');
+    const flowLine = document.getElementById('flowLineProgress');
+    const flowItems = document.querySelectorAll('.flow-item');
+    const flowNodes = document.querySelectorAll('.flow-node');
+
+    if (!flowSection || !flowLine) return;
+
+    const updateFlow = () => {
+        const rect = flowSection.getBoundingClientRect();
+        const vh = window.innerHeight;
+        
+        const startOffset = vh * 0.8;
+        const endOffset = vh * 0.2;
+        
+        const totalHeight = flowSection.offsetHeight;
+        const currentPos = -rect.top + startOffset;
+        let progress = currentPos / (totalHeight + startOffset - endOffset);
+        
+        progress = Math.min(Math.max(progress, 0), 1);
+        flowLine.style.height = `${progress * 100}%`;
+
+        flowItems.forEach((item, index) => {
+            const itemRect = item.getBoundingClientRect();
+            const node = flowNodes[index];
+            
+            if (itemRect.top < vh * 0.7) {
+                item.classList.add('in-view');
+                if (node) node.classList.add('active');
+            } else {
+                item.classList.remove('in-view');
+                if (node) node.classList.remove('active');
             }
         });
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    window.addEventListener('scroll', updateFlow, { passive: true });
+    updateFlow();
 };
 
-// Main Initialization
+// Premium Horizontal Workflow logic
+const initHorizontalWorkflow = () => {
+    const section = document.querySelector(".workflow-h-section");
+    const track = document.getElementById("workflowTrack");
+    const sticky = document.querySelector(".workflow-h-sticky");
+    const stations = document.querySelectorAll(".workflow-h-station");
+    const trackHighlight = document.getElementById("trackHighlight");
+    const gearTrackSystem = document.querySelector(".gear-track-system");
+    const parallaxBg = document.querySelector(".workflow-h-parallax-bg");
+    const capsules = document.querySelectorAll('.workflow-capsule');
+
+    if (!section || !track || !stations.length || !sticky) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Physics State
+    let currentX = 0;
+    let targetX = 0;
+    let velocity = 0;
+    let lastActiveIndex = 0;
+    let autoScrollStartTime = Date.now();
+    let isProgrammaticScroll = false;
+    let lastFrameTime = Date.now();
+    let lastUserScroll = Date.now();
+
+    // Physics Constants
+    const SPRING = 0.12;      // Snapping strength
+    const FRICTION = 0.8;     // Smoothing
+    const AUTO_SCROLL_DELAY = 5000; // 5 seconds per step
+
+    // Set dynamic height for pinning
+    const getScrollAmount = () => track.scrollWidth - window.innerWidth;
+    const updateSectionHeight = () => {
+        const amount = getScrollAmount();
+        section.style.height = (amount + window.innerHeight) + "px";
+    };
+    updateSectionHeight();
+    window.addEventListener("resize", updateSectionHeight);
+
+    // Simple Pinning Trigger
+    const pinning = ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: () => "+=" + getScrollAmount(),
+        pin: sticky,
+        pinSpacing: true,
+        onUpdate: (self) => {
+            if (!isProgrammaticScroll) {
+                lastUserScroll = Date.now();
+            }
+        }
+    });
+
+    // On-click jump for indicators
+    capsules.forEach((capsule, i) => {
+        capsule.style.cursor = "pointer";
+        capsule.addEventListener("click", () => {
+            isProgrammaticScroll = true;
+            lastUserScroll = Date.now();
+            
+            const targetY = pinning.start + (i * window.innerWidth);
+            window.scrollTo({
+                top: targetY,
+                behavior: 'smooth'
+            });
+
+            // Re-enable user scroll detection after animation
+            setTimeout(() => { isProgrammaticScroll = false; }, 1000);
+        });
+    });
+
+    const updatePhysics = () => {
+        const now = Date.now();
+        const deltaTime = now - lastFrameTime;
+        lastFrameTime = now;
+
+        const rect = section.getBoundingClientRect();
+        const vh = window.innerHeight;
+        
+        // Only run when visible
+        const isVisible = rect.bottom > 0 && rect.top < vh;
+        if (!isVisible) {
+            requestAnimationFrame(updatePhysics);
+            return;
+        }
+
+        const travel = section.offsetHeight - vh;
+        const progress = Math.min(Math.max(-rect.top / travel, 0), 1);
+        
+        // Map scroll progress to float index
+        const floatIndex = progress * (stations.length - 1);
+        const activeIndex = Math.round(floatIndex);
+        
+        // Sync Indicators
+        if (activeIndex !== lastActiveIndex) {
+            lastActiveIndex = activeIndex;
+            autoScrollStartTime = now;
+            capsules.forEach((capsule, i) => {
+                const fill = capsule.querySelector('.workflow-fill');
+                if (fill) fill.style.width = '0%';
+                capsule.classList.toggle('active', i === activeIndex);
+            });
+        }
+
+        // Auto-Scroll Logic
+        const timeSinceInteraction = now - lastUserScroll;
+        const timeSinceLastAuto = now - autoScrollStartTime;
+
+        if (rect.top <= 50 && rect.bottom >= vh - 50 && 
+            timeSinceInteraction > 3000 && 
+            timeSinceLastAuto >= AUTO_SCROLL_DELAY && 
+            !isProgrammaticScroll) {
+            
+            let nextIndex = (activeIndex + 1) % stations.length;
+            const targetProgress = nextIndex / (stations.length - 1);
+            const targetScrollY = window.scrollY + rect.top + (targetProgress * travel);
+
+            isProgrammaticScroll = true;
+            window.scrollTo({
+                top: targetScrollY,
+                behavior: 'smooth'
+            });
+            
+            autoScrollStartTime = now;
+            setTimeout(() => { isProgrammaticScroll = false; }, 1500);
+        }
+
+        // Update active fill
+        const fillPercent = Math.min((timeSinceLastAuto / AUTO_SCROLL_DELAY) * 100, 100);
+        const activeCapsule = capsules[activeIndex];
+        if (activeCapsule) {
+            const fill = activeCapsule.querySelector('.workflow-fill');
+            if (fill) fill.style.width = `${fillPercent}%`;
+        }
+
+        // Physics movement
+        const itemWidth = window.innerWidth; // Each station is 100vw
+        targetX = floatIndex * itemWidth;
+
+        const diff = targetX - currentX;
+        velocity += diff * SPRING;
+        velocity *= FRICTION;
+        currentX += velocity;
+
+        track.style.transform = `translateX(${-currentX}px)`;
+
+        // Update visuals
+        if (trackHighlight) {
+            trackHighlight.style.left = `${progress * 100}%`;
+        }
+        if (parallaxBg) {
+            parallaxBg.style.transform = `translateX(${-progress * 150}px) translateY(${progress * 80}px)`;
+        }
+
+        // Station active states
+        stations.forEach((station, i) => {
+            const dist = Math.abs(i - floatIndex);
+            const isActive = dist < 0.45;
+            station.classList.toggle("active", isActive);
+        });
+
+        const anyActive = Array.from(stations).some(s => s.classList.contains('active'));
+        if (gearTrackSystem) {
+            gearTrackSystem.classList.toggle("glow-active", anyActive);
+        }
+
+        requestAnimationFrame(updatePhysics);
+    };
+
+    requestAnimationFrame(updatePhysics);
+};
 document.addEventListener('DOMContentLoaded', () => {
-    initScrollReveal();
-    initPebAppleScroll();
-    initEpcPushScroll();
-    initFormsAndVacancies();
-    initProjects();
+    const initTask = (name, fn) => {
+        try {
+            fn();
+        } catch (e) {
+            console.error(`Failed to initialize ${name}:`, e);
+        }
+    };
+
+    initTask('ScrollReveal', initScrollReveal);
+    initTask('HeaderScroll', initHeaderScroll);
+    initTask('Forms', initFormsAndVacancies);
+    initTask('Projects', initProjects);
+    initTask('PEBScroll', initPebAppleScroll);
+    initTask('EPCAnimations', initEpcPushScroll);
+    initTask('ProcessAnimations', initProcessAnimations);
+    initTask('FlowAnimations', initFlowAnimations);
+    initTask('HorizontalWorkflow', initHorizontalWorkflow);
 });
 
 // Global switchTab function attached to window
@@ -363,12 +803,11 @@ window.switchTab = function (tabName) {
     if (tabName === 'ongoing') {
         ongoing.style.display = 'grid';
         completed.style.display = 'none';
-        // Only load if empty or loading placeholder is present (checking children count < 2 as quick check)
-        if (ongoing.children.length <= 1) loadProjects('Ongoing', 'ongoing-projects');
+        if (ongoing.children.length <= 1) window.loadProjects('Ongoing', 'ongoing-projects');
     } else {
         ongoing.style.display = 'none';
         completed.style.display = 'grid';
-        if (completed.children.length <= 1) loadProjects('Completed', 'completed-projects');
+        if (completed.children.length <= 1) window.loadProjects('Completed', 'completed-projects');
     }
 };
 
@@ -404,7 +843,8 @@ window.moveSlide = function(dir) {
 };
 
 window.updateSlide = function() {
-    document.getElementById('modal-img').src = window.currentImages[window.currentSlide];
+    const modalImg = document.getElementById('modal-img');
+    if (modalImg) modalImg.src = window.currentImages[window.currentSlide];
 };
 
 window.loadProjects = async function (status, containerId, limit = null) {
@@ -414,7 +854,6 @@ window.loadProjects = async function (status, containerId, limit = null) {
     try {
         let projects = await StorageManager.getData('projects');
 
-        // Local filtering
         if (status && status !== 'ALL') {
             projects = projects.filter(p => p.status === status);
         }
@@ -431,20 +870,16 @@ window.loadProjects = async function (status, containerId, limit = null) {
         }
 
         projects.forEach(p => {
-            // Update global cache for modal
             window.cachedProjects[p.id] = p;
 
             const card = document.createElement('article');
             card.className = 'project-card reveal-on-scroll in-view';
-            // The onclick triggers openModal which should use cachedProjects[p.id]
             card.onclick = () => window.openModal(p.id);
 
-            // Image handling
             let displayImage = 'https://via.placeholder.com/600x400?text=No+Image';
             if (p.images && p.images.length > 0) displayImage = p.images[0];
             else if (p.image) displayImage = p.image;
 
-            // Meta tags based on status
             const completedTag = status === 'Completed'
                 ? `<span class="project-tag" style="background: #fff; color: #333; display: inline-block; padding: 2px 8px; border-radius: 4px; font-size:0.8rem; margin-top: 5px;">Completed</span>`
                 : '';
