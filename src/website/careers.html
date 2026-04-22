@@ -326,30 +326,15 @@
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="Logo/Steelflex Logo.png" />
+    <link rel="stylesheet" href="components/components.css">
+    <script src="components/components.js" defer></script>
 </head>
 
 <body>
 
     <!-- Header -->
-    <header class="main-header">
-        <div class="container nav-container">
-            <div class="logo">
-                <a href="index.html"><img loading="lazy" src="assets/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
-            </div>
-            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="about-us.html">About Us</a></li>
-                    <li><a href="products-structures.html">Products & Structures</a></li>
-                    <li><a href="capabilities.html">Capabilities</a></li>
-                    <li><a href="machineries.html">Machineries</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="careers.html" class="active">Careers</a></li>
-                    <li><a href="contact-us.html">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+        <!-- Header Placeholder -->
+    <div id="navbar-placeholder"></div>
 
     <main>
         <!-- Hero Section -->
@@ -473,65 +458,12 @@
     </main>
 
     <!-- Footer -->
-    <footer class="site-footer-redesign">
-        <div class="footer-main">
-            <div class="container">
-                <div class="footer-grid-modern">
-                    <div class="footer-col">
-                        <span class="footer-brand-title"><a href="index.html"><img loading="lazy" src="assets/Logo/Steelflex Logo.png" alt="SteelFlex"
-                                style="height: 50px;"></a></span>
-                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
-                            steel construction solutions.</p>
-                    </div>
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Quick Links</h4>
-                        <ul class="footer-links-list">
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="about-us.html">About Us</a></li>
-                            <li><a href="products-structures.html">Products</a></li>
-                            <li><a href="capabilities.html">Capabilities</a></li>
-                            <li><a href="machineries.html">Machineries</a></li>
-                            <li><a href="projects.html">Projects</a></li>
-                            <li><a href="careers.html" class="active">Careers</a></li>
-                            <li><a href="contact-us.html">Contact Us</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Contact</h4>
-                        <div class="footer-contact-item">
-                            <span>Phone</span>
-                            +91 94264 43442
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Email</span>
-                            md@steelflexstructures.com
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Location</span>
-                            Vadodara, Gujarat
-                        </div>
-                        <a href="review.html" class="btn-footer-review">Add Review</a>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="footer-legal">
-            <div class="container">
-                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved. | Designed by
-                    <a href="https://www.epexio.in" target="_blank"
-                        style="color: #2F528F; text-decoration: none;">Epexio
-                        Techno Solutions</a>
-                </p>
-            </div>
-        </div>
-    </footer>
+        <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
 
     <script>
         // Mobile Menu Toggle
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
-            document.querySelector('.main-nav').classList.toggle('active');
-        });
+        
 
         // File Upload Display Logic
         const fileInput = document.getElementById('cv');

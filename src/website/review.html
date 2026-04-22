@@ -204,30 +204,15 @@
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/png" href="Logo/Steelflex Logo.png" />
+    <link rel="stylesheet" href="components/components.css">
+    <script src="components/components.js" defer></script>
 </head>
 
 <body>
 
     <!-- Header -->
-    <header class="main-header">
-        <div class="container nav-container">
-            <div class="logo">
-                <a href="index.html"><img loading="lazy" src="assets/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
-            </div>
-            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="about-us.html">About Us</a></li>
-                    <li><a href="products-structures.html">Products & Structures</a></li>
-                    <li><a href="capabilities.html">Capabilities</a></li>
-                    <li><a href="machineries.html">Machineries</a></li>
-                    <li><a href="projects.html">Projects</a></li>
-                    <li><a href="careers.html">Careers</a></li>
-                    <li><a href="contact-us.html">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+        <!-- Header Placeholder -->
+    <div id="navbar-placeholder"></div>
 
     <main>
         <!-- Split Layout Wrapper -->
@@ -335,179 +320,10 @@
 
     <!-- MODERN FOOTER -->
 
-    <footer class="site-footer-redesign">
-        <div class="footer-main">
-            <div class="container">
-                <div class="footer-grid-modern">
-                    <div class="footer-col">
-                        <span class="footer-brand-title"><a href="index.html"><img loading="lazy" src="assets/Logo/Steelflex Logo.png" alt="SteelFlex"
-                                style="height: 50px;"></a></span>
-                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
-                            steel construction solutions.</p>
-                    </div>
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Quick Links</h4>
-                        <ul class="footer-links-list">
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="about-us.html">About Us</a></li>
-                            <li><a href="products-structures.html">Products</a></li>
-                            <li><a href="capabilities.html">Capabilities</a></li>
-                            <li><a href="machineries.html">Machineries</a></li>
-                            <li><a href="projects.html">Projects</a></li>
-                            <li><a href="careers.html">Careers</a></li>
-                            <li><a href="contact-us.html">Contact Us</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Contact</h4>
-                        <div class="footer-contact-item"><span>Phone</span> +91 94264 43442</div>
-                        <div class="footer-contact-item"><span>Email</span> md@steelflexstructures.com</div>
-                        <div class="footer-contact-item"><span>Location</span> Vadodara, Gujarat</div>
-                        <a href="review.html" class="btn-footer-review">Add Review</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="footer-legal">
-            <div class="container">
-                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved. | Designed by
-                    <a href="https://www.epexio.in" target="_blank"
-                        style="color: #2F528F; text-decoration: none;">Epexio
-                        Techno Solutions</a>
-                </p>
-            </div>
-        </div>
-    </footer>
+        <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
 
-    <script>
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
-            document.querySelector('.main-nav').classList.toggle('active');
-        });
-
-        const compressImage = (file, maxWidth = 800) => new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    if (width > maxWidth) {
-                        height = Math.round(height * (maxWidth / width));
-                        width = maxWidth;
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.8)); // 80% quality JPEG
-                };
-                img.onerror = (e) => reject(e);
-            };
-            reader.onerror = error => reject(error);
-        });
-
-        const reviewForm = document.getElementById('review-form');
-        if (reviewForm) {
-            reviewForm.addEventListener('submit', async function (e) {
-                e.preventDefault();
-                const submitBtn = reviewForm.querySelector('.submit-btn');
-                const originalText = submitBtn.textContent;
-                submitBtn.textContent = 'Submitting...';
-                submitBtn.disabled = true;
-
-                const formData = new FormData(reviewForm);
-
-                try {
-                    const reviewData = {
-                        clientName: formData.get('client_name'),
-                        companyName: formData.get('company'),
-                        reviewText: formData.get('review_text'),
-                        rating: parseInt(formData.get('rating')),
-                        status: 'pending',
-                        projectImages: [],
-                        createdAt: new Date().toISOString()
-                    };
-
-                    const rPhotoFile = formData.get('reviewer_photo');
-                    if (rPhotoFile && rPhotoFile.size > 0) {
-                        reviewData.reviewerPhoto = await compressImage(rPhotoFile, 400);
-                    } else {
-                        reviewData.reviewerPhoto = null;
-                    }
-
-                    const cLogoFile = formData.get('company_logo');
-                    if (cLogoFile && cLogoFile.size > 0) {
-                        reviewData.companyLogo = await compressImage(cLogoFile, 400);
-                    } else {
-                        reviewData.companyLogo = null;
-                    }
-
-                    for (let file of formData.getAll('project_images')) {
-                        if (file.size > 0) {
-                            const b64 = await compressImage(file, 800);
-                            reviewData.projectImages.push(b64);
-                        }
-                    }
-
-                    const result = await StorageManager.addItem('reviews', reviewData);
-
-                    if (result) {
-                        alert('Review submitted successfully!');
-                        reviewForm.reset();
-                        loadAcceptedReviews();
-                    } else alert('Error: Failed to submit review.');
-                } catch (error) {
-                    console.error(error);
-                    alert('Network error. Please try again later.');
-                } finally {
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-                }
-            });
-        }
-
-        async function loadAcceptedReviews() {
-            const grid = document.getElementById('testimonials-grid');
-            if (!grid) return;
-            try {
-                const allReviews = await StorageManager.getData('reviews');
-
-                // Normalization block (for older review models)
-                allReviews.forEach(r => {
-                    if (r.company && !r.companyName) r.companyName = r.company;
-                    if (r.photo && !r.reviewerPhoto) r.reviewerPhoto = r.photo;
-                    if (r.logo && !r.companyLogo) r.companyLogo = r.logo;
-                });
-
-                const reviews = allReviews.filter(r => (r.status || '').toLowerCase() === 'approved' || (r.status || '').toLowerCase() === 'accepted');
-                grid.innerHTML = '';
-                if (reviews.length === 0) {
-                    document.getElementById('testimonials-section').style.display = 'none';
-                    return;
-                }
-                reviews.forEach(review => {
-                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-                    const photo = review.reviewerPhoto ? `<img loading="lazy" src="${review.reviewerPhoto}" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">` : '';
-                    const logo = review.companyLogo ? `<img loading="lazy" src="${review.companyLogo}" style="max-height: 40px; max-width: 100px; object-fit: contain;">` : '';
-                    const projImages = (review.projectImages && review.projectImages.length > 0) ?
-                        `<div style="display: flex; gap: 5px; margin-top: 10px;">${review.projectImages.map(img => `<img loading="lazy" src="${img}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">`).join('')}</div>` : '';
-
-                    grid.innerHTML += `<div style="background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 4px solid var(--primary-color);">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
-                            <div style="display: flex; gap: 15px; align-items: center;">${photo}<div><h4 style="margin: 0; font-size: 1.1rem;">${review.clientName}</h4><div style="font-size: 0.9rem; color: #666;">${review.companyName}</div></div></div>
-                            <div>${logo}</div>
-                        </div>
-                        <div style="color: #f59e0b; margin-bottom: 15px; font-size: 1.2rem;">${stars}</div>
-                        <p style="font-style: italic; color: #444; margin: 0; line-height: 1.6;">"${review.reviewText}"</p>${projImages}
-                    </div>`;
-                });
-            } catch (err) { }
-        }
-        loadAcceptedReviews();
-    </script>
+    
 </body>
 <script src="animations.js" defer></script>
 

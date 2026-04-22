@@ -31,7 +31,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="components/components.css">
     <script src="/src/shared/storage.js" defer></script>
+    <script src="components/components.js" defer></script>
 
     <!-- JSON-LD Organization Schema -->
     <script type="application/ld+json">
@@ -62,27 +64,8 @@
     </div> -->
 
     <div id="mainContent">
-        <!-- Header -->
-        <header class="main-header">
-            <div class="container nav-container">
-                <div class="logo">
-                    <a href="index.html"><img loading="lazy" src="assets/Logo/Steelflex Logo.png" alt="SteelFlex"
-                            class="logo-img" style="opacity: 0; transition: opacity 0.4s ease;"></a>
-                </div>
-                <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
-                <nav class="main-nav">
-                    <ul>
-                        <li><a href="about-us.html">About Us</a></li>
-                        <li><a href="products-structures.html">Products & Structures</a></li>
-                        <li><a href="capabilities.html">Capabilities</a></li>
-                        <li><a href="machineries.html">Machineries</a></li>
-                        <li><a href="projects.html">Projects</a></li>
-                        <li><a href="careers.html">Careers</a></li>
-                        <li><a href="contact-us.html">Contact</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
+        <!-- Header Placeholder -->
+        <div id="navbar-placeholder"></div>
 
         <main class="index-page-wrapper">
             <!-- 1. Hero Section (Exact Design) -->
@@ -101,16 +84,14 @@
                             Manufacturing &amp;<br />
                             EPC Solutions
                         </h1>
-                        <p class="hero-sub"><br />Custom Design • Precision Work<br />• Reliable Execution.
-                            <br />Leading The Industry With Unmatched Quality &amp; Structural Integrity.
-                        </p>
-                        <div class="hero-buttons">
-                            <a href="contact-us.html" class="btn btn-yellow-exact">Get Started</a>
-                            <a href="capabilities.html" class="btn-text-link">Learn More</a>
-                        </div>
+                        <p class="hero-sub"><br />Custom Design &bull; Precision<br />Work &bull; Reliable
+                            Execution</p>
+                        <p class="hero-sub">Leading The Industry With<br />Unmatched Quality And<br />Structural
+                            Integrity.</p>
                     </div>
                 </div>
             </section>
+
 
             <!-- Why Choose PEB — Apple Sticky Scroll -->
             <section class="peb-apple">
@@ -119,12 +100,18 @@
                 <div class="peb-sticky">
                     <!-- Left: stacked images for smooth crossfade -->
                     <div id="peb-img-container">
-                        <img loading="lazy" class="peb-bg-img active" src="assets/Why Choose PEB/Faster Construction.webp" alt="Faster Construction">
-                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Cost Efficiency.webp" alt="Cost Efficiency">
-                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Flexible Design.webp" alt="Flexible Design">
-                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Structural Strength.webp" alt="Structural Strength">
-                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Sustainability.webp" alt="Sustainability">
-                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Low Maintenance.webp" alt="Low Maintenance">
+                        <img loading="lazy" class="peb-bg-img active"
+                            src="assets/Why Choose PEB/Faster Construction.webp" alt="Faster Construction">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Cost Efficiency.webp"
+                            alt="Cost Efficiency">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Flexible Design.webp"
+                            alt="Flexible Design">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Structural Strength.webp"
+                            alt="Structural Strength">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Sustainability.webp"
+                            alt="Sustainability">
+                        <img loading="lazy" class="peb-bg-img" src="assets/Why Choose PEB/Low Maintenance.webp"
+                            alt="Low Maintenance">
                     </div>
                     <div class="peb-img-overlay"></div>
 
@@ -374,7 +361,8 @@
                         <p>At SteelFlex Structures, we prioritize <strong>Sustainable Construction</strong> by
                             delivering
                             high-performance <strong>Pre-Engineered Buildings (PEB)</strong> and robust <strong>Steel
-                                Structures</strong> engeneering all type of steel structures from design to manufacturing and installation. Our dedication to building <strong>Eco-Friendly
+                                Structures</strong> engeneering all type of steel structures from design to
+                            manufacturing and installation. Our dedication to building <strong>Eco-Friendly
                                 Infrastructure</strong>
                             ensures that every project contributes to a greener future. By integrating <strong>Energy
                                 Efficient Buildings</strong> and dry-construction methodologies, we minimize
@@ -512,27 +500,6 @@
             </div>
         </div>
 
-        <script>
-            document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
-                document.querySelector('.main-nav').classList.toggle('active');
-            });
-
-            // Handle smooth scroll for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector('.main-nav').classList.remove('active');
-
-                    const targetId = this.getAttribute('href');
-                    if (targetId && targetId !== '#') {
-                        const targetElement = document.querySelector(targetId);
-                        if (targetElement) {
-                            targetElement.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    }
-                });
-            });
-        </script>
         <script>
             // PEB Mobile: inject per-step images on small screens
             function initPebMobile() {
@@ -733,86 +700,9 @@
                 }
             });
         </script>
-        <footer class="site-footer-redesign">
-            <!-- Part 1: CTA Bridge -->
-            <div class="footer-cta-bridge">
-                <div class="container reveal-on-scroll">
-                    <h2 class="footer-cta-title">Let’s build reliable engineering solutions together.</h2>
-                </div>
-            </div>
-
-            <!-- Part 2: Main Footer Content -->
-            <div class="footer-main">
-                <div class="container">
-                    <div class="footer-grid-modern">
-                        <!-- Column 1: Brand -->
-                        <div class="footer-col">
-                            <span class="footer-brand-title"><a href="index.html"><img loading="lazy" src="assets/Logo/Steelflex Logo.png"
-                                    alt="SteelFlex" style="height: 50px;"></a></span>
-                            <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and
-                                turnkey
-                                steel construction solutions.</p>
-                        </div>
-
-                        <!-- Column 2: Quick Links -->
-                        <div class="footer-col">
-                            <h4 class="footer-col-title">Quick Links</h4>
-                            <ul class="footer-links-list">
-                                <li><a href="index.html" class="active">Home</a></li>
-                                <li><a href="about-us.html">About Us</a></li>
-                                <li><a href="products-structures.html">Products</a></li>
-                                <li><a href="capabilities.html">Capabilities</a></li>
-                                <li><a href="machineries.html">Machineries</a></li>
-                                <li><a href="projects.html">Projects</a></li>
-                                <li><a href="careers.html">Careers</a></li>
-                                <li><a href="contact-us.html">Contact Us</a></li>
-                            </ul>
-                        </div>
-
-                        <!-- Column 3: Contact Info -->
-                        <div class="footer-col">
-                            <h4 class="footer-col-title">Contact</h4>
-                            <div class="footer-contact-item">
-                                <span>Phone</span>
-                                +91 94264 43442
-                            </div>
-                            <div class="footer-contact-item">
-                                <span>Email</span>
-                                md@steelflexstructures.com
-                            </div>
-                            <div class="footer-contact-item">
-                                <span>Location</span>
-                                Por, Vadodara, Gujarat
-                            </div>
-                            <a href="review.html" class="btn-footer-review">Add Review</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Part 3: Legal Strip -->
-            <div class="footer-legal">
-                <div class="container">
-                    <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved. | Designed
-                        by
-                        <a href="https://www.epexio.in" target="_blank"
-                            style="color: #2F528F; text-decoration: none;">Epexio
-                            Techno Solutions</a>
-                    </p>
-                </div>
-            </div>
-        </footer>
+        <!-- Footer Placeholder -->
+        <div id="footer-placeholder"></div>
     </div>
-
-    <script>
-        // Simple script to ensure elements are visible if splash was removed
-        document.addEventListener("DOMContentLoaded", () => {
-            document.body.style.overflow = "auto";
-            const logo = document.querySelector(".logo-img");
-            if (logo) logo.style.opacity = "1";
-        });
-    </script>
-    <script src="animations.js" defer></script>
 </body>
 
 </html>
