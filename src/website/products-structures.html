@@ -583,6 +583,29 @@
     
 </body>
 
+<script>
+        function switchView(viewId) {
+            // Update buttons
+            const buttons = document.querySelectorAll('.toggle-btn');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('onclick').includes(viewId)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Update views
+            const views = document.querySelectorAll('.view-section');
+            views.forEach(view => {
+                if (view.id === viewId + '-view') {
+                    view.classList.add('active');
+                } else {
+                    view.classList.remove('active');
+                }
+            });
+        }
+    </script>
 <script src="animations.js" defer></script>
 
 </html>
