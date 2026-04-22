@@ -313,6 +313,21 @@ const initEpcPushScroll = () => {
     const AUTO_SCROLL_DELAY = 5000; // 5 seconds per card
 
     const updatePhysics = () => {
+        if (window.innerWidth <= 768) {
+            isAnimating = false;
+            // Reset track and card styles that might have been set by JS
+            track.style.transform = '';
+            items.forEach(item => {
+                const card = item.querySelector('.epc-card');
+                if (card) {
+                    card.style.transform = '';
+                    card.style.opacity = '';
+                    card.style.filter = '';
+                }
+            });
+            return;
+        }
+
         const now = Date.now();
         const deltaTime = now - lastFrameTime;
         lastFrameTime = now;
@@ -480,6 +495,7 @@ const initEpcPushScroll = () => {
     // Click on capsules to jump
     capsules.forEach((capsule, index) => {
         capsule.addEventListener('click', () => {
+            if (window.innerWidth <= 768) return;
             lastUserScroll = Date.now();
             const rect = section.getBoundingClientRect();
             const travel = section.offsetHeight - window.innerHeight;
@@ -499,7 +515,7 @@ const initEpcPushScroll = () => {
 
     // Interaction detection
     const handleManualInteraction = () => {
-        if (isProgrammaticScroll) return;
+        if (isProgrammaticScroll || window.innerWidth <= 768) return;
         lastUserScroll = Date.now();
         autoScrollStartTime = Date.now();
     };
@@ -510,6 +526,7 @@ const initEpcPushScroll = () => {
     window.addEventListener('keydown', handleManualInteraction, { passive: true });
 
     window.addEventListener('scroll', () => {
+        if (window.innerWidth <= 768) return;
         if (!isAnimating) {
             isAnimating = true;
             lastFrameTime = Date.now();
@@ -517,14 +534,24 @@ const initEpcPushScroll = () => {
         }
     }, { passive: true });
 
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && !isAnimating) {
+            isAnimating = true;
+            lastFrameTime = Date.now();
+            requestAnimationFrame(updatePhysics);
+        }
+    });
+
     // Hover Pause Listeners
     section.addEventListener('mouseenter', () => { isHoverPaused = true; });
     section.addEventListener('mouseleave', () => { isHoverPaused = false; });
 
-    // Start physics loop
-    isAnimating = true;
-    lastFrameTime = Date.now();
-    requestAnimationFrame(updatePhysics);
+    // Start physics loop if not mobile
+    if (window.innerWidth > 768) {
+        isAnimating = true;
+        lastFrameTime = Date.now();
+        requestAnimationFrame(updatePhysics);
+    }
 };
 
 const initHeaderScroll = () => {
@@ -631,6 +658,12 @@ const initHorizontalWorkflow = () => {
     };
     updateSectionHeight();
     window.addEventListener("resize", updateSectionHeight);
+    
+    // Recalculate after images load to prevent overlap
+    window.addEventListener("load", () => {
+        updateSectionHeight();
+        ScrollTrigger.refresh();
+    });
 
     // Simple Pinning Trigger
     const pinning = ScrollTrigger.create({
@@ -782,6 +815,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initTask('ProcessAnimations', initProcessAnimations);
     initTask('FlowAnimations', initFlowAnimations);
     initTask('HorizontalWorkflow', initHorizontalWorkflow);
+});
+
+// Final global refresh to ensure all dynamic heights (footer, images) are accounted for
+window.addEventListener('load', () => {
+    ScrollTrigger.refresh();
 });
 
 // Global switchTab function attached to window

@@ -86,4 +86,9 @@ function initFooter() {
     if (window.initScrollReveal) {
         window.initScrollReveal();
     }
+
+    // Refresh ScrollTrigger as the footer adds height to the page
+    if (window.ScrollTrigger) {
+        ScrollTrigger.refresh();
+    }
 }
