@@ -653,6 +653,10 @@ const initHorizontalWorkflow = () => {
     // Set dynamic height for pinning
     const getScrollAmount = () => track.scrollWidth - window.innerWidth;
     const updateSectionHeight = () => {
+        if (window.innerWidth <= 768) {
+            section.style.height = "auto";
+            return;
+        }
         const amount = getScrollAmount();
         section.style.height = (amount + window.innerHeight) + "px";
     };
@@ -664,6 +668,12 @@ const initHorizontalWorkflow = () => {
         updateSectionHeight();
         ScrollTrigger.refresh();
     });
+
+    // Mobile Check
+    if (window.innerWidth <= 768) {
+        stations.forEach(s => s.classList.add('active'));
+        return;
+    }
 
     // Simple Pinning Trigger
     const pinning = ScrollTrigger.create({
@@ -683,6 +693,7 @@ const initHorizontalWorkflow = () => {
     capsules.forEach((capsule, i) => {
         capsule.style.cursor = "pointer";
         capsule.addEventListener("click", () => {
+            if (window.innerWidth <= 768) return;
             isProgrammaticScroll = true;
             lastUserScroll = Date.now();
             
@@ -698,6 +709,7 @@ const initHorizontalWorkflow = () => {
     });
 
     const updatePhysics = () => {
+        if (window.innerWidth <= 768) return;
         const now = Date.now();
         const deltaTime = now - lastFrameTime;
         lastFrameTime = now;
