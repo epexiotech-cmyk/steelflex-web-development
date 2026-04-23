@@ -77,6 +77,11 @@ p {
     color: var(--text-color);
 }
 
+strong {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
 a {
     text-decoration: none;
     transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
@@ -185,6 +190,7 @@ section {
     grid-template-columns: 1.2fr 1fr;
     gap: 80px;
     align-items: center;
+    width: 100%;
 }
 
 .hero-content {
@@ -1099,17 +1105,21 @@ section {
 }
 
 .fact-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-    /* Sophisticated shadow */
-    border-color: rgba(38, 71, 150, 0.2);
+    transform: translateY(-12px);
+    box-shadow: 0 25px 50px rgba(38, 71, 150, 0.12);
+    border-color: var(--primary-color);
 }
 
 /* Icon & Typography */
 .fact-icon {
-    font-size: 3rem;
+    font-size: 3.5rem;
     margin-bottom: 20px;
     display: inline-block;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.fact-card:hover .fact-icon {
+    transform: scale(1.2) rotate(5deg);
 }
 
 .fact-card h4 {
@@ -1126,6 +1136,13 @@ section {
     color: var(--primary-color);
     margin-bottom: 10px;
     letter-spacing: -0.5px;
+    transition: all 0.4s ease;
+}
+
+.fact-card:hover .fact-number {
+    transform: scale(1.1);
+    color: var(--button-color);
+    text-shadow: 0 5px 15px rgba(0, 151, 211, 0.2);
 }
 
 .fact-card p {
@@ -1158,15 +1175,23 @@ section {
     color: var(--secondary-color);
     margin-bottom: 6px;
     position: relative;
-    padding-left: 15px;
+    padding-left: 20px;
+    transition: all 0.3s ease;
+}
+
+.fact-card:hover .fact-list li {
+    transform: translateX(8px);
+    color: var(--text-color);
 }
 
 .fact-list li::before {
-    content: '•';
+    content: '\2022';
     color: var(--primary-color);
     position: absolute;
     left: 0;
-    font-weight: bold;
+    font-size: 1.2rem;
+    line-height: 1;
+    top: -2px;
 }
 
 /* Highlight Card (Center) */
@@ -1243,7 +1268,7 @@ section {
 }
 
 .strip-items span:not(:last-child)::after {
-    content: '•';
+    content: '\2192';
     color: var(--border-color);
     margin-left: 20px;
 }
@@ -1760,7 +1785,7 @@ section {
 
 
 /* =========================================
-   EDGE-TO-EDGE DESKTOP LAYOUT (≥1280px)
+   EDGE-TO-EDGE DESKTOP LAYOUT (â‰¥1280px)
    Global Visual Density Update
    ========================================= */
 
@@ -2658,7 +2683,11 @@ section {
 
     /* Services Section */
     .services {
-        padding: 3rem 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 4rem 0;
         background-color: #f8f9fa;
         /* Light background for contrast */
     }
@@ -2680,7 +2709,7 @@ section {
         text-align: center;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
         /* Softer shadow for compact layout */
-        transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+        transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         height: 100%;
         border: 1px solid rgba(0, 0, 0, 0.03);
         display: flex;
@@ -2699,9 +2728,9 @@ section {
     } */
 
     .card .icon {
-        font-size: 2rem;
+        font-size: 2.2rem;
         margin-bottom: 1rem;
-        transition: transform 0.4s ease;
+        transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .card h3 {
@@ -2715,12 +2744,35 @@ section {
 
     /* Hover Effects */
     .card:hover {
-        transform: translateY(-5px) scale(1.02);
-        background: #ffffff;
-        box-shadow: 0 25px 60px rgba(47, 82, 143, 0.12);
-        /* Branded soft glow */
+        transform: translateY(-5px) scale(1.1);
+        background: var(--primary-color);
+        box-shadow: 0 25px 60px rgba(33, 28, 77, 0.25);
         z-index: 10;
-        border-color: var(--button-color);
+        border-color: var(--primary-color);
+    }
+
+    .card:hover h3 {
+        color: #ffffff;
+    }
+
+    .card:hover .icon {
+        animation: jiggle 0.8s ease-in-out infinite;
+    }
+
+    @keyframes jiggle {
+
+        0%,
+        100% {
+            transform: rotate(0deg) scale(1.2);
+        }
+
+        33% {
+            transform: rotate(4deg) scale(1.25);
+        }
+
+        66% {
+            transform: rotate(-4deg) scale(1.25);
+        }
     }
 
     /* Keep the hover clean without layout shifts */
@@ -3489,7 +3541,7 @@ section {
 }
 
 /* =============================================
-   WHY CHOOSE PEB — JS-fixed scroll (works with
+   WHY CHOOSE PEB â€” JS-fixed scroll (works with
    any ancestor overflow setting)
    ============================================= */
 
@@ -3500,7 +3552,7 @@ section {
     background: #0b1120;
 }
 
-/* The visual panel — JS toggles between absolute / fixed / absolute-bottom */
+/* The visual panel â€” JS toggles between absolute / fixed / absolute-bottom */
 .peb-sticky {
     position: absolute;
     top: 0;
@@ -3551,7 +3603,7 @@ section {
     opacity: 1;
 }
 
-/* Right-edge gradient — shifted 100px right */
+/* Right-edge gradient â€” shifted 100px right */
 .peb-img-overlay {
     position: absolute;
     top: 0;
@@ -3580,7 +3632,7 @@ section {
     /* Solid Title */
 }
 
-/* Right text panel — shifted 100px right */
+/* Right text panel â€” shifted 100px right */
 .peb-text-panel {
     position: absolute;
     top: 0;
@@ -3647,7 +3699,7 @@ section {
     margin: 0;
 }
 
-/* Mobile — vertical stacked layout (image per step) */
+/* Mobile â€” vertical stacked layout (image per step) */
 @media (max-width: 768px) {
 
     /* Section: remove scroll-height trick, auto-height for stacking */
@@ -3671,7 +3723,7 @@ section {
         background: #0b1120;
     }
 
-    /* Hide the desktop shared image container — each step gets its own */
+    /* Hide the desktop shared image container â€” each step gets its own */
     #peb-img-container {
         display: none !important;
     }
@@ -3717,7 +3769,7 @@ section {
         border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    /* Remove the desktop cyan bar — replaced by image */
+    /* Remove the desktop cyan bar â€” replaced by image */
     .peb-step::before {
         display: none;
     }
@@ -4218,13 +4270,85 @@ img {
 }
 
 .sf-item:hover {
-    transform: translateY(-10px);
-    border-bottom-color: var(--primary-color);
+    transform: translateY(-15px) scale(1.02);
+    background: #fff;
+}
+
+/* Story-telling Neon Themes */
+.sf-item:nth-child(1):hover {
+    box-shadow: 0 10px 40px rgba(46, 204, 113, 0.3);
+    border-bottom-color: #2ecc71;
+}
+.sf-item:nth-child(1):hover .sf-icon,
+.sf-item:nth-child(1):hover strong {
+    color: #2ecc71;
+}
+.sf-item:nth-child(1):hover .sf-icon {
+    animation: sf-rotate 2s linear infinite;
+}
+
+.sf-item:nth-child(2):hover {
+    box-shadow: 0 10px 40px rgba(241, 196, 15, 0.3);
+    border-bottom-color: #f1c40f;
+}
+.sf-item:nth-child(2):hover .sf-icon,
+.sf-item:nth-child(2):hover strong {
+    color: #f1c40f;
+}
+.sf-item:nth-child(2):hover .sf-icon {
+    animation: sf-glow 1.5s ease-in-out infinite;
+}
+
+.sf-item:nth-child(3):hover {
+    box-shadow: 0 10px 40px rgba(52, 152, 219, 0.3);
+    border-bottom-color: #3498db;
+}
+.sf-item:nth-child(3):hover .sf-icon,
+.sf-item:nth-child(3):hover strong {
+    color: #3498db;
+}
+.sf-item:nth-child(3):hover .sf-icon {
+    animation: sf-ripple 1.2s ease-out infinite;
+}
+
+.sf-item:nth-child(4):hover {
+    box-shadow: 0 10px 40px rgba(231, 76, 60, 0.3);
+    border-bottom-color: #e74c3c;
+}
+.sf-item:nth-child(4):hover .sf-icon,
+.sf-item:nth-child(4):hover strong {
+    color: #e74c3c;
+}
+.sf-item:nth-child(4):hover .sf-icon {
+    animation: sf-down 2s ease-in-out infinite;
+}
+
+@keyframes sf-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes sf-glow {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px #f1c40f); }
+    50% { transform: scale(1.2); filter: drop-shadow(0 0 15px #f1c40f); }
+}
+
+@keyframes sf-ripple {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.7; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes sf-down {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(15px) scale(0.9); }
 }
 
 .sf-icon {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     margin-bottom: 1.5rem;
+    display: inline-block;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .sf-item h3 {
@@ -4249,6 +4373,11 @@ img {
     padding: 4rem;
     border-radius: 24px;
     border: 1px solid var(--border-color);
+    transition: all 0.4s ease;
+}
+
+.sustainability-details-row:hover {
+    box-shadow: 0 20px 60px rgba(38, 71, 150, 0.08);
 }
 
 .sd-col h3 {
@@ -4266,6 +4395,11 @@ img {
     width: 40px;
     height: 3px;
     background: var(--button-color);
+    transition: width 0.4s ease;
+}
+
+.sustainability-details-row:hover .sd-col h3::after {
+    width: 70px;
 }
 
 .sd-col ul {
@@ -4280,6 +4414,17 @@ img {
     list-style: none;
     position: relative;
     padding-left: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.sd-col li:hover {
+    background: rgba(38, 71, 150, 0.03);
+    padding-left: 2rem;
+    color: var(--primary-color);
+}
+
+.sd-col li:hover strong {
+    color: var(--button-color);
 }
 
 .sd-col li::before {
@@ -4516,7 +4661,7 @@ img {
 }
 
 .epc-content li::before {
-    content: "→";
+    content: "â†’";
     position: absolute;
     left: 0;
     color: var(--button-color);
@@ -4896,7 +5041,7 @@ img {
         transform: none !important;
         opacity: 1 !important;
         filter: none !important;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
     }
 
     .epc-img-box {
@@ -4921,7 +5066,7 @@ img {
         line-height: 1.4 !important;
     }
 
-    .epc-indicators, 
+    .epc-indicators,
     .epc-footer-note {
         display: none !important;
     }
@@ -5398,7 +5543,8 @@ img {
         align-items: center;
     }
 
-    .station-top, .station-bottom {
+    .station-top,
+    .station-bottom {
         height: auto;
         padding: 0;
         justify-content: center;
@@ -5434,5 +5580,47 @@ img {
     .workflow-h-bg-grid,
     .workflow-h-parallax-bg {
         display: none !important;
+    }
+}
+
+/* About Page Hero - 20% Size Increase & 100vh Layout */
+.about-page .hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-bottom: 80px;
+}
+
+.about-page .hero-grid {
+    grid-template-columns: 1fr 1.3fr;
+    gap: 70px;
+    width: 100%;
+}
+
+.about-page .hero-content {
+    padding-left: 0;
+}
+
+.about-page .hero-content h1 {
+    font-size: 4.8rem;
+}
+
+.about-page .subheading {
+    font-size: 1.3rem;
+    max-width: 80%;
+}
+
+.about-page .collage-container {
+    height: 600px;
+}
+
+.about-page .hero-section .btn {
+    font-size: 1.1rem;
+    padding: 18px 44px;
+}
+
+@media (min-width: 1280px) {
+    .about-page .hero-section {
+        padding-bottom: 80px;
     }
 }

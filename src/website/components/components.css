@@ -149,6 +149,20 @@
     font-size: 1rem;
     margin-bottom: 12px;
     line-height: 1.5;
+    transition: all 0.3s ease;
+    padding-left: 0;
+    border-left: 3px solid transparent;
+}
+
+.footer-contact-item:hover {
+    padding-left: 12px;
+    border-left-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.footer-contact-item:hover a,
+.footer-contact-item:hover span {
+    color: var(--primary-color) !important;
 }
 
 .footer-contact-item span {
@@ -156,6 +170,11 @@
     font-weight: 500;
     display: block;
     margin-bottom: 2px;
+    transition: color 0.3s ease;
+}
+
+.footer-contact-item:hover span {
+    color: var(--primary-color);
 }
 
 .btn-footer-review {
