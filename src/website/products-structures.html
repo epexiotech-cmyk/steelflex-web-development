@@ -111,6 +111,69 @@
             padding-top: 40px;
             border-top: 1px solid #eee;
         }
+
+        .sectors-section .why-card-new {
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            filter: grayscale(100%);
+            opacity: 0.8;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Revolving Glow Effect */
+        .sectors-section .why-card-new::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                transparent 160deg,
+                var(--primary-color) 180deg,
+                transparent 200deg,
+                transparent 360deg
+            );
+            transform: translate(-50%, -50%) rotate(0deg);
+            animation: rotateGlow 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Card background to overlay the center of the glow */
+        .sectors-section .why-card-new::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: var(--background-section);
+            border-radius: inherit;
+            z-index: -1;
+            transition: background 0.3s ease;
+        }
+
+        .sectors-section .why-card-new:hover::before {
+            opacity: 1;
+        }
+
+        .sectors-section .why-card-new:hover::after {
+            background: #ffffff;
+        }
+
+        .sectors-section .why-card-new:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            box-shadow: 0 10px 40px rgba(38, 71, 150, 0.2);
+        }
+
+        @keyframes rotateGlow {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
     </style>
     <script src="/src/shared/storage.js" defer></script>
 

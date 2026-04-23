@@ -1785,7 +1785,7 @@ section {
 
 
 /* =========================================
-   EDGE-TO-EDGE DESKTOP LAYOUT (â‰¥1280px)
+   EDGE-TO-EDGE DESKTOP LAYOUT (>= 1280px)
    Global Visual Density Update
    ========================================= */
 
@@ -3541,7 +3541,7 @@ section {
 }
 
 /* =============================================
-   WHY CHOOSE PEB â€” JS-fixed scroll (works with
+   WHY CHOOSE PEB — JS-fixed scroll (works with
    any ancestor overflow setting)
    ============================================= */
 
@@ -3552,7 +3552,7 @@ section {
     background: #0b1120;
 }
 
-/* The visual panel â€” JS toggles between absolute / fixed / absolute-bottom */
+/* The visual panel — JS toggles between absolute / fixed / absolute-bottom */
 .peb-sticky {
     position: absolute;
     top: 0;
@@ -3603,7 +3603,7 @@ section {
     opacity: 1;
 }
 
-/* Right-edge gradient â€” shifted 100px right */
+/* Right-edge gradient - shifted 100px right */
 .peb-img-overlay {
     position: absolute;
     top: 0;
@@ -3632,7 +3632,7 @@ section {
     /* Solid Title */
 }
 
-/* Right text panel â€” shifted 100px right */
+/* Right text panel - shifted 100px right */
 .peb-text-panel {
     position: absolute;
     top: 0;
@@ -3699,7 +3699,7 @@ section {
     margin: 0;
 }
 
-/* Mobile â€” vertical stacked layout (image per step) */
+/* Mobile - vertical stacked layout (image per step) */
 @media (max-width: 768px) {
 
     /* Section: remove scroll-height trick, auto-height for stacking */
@@ -3723,7 +3723,7 @@ section {
         background: #0b1120;
     }
 
-    /* Hide the desktop shared image container â€” each step gets its own */
+    /* Hide the desktop shared image container - each step gets its own */
     #peb-img-container {
         display: none !important;
     }
@@ -3769,7 +3769,7 @@ section {
         border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    /* Remove the desktop cyan bar â€” replaced by image */
+    /* Remove the desktop cyan bar - replaced by image */
     .peb-step::before {
         display: none;
     }
@@ -4661,7 +4661,7 @@ img {
 }
 
 .epc-content li::before {
-    content: "â†’";
+    content: "\2192";
     position: absolute;
     left: 0;
     color: var(--button-color);

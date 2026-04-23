@@ -809,6 +809,98 @@ const initHorizontalWorkflow = () => {
 
     requestAnimationFrame(updatePhysics);
 };
+// Production Capacity Physics Nodes
+const initCapacityPhysics = () => {
+    const scene = document.getElementById('capacityPhysicsScene');
+    const nodes = document.querySelectorAll('.physics-node');
+
+    if (!scene || !nodes.length) return;
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let sceneRect = scene.getBoundingClientRect();
+
+    // Track mouse
+    window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    // Update rect on scroll/resize
+    const updateRect = () => {
+        sceneRect = scene.getBoundingClientRect();
+    };
+    window.addEventListener('scroll', updateRect, {
+        passive: true
+    });
+    window.addEventListener('resize', updateRect);
+
+    // Initial floating positions & randomized offsets
+    const nodeData = Array.from(nodes).map((node, i) => ({
+        el: node,
+        img: node.querySelector('.node-glow-wrapper'),
+        info: node.querySelector('.node-info'),
+        x: 0,
+        y: 0,
+        targetX: 0,
+        targetY: 0,
+        vx: 0,
+        vy: 0,
+        phase: Math.random() * Math.PI * 2,
+        speed: parseFloat(node.dataset.speed) || 1,
+        amp: 15 + Math.random() * 10
+    }));
+
+    const update = () => {
+        const now = Date.now() * 0.001;
+
+        nodeData.forEach((node, i) => {
+            // 1. Ambient Floating (Sine Wave)
+            const floatX = Math.cos(now * 0.5 * node.speed + node.phase) * node.amp;
+            const floatY = Math.sin(now * 0.7 * node.speed + node.phase) * node.amp;
+
+            // 2. Mouse Interaction (Magnetic Push/Pull)
+            const rect = node.el.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            const dx = mouseX - centerX;
+            const dy = mouseY - centerY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            let forceX = 0;
+            let forceY = 0;
+
+            if (dist < 300) {
+                const power = (1 - dist / 300) * 20;
+                forceX = (dx / dist) * power;
+                forceY = (dy / dist) * power;
+            }
+
+            // 3. Apply Physics (Inertia + Spring)
+            node.targetX = floatX + forceX;
+            node.targetY = floatY + forceY;
+
+            node.vx += (node.targetX - node.x) * 0.05;
+            node.vy += (node.targetY - node.y) * 0.05;
+
+            node.vx *= 0.8;
+            node.vy *= 0.8;
+
+            node.x += node.vx;
+            node.y += node.vy;
+
+            // 4. Update DOM
+            if (node.img) node.img.style.transform = `translate3d(${node.x}px, ${node.y}px, 0) rotate(${node.x * 0.1}deg)`;
+            if (node.info) node.info.style.transform = `translate3d(${node.x * 0.3}px, ${node.y * 0.3}px, 0)`;
+        });
+
+        requestAnimationFrame(update);
+    };
+
+    update();
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const initTask = (name, fn) => {
         try {
@@ -827,6 +919,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTask('ProcessAnimations', initProcessAnimations);
     initTask('FlowAnimations', initFlowAnimations);
     initTask('HorizontalWorkflow', initHorizontalWorkflow);
+    initTask('CapacityPhysics', initCapacityPhysics);
 });
 
 // Final global refresh to ensure all dynamic heights (footer, images) are accounted for
