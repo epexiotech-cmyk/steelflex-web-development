@@ -78,11 +78,11 @@
             flex-shrink: 0;
         }
 
-        /* --- Production Capacity Physics Nodes --- */
+        /* --- Production Capacity Spotlight Effect --- */
         .physics-scene {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 40px;
+            gap: 30px;
             perspective: 1000px;
             margin-top: 30px;
         }
@@ -93,87 +93,144 @@
             align-items: center;
             text-align: center;
             cursor: pointer;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 1;
         }
 
-        .node-glow-wrapper {
+        .peephole-card {
             position: relative;
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 25px;
-            z-index: 1;
-            overflow: visible;
-            transition: border-radius 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .physics-node:hover .node-glow-wrapper {
+            width: 264px; /* Increased from 220px (+20%) */
+            height: 264px; /* Increased from 220px (+20%) */
             border-radius: 20px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --mask-top: 30%;
+            --mask-right: 30%;
+            --mask-bottom: 30%;
+            --mask-left: 30%;
+            --mask-radius: 50%;
         }
 
-        /* Revolving Glow Effect for Nodes */
-        .node-glow-wrapper::before {
-            content: '';
+        .physics-node:hover .peephole-card {
+            box-shadow: 0 25px 50px rgba(38, 71, 150, 0.2);
+            transform: translateY(-5px);
+            border-radius: 12px;
+            width: 275px; /* Proportional hover increase */
+            height: 275px;
+        }
+
+        .card-img-layer {
             position: absolute;
-            inset: -10px;
-            background: conic-gradient(
-                from 0deg,
-                transparent 0deg,
-                transparent 160deg,
-                var(--primary-color) 180deg,
-                transparent 200deg,
-                transparent 360deg
-            );
-            border-radius: inherit;
-            animation: rotateGlow 3s linear infinite;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: -1;
-            filter: blur(8px);
-        }
-
-        .physics-node:hover .node-glow-wrapper::before {
-            opacity: 0.8;
-        }
-
-        .node-image-container {
+            inset: 0;
             width: 100%;
             height: 100%;
-            border-radius: inherit;
-            background: #fff;
-            padding: 5px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 2;
-            overflow: hidden;
-            border: 2px solid #eee;
-            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .physics-node:hover .node-image-container {
-            border-color: var(--primary-color);
-            transform: scale(1.02);
-            box-shadow: 0 20px 45px rgba(38, 71, 150, 0.25);
-        }
-
-        .node-img {
+        .card-img-layer img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
+        }
+
+        /* Muted background layer - Neon Tinted */
+        .card-img-layer.muted {
+            filter: brightness(0.25) blur(6px) saturate(1.5);
+            opacity: 1;
+            z-index: 1;
+        }
+
+        /* Neon Overlay */
+        .card-neon-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(38, 71, 150, 0.5), rgba(0, 242, 255, 0.4));
+            mix-blend-mode: overlay;
+            z-index: 1.5;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .physics-node:hover .card-neon-overlay {
+            opacity: 0;
+        }
+
+        /* Clear spotlight layer */
+        .card-img-layer.clear {
+            z-index: 2;
+            /* Using inset for smooth interpolation between circle and square */
+            clip-path: inset(var(--mask-top, 30%) var(--mask-right, 30%) var(--mask-bottom, 30%) var(--mask-left, 30%) round var(--mask-radius, 50%));
+            /* Remove clip-path from transition to avoid lag behind physics engine */
+            transition: opacity 0.4s ease; 
+            will-change: clip-path;
+        }
+
+        /* Hover Reveal: Transition to full rectangle */
+        .physics-node:hover .card-img-layer.clear {
+            clip-path: inset(0% 0% 0% 0% round 12px);
+            /* Ensure JS variables don't override hover state */
+            --mask-top: 0% !important;
+            --mask-right: 0% !important;
+            --mask-bottom: 0% !important;
+            --mask-left: 0% !important;
+            --mask-radius: 12px !important;
+        }
+
+        /* Glowing Ring around the spotlight */
+        .spotlight-ring {
+            position: absolute;
+            inset: var(--mask-top) var(--mask-right) var(--mask-bottom) var(--mask-left);
+            border-radius: var(--mask-radius);
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.8), inset 0 0 10px rgba(0, 242, 255, 0.4);
+            z-index: 4;
+            pointer-events: none;
+            /* Instant movement to stay synced with mask, only animate opacity */
+            transition: opacity 0.4s ease;
+            will-change: inset;
+        }
+
+        .physics-node:hover .spotlight-ring {
+            opacity: 0;
+        }
+
+        .physics-node:hover .card-img-layer.muted {
+            opacity: 0;
+            filter: brightness(1) blur(0) grayscale(0);
+        }
+
+        /* Glass border glow */
+        .card-border-glow {
+            position: absolute;
+            inset: 0;
+            border: 2px solid transparent;
             border-radius: inherit;
-            transition: border-radius 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent, rgba(255,255,255,0.2)) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0.5;
+            transition: opacity 0.4s ease;
+        }
+
+        .physics-node:hover .card-border-glow {
+            opacity: 1;
+            background: linear-gradient(135deg, var(--primary-color), transparent, var(--primary-color)) border-box;
         }
 
         .node-info {
-            transition: transform 0.3s ease;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .physics-node:hover .node-info {
-            transform: translateY(5px);
+            transform: translateY(8px);
         }
 
         .node-number {
@@ -202,33 +259,26 @@
             font-size: 1rem;
         }
 
-        @keyframes rotateGlow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
         @media (max-width: 900px) {
-
-            .vm-block,
-            .vm-block.reverse {
-                flex-direction: column;
-                gap: 30px;
-            }
-
-            .capability-grid:not(.physics-scene) {
-                grid-template-columns: 1fr;
-            }
-
             .physics-scene {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 40px 20px;
             }
-            .node-glow-wrapper {
-                width: 110px;
-                height: 110px;
+            .peephole-card {
+                width: 160px;
+                height: 160px;
+                --mask-size: 40px;
             }
-            .node-number {
-                font-size: 1.8rem;
+            /* On mobile/touch, maybe simplify or just allow the tap hover */
+        }
+        
+        @media (max-width: 480px) {
+            .physics-scene {
+                grid-template-columns: 1fr;
+            }
+            .peephole-card {
+                width: 280px;
+                height: 200px;
             }
         }
     </style>
@@ -276,10 +326,16 @@
                     <div class="capacity-grid physics-scene" id="capacityPhysicsScene">
                         <!-- Item 1: Primary Members -->
                         <div class="capacity-item reveal-on-scroll physics-node" data-speed="1.2">
-                            <div class="node-glow-wrapper">
-                                <div class="node-image-container">
-                                    <img src="assets/Production Capacity/Primary Members.webp" alt="Primary Members" class="node-img">
+                            <div class="peephole-card">
+                                <div class="card-img-layer muted">
+                                    <img src="assets/Production Capacity/Primary Members.webp" alt="Primary Members">
                                 </div>
+                                <div class="card-img-layer clear">
+                                    <img src="assets/Production Capacity/Primary Members.webp" alt="Primary Members">
+                                </div>
+                                <div class="card-neon-overlay"></div>
+                                <div class="spotlight-ring"></div>
+                                <div class="card-border-glow"></div>
                             </div>
                             <div class="node-info">
                                 <span class="node-number">6,000</span>
@@ -290,10 +346,16 @@
 
                         <!-- Item 2: Secondary Members -->
                         <div class="capacity-item reveal-on-scroll physics-node" data-speed="0.8">
-                            <div class="node-glow-wrapper">
-                                <div class="node-image-container">
-                                    <img src="assets/Production Capacity/Secondary Members.webp" alt="Secondary Members" class="node-img">
+                            <div class="peephole-card">
+                                <div class="card-img-layer muted">
+                                    <img src="assets/Production Capacity/Secondary Members.webp" alt="Secondary Members">
                                 </div>
+                                <div class="card-img-layer clear">
+                                    <img src="assets/Production Capacity/Secondary Members.webp" alt="Secondary Members">
+                                </div>
+                                <div class="card-neon-overlay"></div>
+                                <div class="spotlight-ring"></div>
+                                <div class="card-border-glow"></div>
                             </div>
                             <div class="node-info">
                                 <span class="node-number">4,000</span>
@@ -304,10 +366,16 @@
 
                         <!-- Item 3: Color Coated Sheets -->
                         <div class="capacity-item reveal-on-scroll physics-node" data-speed="1.5">
-                            <div class="node-glow-wrapper">
-                                <div class="node-image-container">
-                                    <img src="assets/Production Capacity/Color Coated Sheets.webp" alt="Color Coated Sheets" class="node-img">
+                            <div class="peephole-card">
+                                <div class="card-img-layer muted">
+                                    <img src="assets/Production Capacity/Color Coated Sheets.webp" alt="Color Coated Sheets">
                                 </div>
+                                <div class="card-img-layer clear">
+                                    <img src="assets/Production Capacity/Color Coated Sheets.webp" alt="Color Coated Sheets">
+                                </div>
+                                <div class="card-neon-overlay"></div>
+                                <div class="spotlight-ring"></div>
+                                <div class="card-border-glow"></div>
                             </div>
                             <div class="node-info">
                                 <span class="node-number">4,000</span>
@@ -318,10 +386,16 @@
 
                         <!-- Item 4: Total Output -->
                         <div class="capacity-item reveal-on-scroll physics-node" data-speed="1.0">
-                            <div class="node-glow-wrapper">
-                                <div class="node-image-container">
-                                    <img src="assets/Production Capacity/Total Output.webp" alt="Total Output" class="node-img">
+                            <div class="peephole-card">
+                                <div class="card-img-layer muted">
+                                    <img src="assets/Production Capacity/Total Output.webp" alt="Total Output">
                                 </div>
+                                <div class="card-img-layer clear">
+                                    <img src="assets/Production Capacity/Total Output.webp" alt="Total Output">
+                                </div>
+                                <div class="card-neon-overlay"></div>
+                                <div class="spotlight-ring"></div>
+                                <div class="card-border-glow"></div>
                             </div>
                             <div class="node-info">
                                 <span class="node-number">16,000</span>
@@ -330,193 +404,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-        
-        <!-- EPC Turnkey Solutions - Horizontal Sticky Scroll -->
-        <section id="epc-turnkey" class="epc-sticky-section">
-            <div class="epc-sticky-wrapper">
-                <div class="epc-header">
-                    <h2>EPC Turnkey Solutions</h2>
-                    <p>From concept to commissioning, we deliver fully integrated infrastructure solutions.</p>
-                </div>
-
-                <div class="epc-horizontal-track">
-                    <!-- Item 1 -->
-                    <div class="epc-item reveal-on-scroll" data-index="0">
-                        <div class="epc-card">
-                            <div class="epc-img-box">
-                                <img src="assets/epc/epc_steel_erection.png" alt="Steel Erection">
-                            </div>
-                            <div class="epc-content">
-                                <h3>1. Erection Services</h3>
-                                <ul>
-                                    <li>Precision on-site assembly with certified teams</li>
-                                    <li>Fast-track execution with strict safety standards</li>
-                                    <li>Expertise in heavy structural installations</li>
-                                    <li>Advanced crane coordination for vertical expansion</li>
-                                    <li>Zero-accident site management policies</li>
-                                    <li>Real-time progress tracking with digital reporting</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 2 -->
-                    <div class="epc-item reveal-on-scroll" data-index="1">
-                        <div class="epc-card">
-                            <div class="epc-img-box">
-                                <img src="assets/epc/epc_mep_systems.png" alt="MEP Systems">
-                            </div>
-                            <div class="epc-content">
-                                <h3>2. MEP Services</h3>
-                                <ul>
-                                    <li>Complete electrical, plumbing, and HVAC systems</li>
-                                    <li>Integrated utility management for industrial units</li>
-                                    <li>Focus on energy efficiency and compliance</li>
-                                    <li>Customized power distribution for high-load machinery</li>
-                                    <li>Industrial-grade air filtration and ventilation units</li>
-                                    <li>Smart monitoring systems for remote utility control</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 3 -->
-                    <div class="epc-item reveal-on-scroll" data-index="2">
-                        <div class="epc-card">
-                            <div class="epc-img-box">
-                                <img src="https://placehold.co/800x600/264796/ffffff?text=Design+Consultancy" alt="Design">
-                            </div>
-                            <div class="epc-content">
-                                <h3>3. Design & Detailing</h3>
-                                <ul>
-                                    <li>Advanced 3D BIM modeling and structural analysis</li>
-                                    <li>Accurate shop drawings for flawless manufacturing</li>
-                                    <li>Optimized engineering to reduce material waste</li>
-                                    <li>Virtual reality (VR) walkthroughs for design validation</li>
-                                    <li>Complex geometric structural detailing and drafting</li>
-                                    <li>Value engineering to optimize project costs and time</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 4 -->
-                    <div class="epc-item reveal-on-scroll" data-index="3">
-                        <div class="epc-card">
-                            <div class="epc-img-box">
-                                <img src="https://placehold.co/800x600/264796/ffffff?text=Civil+Works" alt="Civil">
-                            </div>
-                            <div class="epc-content">
-                                <h3>4. Civil Foundations</h3>
-                                <ul>
-                                    <li>Robust civil engineering and site development</li>
-                                    <li>High-precision foundation works for heavy structures</li>
-                                    <li>End-to-end site preparation and drainage solutions</li>
-                                    <li>Advanced soil testing and seismic stability analysis</li>
-                                    <li>Retaining walls and specialized piling for soft terrains</li>
-                                    <li>High-strength reinforced concrete (RCC) works</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 5 -->
-                    <div class="epc-item reveal-on-scroll" data-index="4">
-                        <div class="epc-card">
-                            <div class="epc-img-box">
-                                <img src="https://placehold.co/800x600/264796/ffffff?text=Fire+Protection" alt="Fire">
-                            </div>
-                            <div class="epc-content">
-                                <h3>5. Fire & Safety</h3>
-                                <ul>
-                                    <li>Integrated fire suppression and alarm systems</li>
-                                    <li>Compliance with international safety protocols</li>
-                                    <li>Industrial-grade emergency management systems</li>
-                                    <li>Automated sprinkler and high-velocity water spray systems</li>
-                                    <li>Smoke detection and heat-sensitive early warning units</li>
-                                    <li>Regular safety audits and certification maintenance</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 6 -->
-                    <div class="epc-item reveal-on-scroll" data-index="5">
-                        <div class="epc-card">
-                            <div class="epc-img-box">
-                                <img src="https://placehold.co/800x600/264796/ffffff?text=Green+Building" alt="Green">
-                            </div>
-                            <div class="epc-content">
-                                <h3>6. Smart & Green Buildings</h3>
-                                <ul>
-                                    <li>Solar-ready and energy-efficient designs</li>
-                                    <li>Sustainable material sourcing and recycling</li>
-                                    <li>LEED compliant industrial infrastructure</li>
-                                    <li>Rainwater harvesting and greywater recycling units</li>
-                                    <li>Passive cooling designs to reduce HVAC dependency</li>
-                                    <li>Real-time energy consumption dashboards and IoT integration</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 7 -->
-                    <div class="epc-item reveal-on-scroll" data-index="6">
-                        <div class="epc-card">
-                            <div class="epc-img-box">
-                                <img src="https://placehold.co/800x600/264796/ffffff?text=PEB+Structures" alt="PEB">
-                            </div>
-                            <div class="epc-content">
-                                <h3>7. Pre Engineered Building (PEB)</h3>
-                                <ul>
-                                    <li>Full turnkey structural design and fabrication</li>
-                                    <li>High-tensile steel frames for large clear spans</li>
-                                    <li>Weather-tight roofing and wall cladding systems</li>
-                                    <li>Thermal insulation and skylight integrations</li>
-                                    <li>Scalable and modular construction techniques</li>
-                                    <li>Seismic and wind load optimized structures</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item 8 -->
-                    <div class="epc-item reveal-on-scroll" data-index="7">
-                        <div class="epc-card">
-                            <div class="epc-img-box">
-                                <img src="https://placehold.co/800x600/264796/ffffff?text=Industrial+Flooring" alt="Flooring">
-                            </div>
-                            <div class="epc-content">
-                                <h3>8. Industrial Flooring</h3>
-                                <ul>
-                                    <li>Heavy-duty concrete flooring and laser screeding</li>
-                                    <li>Epoxy and polyurethane (PU) coating systems</li>
-                                    <li>Expansion joints and load-transfer mechanism</li>
-                                    <li>Dust-proof and chemical-resistant surfacing</li>
-                                    <li>Precision leveling for high-bay warehousing</li>
-                                    <li>Floor maintenance and structural health monitoring</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="epc-indicators">
-                    <div class="epc-capsule active" data-index="0"><div class="epc-fill"></div></div>
-                    <div class="epc-capsule" data-index="1"><div class="epc-fill"></div></div>
-                    <div class="epc-capsule" data-index="2"><div class="epc-fill"></div></div>
-                    <div class="epc-capsule" data-index="3"><div class="epc-fill"></div></div>
-                    <div class="epc-capsule" data-index="4"><div class="epc-fill"></div></div>
-                    <div class="epc-capsule" data-index="5"><div class="epc-fill"></div></div>
-                    <div class="epc-capsule" data-index="6"><div class="epc-fill"></div></div>
-                    <div class="epc-capsule" data-index="7"><div class="epc-fill"></div></div>
-                </div>
-
-                <div class="epc-footer-note">
-                    Scroll to explore our end-to-end turnkey solutions
                 </div>
             </div>
         </section>
@@ -551,7 +438,7 @@
                             </div>
                             <div class="flow-visual">
                                 <div class="flow-image-wrapper">
-                                    <img src="assets/Capabilities/Core Capabilities/Design & Engineering.webp" alt="Design & Engineering">
+                                    <img src="assets/Capabilities/Core Capabilities/01 Design & Engineering.webp" alt="Design & Engineering">
                                 </div>
                             </div>
                         </div>
@@ -573,7 +460,7 @@
                             </div>
                             <div class="flow-visual">
                                 <div class="flow-image-wrapper">
-                                    <img src="assets/Capabilities/Core Capabilities/Advanced Manufacturing.webp" alt="Advanced Manufacturing">
+                                    <img src="assets/Capabilities/Core Capabilities/02 Advanced Manufacturing.webp" alt="Advanced Manufacturing">
                                 </div>
                             </div>
                         </div>
@@ -595,7 +482,7 @@
                             </div>
                             <div class="flow-visual">
                                 <div class="flow-image-wrapper">
-                                    <img src="assets/Capabilities/Core Capabilities/Quality Assurance.webp" alt="Quality Assurance">
+                                    <img src="assets/Capabilities/Core Capabilities/03 Quality Assurance.webp" alt="Quality Assurance">
                                 </div>
                             </div>
                         </div>
@@ -617,7 +504,7 @@
                             </div>
                             <div class="flow-visual">
                                 <div class="flow-image-wrapper">
-                                    <img src="assets/Capabilities/Core Capabilities/Turnkey EPC Execution.webp" alt="Turnkey Execution">
+                                    <img src="assets/Capabilities/Core Capabilities/04 Turnkey EPC Execution.webp" alt="Turnkey Execution">
                                 </div>
                             </div>
                         </div>
@@ -639,7 +526,7 @@
                             </div>
                             <div class="flow-visual">
                                 <div class="flow-image-wrapper">
-                                    <img src="https://placehold.co/1200x675/264796/ffffff?text=Project+Management" alt="Project Management">
+                                    <img src="assets/Capabilities/Core Capabilities/05 Project Management.webp" alt="Project Management">
                                 </div>
                             </div>
                         </div>
@@ -661,12 +548,199 @@
                             </div>
                             <div class="flow-visual">
                                 <div class="flow-image-wrapper">
-                                    <img src="https://placehold.co/1200x675/264796/ffffff?text=Innovation" alt="R&D">
+                                    <img src="assets/Capabilities/Core Capabilities/06 Research & Development.webp" alt="R&D">
                                 </div>
                             </div>
                         </div>
                         <div class="flow-node" id="node-6"></div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EPC Turnkey Solutions - Horizontal Sticky Scroll -->
+        <section id="epc-turnkey" class="epc-sticky-section">
+            <div class="epc-sticky-wrapper">
+                <div class="epc-header">
+                    <h2>EPC Turnkey Solutions</h2>
+                    <p>From concept to commissioning, we deliver fully integrated infrastructure solutions.</p>
+                </div>
+
+                <div class="epc-horizontal-track">
+                    <!-- Item 1 -->
+                    <div class="epc-item reveal-on-scroll" data-index="0">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="assets/Capabilities/EPC Turnkey Solutions/1. Erection Services.webp" alt="Steel Erection">
+                            </div>
+                            <div class="epc-content">
+                                <h3>1. Erection Services</h3>
+                                <ul>
+                                    <li>Precision on-site assembly with certified teams</li>
+                                    <li>Fast-track execution with strict safety standards</li>
+                                    <li>Expertise in heavy structural installations</li>
+                                    <li>Advanced crane coordination for vertical expansion</li>
+                                    <li>Zero-accident site management policies</li>
+                                    <li>Real-time progress tracking with digital reporting</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="epc-item reveal-on-scroll" data-index="1">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="assets/Capabilities/EPC Turnkey Solutions/2. MEP Services.webp" alt="MEP Systems">
+                            </div>
+                            <div class="epc-content">
+                                <h3>2. MEP Services</h3>
+                                <ul>
+                                    <li>Complete electrical, plumbing, and HVAC systems</li>
+                                    <li>Integrated utility management for industrial units</li>
+                                    <li>Focus on energy efficiency and compliance</li>
+                                    <li>Customized power distribution for high-load machinery</li>
+                                    <li>Industrial-grade air filtration and ventilation units</li>
+                                    <li>Smart monitoring systems for remote utility control</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="epc-item reveal-on-scroll" data-index="2">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="assets/Capabilities/EPC Turnkey Solutions/3. Design & Detailing.webp" alt="Design">
+                            </div>
+                            <div class="epc-content">
+                                <h3>3. Design & Detailing</h3>
+                                <ul>
+                                    <li>Advanced 3D BIM modeling and structural analysis</li>
+                                    <li>Accurate shop drawings for flawless manufacturing</li>
+                                    <li>Optimized engineering to reduce material waste</li>
+                                    <li>Virtual reality (VR) walkthroughs for design validation</li>
+                                    <li>Complex geometric structural detailing and drafting</li>
+                                    <li>Value engineering to optimize project costs and time</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="epc-item reveal-on-scroll" data-index="3">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="assets/Capabilities/EPC Turnkey Solutions/4. Civil Foundations.webp" alt="Civil">
+                            </div>
+                            <div class="epc-content">
+                                <h3>4. Civil Foundations</h3>
+                                <ul>
+                                    <li>Robust civil engineering and site development</li>
+                                    <li>High-precision foundation works for heavy structures</li>
+                                    <li>End-to-end site preparation and drainage solutions</li>
+                                    <li>Advanced soil testing and seismic stability analysis</li>
+                                    <li>Retaining walls and specialized piling for soft terrains</li>
+                                    <li>High-strength reinforced concrete (RCC) works</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 5 -->
+                    <div class="epc-item reveal-on-scroll" data-index="4">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="assets/Capabilities/EPC Turnkey Solutions/5. Fire & Safety.webp" alt="Fire">
+                            </div>
+                            <div class="epc-content">
+                                <h3>5. Fire & Safety</h3>
+                                <ul>
+                                    <li>Integrated fire suppression and alarm systems</li>
+                                    <li>Compliance with international safety protocols</li>
+                                    <li>Industrial-grade emergency management systems</li>
+                                    <li>Automated sprinkler and high-velocity water spray systems</li>
+                                    <li>Smoke detection and heat-sensitive early warning units</li>
+                                    <li>Regular safety audits and certification maintenance</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 6 -->
+                    <div class="epc-item reveal-on-scroll" data-index="5">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="assets/Capabilities/EPC Turnkey Solutions/6. Smart & Green Buildings.webp" alt="Green">
+                            </div>
+                            <div class="epc-content">
+                                <h3>6. Smart & Green Buildings</h3>
+                                <ul>
+                                    <li>Solar-ready and energy-efficient designs</li>
+                                    <li>Sustainable material sourcing and recycling</li>
+                                    <li>LEED compliant industrial infrastructure</li>
+                                    <li>Rainwater harvesting and greywater recycling units</li>
+                                    <li>Passive cooling designs to reduce HVAC dependency</li>
+                                    <li>Real-time energy consumption dashboards and IoT integration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 7 -->
+                    <div class="epc-item reveal-on-scroll" data-index="6">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="assets/Capabilities/EPC Turnkey Solutions/7. Pre Engineered Building (PEB).jpg" alt="PEB">
+                            </div>
+                            <div class="epc-content">
+                                <h3>7. Pre Engineered Building (PEB)</h3>
+                                <ul>
+                                    <li>Full turnkey structural design and fabrication</li>
+                                    <li>High-tensile steel frames for large clear spans</li>
+                                    <li>Weather-tight roofing and wall cladding systems</li>
+                                    <li>Thermal insulation and skylight integrations</li>
+                                    <li>Scalable and modular construction techniques</li>
+                                    <li>Seismic and wind load optimized structures</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 8 -->
+                    <div class="epc-item reveal-on-scroll" data-index="7">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="assets/Capabilities/EPC Turnkey Solutions/8. Industrial Flooring.webp" alt="Flooring">
+                            </div>
+                            <div class="epc-content">
+                                <h3>8. Industrial Flooring</h3>
+                                <ul>
+                                    <li>Heavy-duty concrete flooring and laser screeding</li>
+                                    <li>Epoxy and polyurethane (PU) coating systems</li>
+                                    <li>Expansion joints and load-transfer mechanism</li>
+                                    <li>Dust-proof and chemical-resistant surfacing</li>
+                                    <li>Precision leveling for high-bay warehousing</li>
+                                    <li>Floor maintenance and structural health monitoring</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="epc-indicators">
+                    <div class="epc-capsule active" data-index="0"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="1"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="2"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="3"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="4"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="5"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="6"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="7"><div class="epc-fill"></div></div>
+                </div>
+
+                <div class="epc-footer-note">
+                    Scroll to explore our end-to-end turnkey solutions
                 </div>
             </div>
         </section>
@@ -716,7 +790,7 @@
                     <!-- Step 1: Concept -->
                     <div class="workflow-h-station" data-step="1">
                         <div class="station-visual">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=1200&q=80" alt="Concept">
+                            <img loading="lazy" src="assets/Capabilities/The SteelFlex Workflow/01 Concept.webp" alt="Concept">
                             <div class="station-anim-layer" id="anim-concept">
                                 <svg class="blueprint-svg" viewBox="0 0 100 100">
                                     <path class="draw-path" d="M10,10 L90,10 L90,90 L10,90 Z M10,50 L90,50 M50,10 L50,90" fill="none" stroke="rgba(0,123,255,0.5)" stroke-width="0.5"/>
@@ -737,7 +811,7 @@
                     <!-- Step 2: Design -->
                     <div class="workflow-h-station" data-step="2">
                         <div class="station-visual">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80" alt="Design">
+                            <img loading="lazy" src="assets/Capabilities/The SteelFlex Workflow/02 Design.webp" alt="Design">
                             <div class="station-anim-layer" id="anim-design">
                                 <div class="wireframe-box"></div>
                             </div>
@@ -756,7 +830,7 @@
                     <!-- Step 3: Fabrication -->
                     <div class="workflow-h-station" data-step="3">
                         <div class="station-visual">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1200&q=80" alt="Fabrication">
+                            <img loading="lazy" src="assets/Capabilities/The SteelFlex Workflow/03 Fabrication.webp" alt="Fabrication">
                             <div class="station-anim-layer" id="anim-fabrication">
                                 <div class="sparks-container"></div>
                             </div>
@@ -775,7 +849,7 @@
                     <!-- Step 4: Logistics -->
                     <div class="workflow-h-station" data-step="4">
                         <div class="station-visual">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80" alt="Logistics">
+                            <img loading="lazy" src="assets/Capabilities/The SteelFlex Workflow/04 Logistics.webp" alt="Logistics">
                             <div class="station-anim-layer" id="anim-logistics">
                                 <div class="truck-path"></div>
                             </div>
@@ -794,7 +868,7 @@
                     <!-- Step 5: Assembly -->
                     <div class="workflow-h-station" data-step="5">
                         <div class="station-visual">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1200&q=80" alt="Assembly">
+                            <img loading="lazy" src="assets/Capabilities/The SteelFlex Workflow/05 Assembly.webp" alt="Assembly">
                             <div class="station-anim-layer" id="anim-assembly">
                                 <div class="assembly-pieces"></div>
                             </div>
@@ -813,7 +887,7 @@
                     <!-- Step 6: Delivery -->
                     <div class="workflow-h-station" data-step="6">
                         <div class="station-visual">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1566932769119-7a1fb6d7ce23?auto=format&fit=crop&w=1200&q=80" alt="Delivery">
+                            <img loading="lazy" src="assets/Capabilities/The SteelFlex Workflow/06 Delivery.webp" alt="Delivery">
                             <div class="station-anim-layer" id="anim-delivery">
                                 <div class="checkmark-burst"></div>
                             </div>
@@ -832,7 +906,7 @@
                     <!-- Step 7: Lifecycle Support -->
                     <div class="workflow-h-station" data-step="7">
                         <div class="station-visual">
-                            <img loading="lazy" src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=1200&q=80" alt="Lifecycle Support">
+                            <img loading="lazy" src="assets/Capabilities/The SteelFlex Workflow/07 Lifecycle Support.webp" alt="Lifecycle Support">
                             <div class="station-anim-layer" id="anim-lifecycle">
                                 <div class="pulse-glow"></div>
                             </div>
@@ -885,4 +959,3 @@
     <script src="animations.js" defer></script>
 </body>
 </html>
-

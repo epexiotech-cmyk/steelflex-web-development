@@ -810,6 +810,7 @@ const initHorizontalWorkflow = () => {
     requestAnimationFrame(updatePhysics);
 };
 // Production Capacity Physics Nodes
+// Production Capacity Spotlight Effect
 const initCapacityPhysics = () => {
     const scene = document.getElementById('capacityPhysicsScene');
     const nodes = document.querySelectorAll('.physics-node');
@@ -818,81 +819,85 @@ const initCapacityPhysics = () => {
 
     let mouseX = 0;
     let mouseY = 0;
-    let sceneRect = scene.getBoundingClientRect();
 
-    // Track mouse
     window.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
     });
 
-    // Update rect on scroll/resize
-    const updateRect = () => {
-        sceneRect = scene.getBoundingClientRect();
-    };
-    window.addEventListener('scroll', updateRect, {
-        passive: true
-    });
-    window.addEventListener('resize', updateRect);
+    const nodeData = Array.from(nodes).map((node) => {
+        const card = node.querySelector('.peephole-card');
+        const data = {
+            el: node,
+            card: card,
+            x: 0,
+            y: 0,
+            targetX: 0,
+            targetY: 0,
+            vx: 0,
+            vy: 0,
+            phase: Math.random() * Math.PI * 2,
+            speed: parseFloat(node.dataset.speed) || 1,
+            amp: 35 + Math.random() * 20, // Increased from 25 for faster ambient motion
+            isHovered: false
+        };
 
-    // Initial floating positions & randomized offsets
-    const nodeData = Array.from(nodes).map((node, i) => ({
-        el: node,
-        img: node.querySelector('.node-glow-wrapper'),
-        info: node.querySelector('.node-info'),
-        x: 0,
-        y: 0,
-        targetX: 0,
-        targetY: 0,
-        vx: 0,
-        vy: 0,
-        phase: Math.random() * Math.PI * 2,
-        speed: parseFloat(node.dataset.speed) || 1,
-        amp: 15 + Math.random() * 10
-    }));
+        node.addEventListener('mouseenter', () => { data.isHovered = true; });
+        node.addEventListener('mouseleave', () => { data.isHovered = false; });
+
+        return data;
+    });
 
     const update = () => {
         const now = Date.now() * 0.001;
 
-        nodeData.forEach((node, i) => {
-            // 1. Ambient Floating (Sine Wave)
-            const floatX = Math.cos(now * 0.5 * node.speed + node.phase) * node.amp;
-            const floatY = Math.sin(now * 0.7 * node.speed + node.phase) * node.amp;
+        nodeData.forEach((node) => {
+            if (!node.card) return;
 
-            // 2. Mouse Interaction (Magnetic Push/Pull)
-            const rect = node.el.getBoundingClientRect();
+            // Get card center in viewport
+            const rect = node.card.getBoundingClientRect();
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
 
+            // 1. Ambient Floating (Relative to center)
+            const floatX = Math.cos(now * 0.5 * node.speed + node.phase) * node.amp;
+            const floatY = Math.sin(now * 0.7 * node.speed + node.phase) * node.amp;
+
+            // 2. Mouse Attraction (Spotlight follows mouse when nearby)
             const dx = mouseX - centerX;
             const dy = mouseY - centerY;
             const dist = Math.sqrt(dx * dx + dy * dy);
 
-            let forceX = 0;
-            let forceY = 0;
+            let attractX = 0;
+            let attractY = 0;
 
-            if (dist < 300) {
-                const power = (1 - dist / 300) * 20;
-                forceX = (dx / dist) * power;
-                forceY = (dy / dist) * power;
+            // If mouse is within 400px, spotlight leans towards it
+            if (dist < 400) {
+                const strength = (1 - dist / 400);
+                attractX = dx * strength * 0.5;
+                attractY = dy * strength * 0.5;
             }
 
-            // 3. Apply Physics (Inertia + Spring)
-            node.targetX = floatX + forceX;
-            node.targetY = floatY + forceY;
+            // 3. Physics Processing
+            node.targetX = floatX + attractX;
+            node.targetY = floatY + attractY;
 
-            node.vx += (node.targetX - node.x) * 0.05;
-            node.vy += (node.targetY - node.y) * 0.05;
-
-            node.vx *= 0.8;
-            node.vy *= 0.8;
-
+            // Faster interpolation (increased from 0.1 and 0.82)
+            node.vx += (node.targetX - node.x) * 0.15;
+            node.vy += (node.targetY - node.y) * 0.15;
+            node.vx *= 0.86; // Lower friction for faster movement
+            node.vy *= 0.86;
             node.x += node.vx;
             node.y += node.vy;
 
-            // 4. Update DOM
-            if (node.img) node.img.style.transform = `translate3d(${node.x}px, ${node.y}px, 0) rotate(${node.x * 0.1}deg)`;
-            if (node.info) node.info.style.transform = `translate3d(${node.x * 0.3}px, ${node.y * 0.3}px, 0)`;
+            // 4. Map to CSS Variables (Using inset for smooth shape transitions)
+            const pctX = 50 + (node.x / rect.width * 100);
+            const pctY = 50 + (node.y / rect.height * 100);
+            const halfSize = 18; 
+            node.card.style.setProperty('--mask-top', `${pctY - halfSize}%`);
+            node.card.style.setProperty('--mask-right', `${100 - (pctX + halfSize)}%`);
+            node.card.style.setProperty('--mask-bottom', `${100 - (pctY + halfSize)}%`);
+            node.card.style.setProperty('--mask-left', `${pctX - halfSize}%`);
         });
 
         requestAnimationFrame(update);
@@ -900,6 +905,7 @@ const initCapacityPhysics = () => {
 
     update();
 };
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const initTask = (name, fn) => {
