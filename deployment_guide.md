@@ -130,24 +130,15 @@ sudo certbot renew --dry-run
 
 ---
 
-## 7. Automated Backups (Compressed & Clean)
-1. **Create Backup Folder & Set Permissions**:
-   ```bash
-   mkdir -p /var/www/backups
-   sudo chown -R www-data:www-data /var/www/backups
-   ```
-2. **Open crontab**: `crontab -e`
-3. **Add these lines**:
-```bash
-# 1. Create a compressed backup daily at 3 AM
-0 3 * * * tar -czf /var/www/backups/backup_$(date +\%F).tar.gz /var/www/persistent_data
+## 7. Automated Google Drive Backups
+This application features a built-in automated backup system powered by `cronService.js`. You do **not** need to set up any bash scripts or VPS cron jobs.
 
-# 2. Cleanup: Delete backups older than 7 days to save disk space
-0 4 * * * find /var/www/backups -type f -mtime +7 -delete
-```
+1. **How it works:** Every day at Midnight (server time), the Node.js server automatically compresses your JSON database and upload folders, and securely uploads the `.zip` archive directly to your connected Google Drive.
+2. **Setup:** Ensure you have correctly transferred your `token.json` and `oauth-credentials.json` files to the server (as described in Section 10).
+3. **Verification:** You can verify the backups are running by checking your Google Drive or viewing the `pm2 logs` which will log the daily successful uploads.
 
-> [!CAUTION]
-> **Disaster Recovery**: Backups on the same server are useless if the VPS crashes. **Download your backups weekly** or use a script to move them to Google Drive/Dropbox.
+> [!TIP]
+> **Disaster Recovery:** Because your backups are stored safely off-site in Google Drive, you are fully protected even if the VPS completely crashes or is destroyed.
 
 ---
 
@@ -177,14 +168,15 @@ pm2 reload steelflex-app # 'reload' is zero-downtime
 
 ---
 
-## 10. Important Note: .env Handling
-- **Create Manually**: The `.env` file MUST be created manually on the VPS. Never commit it to Git.
-- **Example contents:**
-  ```env
-  PORT=3000
-  NODE_ENV=production
-  # Other secrets...
-  ```
+## 10. Important Note: Handling Secrets & Git-Ignored Files
+Since your repository correctly ignores sensitive credentials, they will **not** be transferred when you clone your code via Git. You must handle them manually.
+
+- **Required Files:** You need to securely transfer the following files from your local computer to the VPS project folder (`/var/www/steelflex/`):
+  - `.env` (Environment variables)
+  - `oauth-credentials.json` (Google Drive OAuth credentials)
+  - `token.json` (Google Drive Access Token)
+- **How to Transfer:** Use a secure method like SFTP (e.g., FileZilla, Cyberduck), SCP via terminal, or your Hostinger File Manager to upload these files directly.
+- **Why this is critical:** Without these files, your Node.js application will crash or severely malfunction (e.g., automated cloud backups will instantly fail without the OAuth tokens). Never commit these files to Git!
 
 
 Chat GPT Output:

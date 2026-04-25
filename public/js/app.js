@@ -1793,24 +1793,37 @@ async function renderApplications(container) {
         container.innerHTML = `
             <div class="card">
                 <table class="data-table">
-                    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>CV</th><th>Submitted</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>CV</th><th>Submitted</th><th style="width: 120px;">Status</th><th style="width: 100px;">Actions</th></tr></thead>
                     <tbody>
-                        ${apps.map(a => `
-                            <tr>
-                                <td>${a.name}</td>
-                                <td>${a.appliedRole || a.position || 'N/A'}</td>
-                                <td>${a.email}</td>
-                                <td>
-                                    ${(a.cvFile && a.cvFile !== 'base64') ? `<a href="${a.cvFile}" target="_blank" style="color: var(--primary); font-weight: 600;">Download CV</a>` : 
-                                      (a.cvData && a.cvData !== 'base64') ? `<a href="${a.cvData}" target="_blank" style="color: var(--primary); font-weight: 600;">Download CV</a>` : 
-                                      '<span style="color: #9ca3af;">No CV</span>'}
-                                </td>
-                                <td>${new Date(a.submittedAt || a.createdAt || a.date || Date.now()).toLocaleDateString()}</td>
-                                <td>
-                                    <button class="btn-sm btn-delete" onclick="deleteApplication('${a.id}')"><i class="fas fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `).join('') || '<tr><td colspan="6" style="text-align:center;">No applications found.</td></tr>'}
+                        ${apps.map(a => {
+                            const status = a.status || 'New';
+                            let dotColor = '#3b82f6'; // Blue for New
+                            if (status === 'Reviewed') dotColor = '#22c55e'; // Green
+                            if (status === 'Interview') dotColor = '#f59e0b'; // Orange
+                            if (status === 'Rejected') dotColor = '#ef4444'; // Red
+
+                            return `
+                                <tr>
+                                    <td><strong>${a.name}</strong></td>
+                                    <td>${a.position || a.appliedRole || 'N/A'}</td>
+                                    <td>${a.email}</td>
+                                    <td>
+                                        ${a.cvData ? `<a href="${a.cvData}" download="${a.cvName || 'Resume.pdf'}" class="btn-sm btn-secondary" style="font-size: 0.75rem; padding: 2px 6px; display:inline-block; text-decoration:none;">Download</a>` : '-'}
+                                    </td>
+                                    <td>${new Date(a.submittedAt || a.createdAt || a.date || Date.now()).toLocaleDateString()}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <span style="width: 8px; height: 8px; background: ${dotColor}; border-radius: 50%; display: inline-block;"></span>
+                                            <span style="font-size: 0.85rem; font-weight: 500;">${status}</span>
+                                        </div>
+                                    </td>
+                                    <td style="display: flex; gap: 5px;">
+                                        <button class="btn-sm btn-edit" onclick="viewApplicationDetails('${a.id}')" title="View Details" style="margin: 0;"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-sm btn-delete" onclick="deleteApplication('${a.id}')" title="Delete" style="margin: 0;"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('') || '<tr><td colspan="7" style="text-align:center;">No applications found.</td></tr>'}
                     </tbody>
                 </table>
             </div>
@@ -1819,6 +1832,76 @@ async function renderApplications(container) {
         container.innerHTML = `<p class="error">Error loading applications: ${e.message}</p>`;
     }
 }
+
+window.viewApplicationDetails = async (id) => {
+    try {
+        const app = await DataManager.getById('careers', id);
+        if (!app) return;
+
+        showModal(`
+            <div class="application-view-modal">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; border-bottom: 1px solid #eee; padding-bottom: 1rem;">
+                    <div>
+                        <h2 style="margin: 0; color: var(--primary);">${app.name}</h2>
+                        <p style="margin: 5px 0 0; color: #666;">Applied for: <strong>${app.position || app.appliedRole || 'N/A'}</strong></p>
+                    </div>
+                    <span class="badge badge-info is-light">${app.status || 'New'}</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 5px;">Email Address</label>
+                        <p style="margin: 0; font-weight: 500;">${app.email}</p>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 5px;">Phone Number</label>
+                        <p style="margin: 0; font-weight: 500;">${app.mobile || app.phone || 'N/A'}</p>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 5px;">Submission Date</label>
+                        <p style="margin: 0;">${new Date(app.submittedAt || app.createdAt || app.date || Date.now()).toLocaleString()}</p>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 5px;">CV Attachment</label>
+                        ${app.cvData ? `<a href="${app.cvData}" download="${app.cvName || 'Resume.pdf'}" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:5px; text-decoration:none;"><i class="fas fa-download"></i> Download CV</a>` : '<p style="margin: 0; color: #999;">No CV attached</p>'}
+                    </div>
+                </div>
+
+                <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; border: 1px solid #f1f5f9;">
+                    <label style="display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 10px;">Brief Introduction / Message</label>
+                    <p style="margin: 0; line-height: 1.6; white-space: pre-wrap; color: #334155;">${app.message || 'No message provided.'}</p>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; gap: 15px; justify-content: flex-end; align-items: flex-end;">
+                    <button class="btn btn-secondary" onclick="closeModal()" style="height: 42px;">Close</button>
+                    <div style="flex: 1; max-width: 200px;">
+                        <label style="display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px;">Update Status</label>
+                        <select class="form-control" onchange="updateCareerStatus('${app.id}', this.value); closeModal();" style="height: 42px; cursor: pointer;">
+                            <option value="New" ${app.status === 'New' || !app.status ? 'selected' : ''}>New / Unread</option>
+                            <option value="Reviewed" ${app.status === 'Reviewed' ? 'selected' : ''}>Mark Reviewed</option>
+                            <option value="Interview" ${app.status === 'Interview' ? 'selected' : ''}>Mark Interview</option>
+                            <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>Mark Rejected</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `);
+    } catch (err) {
+        console.error('Error viewing application:', err);
+        showToast('Error loading application details', 'error');
+    }
+};
+
+window.updateCareerStatus = async (id, status) => {
+    try {
+        await DataManager.update('careers', id, { status });
+        const container = document.getElementById('content-area');
+        if (container) renderApplications(container);
+        showToast(`Status updated to ${status}`);
+    } catch (e) {
+        alert('Error updating status: ' + e.message);
+    }
+};
 
 window.deleteApplication = async (id) => {
     window.customConfirm('Are you sure you want to delete this application?', async (confirmed) => {

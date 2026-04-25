@@ -576,34 +576,44 @@ window.downloadCV = async (id) => {
             return;
         }
 
-        // Convert Base64 to Blob
-        // Format check: "data:application/pdf;base64,JVBERi..."
-        let base64Data = app.cvData;
-        let contentType = 'application/pdf';
+        let dataUrl = app.cvData;
 
-        if (app.cvData.includes('base64,')) {
-            const parts = app.cvData.split(';base64,');
-            contentType = parts[0].replace('data:', '') || 'application/pdf';
-            base64Data = parts[1];
+        // If the cvData is raw base64 without the data URI prefix, reconstruct it
+        if (!dataUrl.startsWith('data:')) {
+            const ext = app.cvName ? app.cvName.split('.').pop().toLowerCase() : 'pdf';
+            const mimeTypes = {
+                'pdf': 'application/pdf',
+                'doc': 'application/msword',
+                'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'png': 'image/png',
+                'jpg': 'image/jpeg',
+                'jpeg': 'image/jpeg'
+            };
+            const mime = mimeTypes[ext] || 'application/octet-stream';
+            dataUrl = `data:${mime};base64,${dataUrl}`;
         }
 
-        const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: contentType });
+        // Use fetch to convert the data URL to a blob efficiently,
+        // avoiding synchronous loops that can freeze or crash the browser.
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
 
         // Trigger download
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = app.cvName || 'Resume.pdf';
+        
+        // Ensure standard DOM execution for the programmatic click
         document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        
+        // Cleanup
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+
     } catch (err) {
         console.error('Error downloading CV:', err);
         alert('File not available or corrupted.');

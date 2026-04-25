@@ -233,9 +233,22 @@ app.post(['/api/data/:type', '/api/:type'], async (req, res) => {
         if (fs.existsSync(filePath)) {
             items = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
         }
-        items.push(req.body);
+        
+        // Harden Data: Assign essential fields if missing
+        const newItem = { ...req.body };
+        if (!newItem.id) {
+            newItem.id = Date.now().toString() + Math.random().toString(36).substring(2, 9);
+        }
+        if (!newItem.createdAt && !newItem.date) {
+            newItem.createdAt = new Date().toISOString();
+        }
+        if (!newItem.status && type === 'careers') {
+            newItem.status = 'New';
+        }
+        
+        items.push(newItem);
         fs.writeFileSync(filePath, JSON.stringify(items, null, 2));
-        res.json({ success: true, item: req.body });
+        res.json({ success: true, item: newItem });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
