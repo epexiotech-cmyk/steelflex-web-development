@@ -1,550 +1,629 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Project Portfolio | SteelFlex Structures</title>
-    <meta name="description" content="View our successfully completed industrial, commercial, and institutional pre-engineered building projects across India.">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.steelflexstructures.com/projects">
+    <meta
+      name="description"
+      content="View our successfully completed industrial, commercial, and institutional pre-engineered building projects across India."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.steelflexstructures.com/projects" />
 
     <!-- Open Graph Tags -->
-    <meta property="og:title" content="Project Portfolio | SteelFlex Structures">
-    <meta property="og:description" content="View our successfully completed industrial, commercial, and institutional pre-engineered building projects across India.">
-    <meta property="og:image" content="https://www.steelflexstructures.com/og-image.jpg">
-    <meta property="og:url" content="https://www.steelflexstructures.com/projects">
-    <meta property="og:type" content="website">
+    <meta
+      property="og:title"
+      content="Project Portfolio | SteelFlex Structures"
+    />
+    <meta
+      property="og:description"
+      content="View our successfully completed industrial, commercial, and institutional pre-engineered building projects across India."
+    />
+    <meta
+      property="og:image"
+      content="https://www.steelflexstructures.com/og-image.jpg"
+    />
+    <meta
+      property="og:url"
+      content="https://www.steelflexstructures.com/projects"
+    />
+    <meta property="og:type" content="website" />
 
     <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Project Portfolio | SteelFlex Structures">
-    <meta name="twitter:description" content="View our successfully completed industrial, commercial, and institutional pre-engineered building projects across India.">
-    <meta name="twitter:image" content="https://www.steelflexstructures.com/og-image.jpg">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Project Portfolio | SteelFlex Structures"
+    />
+    <meta
+      name="twitter:description"
+      content="View our successfully completed industrial, commercial, and institutional pre-engineered building projects across India."
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.steelflexstructures.com/og-image.jpg"
+    />
 
-    
-    
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css" />
     <style>
-        /* Projects Specific Styles */
-        .project-filters {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 60px;
-        }
+      /* Projects Specific Styles */
+      .project-filters {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 60px;
+      }
 
-        .filter-btn {
-            background: #F6F8FB;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 50px;
-            /* Pill shape */
-            font-size: 0.95rem;
-            color: var(--secondary-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
+      .filter-btn {
+        background: #f6f8fb;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 50px;
+        /* Pill shape */
+        font-size: 0.95rem;
+        color: var(--secondary-color);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+      }
 
-        .filter-btn.active,
-        .filter-btn:hover {
-            background: var(--primary-color);
-            color: #fff;
-        }
+      .filter-btn.active,
+      .filter-btn:hover {
+        background: var(--primary-color);
+        color: #fff;
+      }
 
+      .projects-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
+        margin-bottom: 40px;
+      }
+
+      .project-card {
+        background: #fff;
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.3s ease;
+        /* Minimal styling as per "free flow" */
+      }
+
+      .project-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .project-card-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: var(--border-radius-lg);
+        margin-bottom: 20px;
+      }
+
+      .project-tag {
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--secondary-color);
+        margin-bottom: 10px;
+        display: block;
+        font-weight: 600;
+      }
+
+      .project-title {
+        font-size: 1.4rem;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .project-meta {
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 15px;
+      }
+
+      .project-link {
+        color: var(--primary-color);
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      /* Large Feature Card */
+      .featured-project {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+        gap: 50px;
+        align-items: center;
+        margin-bottom: 100px;
+      }
+
+      .featured-content h2 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: var(--primary-color);
+      }
+
+      @media (max-width: 900px) {
         .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 40px;
-            margin-bottom: 40px;
+          grid-template-columns: repeat(2, 1fr);
         }
 
-        .project-card {
-            background: #fff;
-            border-radius: var(--border-radius-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.3s ease;
-            /* Minimal styling as per "free flow" */
-        }
-
-        .project-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .project-card-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: var(--border-radius-lg);
-            margin-bottom: 20px;
-        }
-
-        .project-tag {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--secondary-color);
-            margin-bottom: 10px;
-            display: block;
-            font-weight: 600;
-        }
-
-        .project-title {
-            font-size: 1.4rem;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .project-meta {
-            font-size: 0.95rem;
-            color: #555;
-            margin-bottom: 15px;
-        }
-
-        .project-link {
-            color: var(--primary-color);
-            font-weight: 600;
-            text-decoration: none;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* Large Feature Card */
         .featured-project {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 50px;
-            align-items: center;
-            margin-bottom: 100px;
+          grid-template-columns: 1fr;
         }
+      }
 
-        .featured-content h2 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            color: var(--primary-color);
+      @media (max-width: 600px) {
+        .projects-grid {
+          grid-template-columns: 1fr;
         }
-
-        @media (max-width: 900px) {
-            .projects-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .featured-project {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+      }
     </style>
-<script src="/src/shared/storage.js" defer></script>
+    <script src="/src/shared/storage.js" defer></script>
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <link rel="stylesheet" href="/components/components.css">
+    <link rel="stylesheet" href="/components/components.css" />
     <script src="/components/components.js" defer></script>
-    <link rel="icon" href="/favicon.ico">
-</head>
+    <link rel="icon" href="/favicon.ico" />
+  </head>
 
-<body>
-
+  <body>
     <!-- Header -->
-        <!-- Header Placeholder -->
+    <!-- Header Placeholder -->
     <div id="navbar-placeholder"></div>
 
     <!-- Page Hero -->
-    <section class="hero-section" style="padding: 120px 0 60px; text-align: center; background: #fff;">
-        <div class="container">
-            <h1 class="reveal-on-scroll" style="color: var(--primary-color); font-size: 3rem; margin-bottom: 20px;">Our
-                Portfolio
-            </h1>
-            <p class="reveal-on-scroll delay-1"
-                style="font-size: 1.2rem; max-width: 900px; margin: 0 auto; color: var(--secondary-color); line-height: 1.6;">
-                Our diverse portfolio spans across heavy industrial manufacturing, advanced warehousing logistics, and
-                large-scale infrastructure projects. We take pride in delivering robust, high-performance steel
-                structures for trusted industry leaders like Adani, Reliance, and L&T. From complex power plants to
-                modern commercial complexes, our expertise ensures precision engineering and timely execution for every
-                landmark we build.
-            </p>
-        </div>
+    <section
+      class="hero-section"
+      style="padding: 120px 0 60px; text-align: center; background: #fff"
+    >
+      <div class="container">
+        <h1
+          class="reveal-on-scroll"
+          style="
+            color: var(--primary-color);
+            font-size: 3rem;
+            margin-bottom: 20px;
+          "
+        >
+          Our Portfolio
+        </h1>
+        <p
+          class="reveal-on-scroll delay-1"
+          style="
+            font-size: 1.2rem;
+            max-width: 900px;
+            margin: 0 auto;
+            color: var(--secondary-color);
+            line-height: 1.6;
+          "
+        >
+          Our diverse portfolio spans across heavy industrial manufacturing,
+          advanced warehousing logistics, and large-scale infrastructure
+          projects. We take pride in delivering robust, high-performance steel
+          structures for trusted industry leaders like Adani, Reliance, and L&T.
+          From complex power plants to modern commercial complexes, our
+          expertise ensures precision engineering and timely execution for every
+          landmark we build.
+        </p>
+      </div>
     </section>
 
     <!-- Main Content -->
-    <main style="padding-bottom: 80px; background-color: var(--background-section);">
-        <div class="container">
-
-            <!-- Tab Navigation -->
-            <div class="project-tabs reveal-on-scroll delay-2"
-                style="display: flex; justify-content: center; gap: 20px; margin-bottom: 50px;">
-                <button class="tab-btn active" data-tab="ongoing" onclick="switchTab('ongoing')">Ongoing
-                    Projects</button>
-                <button class="tab-btn" data-tab="completed" onclick="switchTab('completed')">Completed
-                    Projects</button>
-            </div>
-
-            <!-- ONGOING PROJECTS GRID -->
-            <div id="ongoing-projects" class="projects-grid active-tab-content" data-stagger>
-                <div style="grid-column: 1/-1; text-align: center; color: #888;">Loading projects...</div>
-            </div>
-
-            <!-- COMPLETED PROJECTS GRID -->
-            <div id="completed-projects" class="projects-grid" style="display: none;" data-stagger>
-                <div style="grid-column: 1/-1; text-align: center; color: #888;">Loading completed projects...</div>
-            </div>
-
+    <main
+      style="padding-bottom: 80px; background-color: var(--background-section)"
+    >
+      <div class="container">
+        <!-- Tab Navigation -->
+        <div
+          class="project-tabs reveal-on-scroll delay-2"
+          style="
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 50px;
+          "
+        >
+          <button
+            class="tab-btn active"
+            data-tab="ongoing"
+            onclick="switchTab('ongoing')"
+          >
+            Ongoing Projects
+          </button>
+          <button
+            class="tab-btn"
+            data-tab="completed"
+            onclick="switchTab('completed')"
+          >
+            Completed Projects
+          </button>
         </div>
+
+        <!-- ONGOING PROJECTS GRID -->
+        <div
+          id="ongoing-projects"
+          class="projects-grid active-tab-content"
+          data-stagger
+        >
+          <div style="grid-column: 1/-1; text-align: center; color: #888">
+            Loading projects...
+          </div>
+        </div>
+
+        <!-- COMPLETED PROJECTS GRID -->
+        <div
+          id="completed-projects"
+          class="projects-grid"
+          style="display: none"
+          data-stagger
+        >
+          <div style="grid-column: 1/-1; text-align: center; color: #888">
+            Loading completed projects...
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- Project Detail Modal -->
     <div id="project-modal" class="modal-overlay" onclick="closeModal(event)">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-modal" onclick="closeModal(event)">×</button>
+      <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="close-modal" onclick="closeModal(event)">×</button>
 
-            <div class="modal-body-grid">
-                <!-- Carousel -->
-                <div class="modal-carousel">
-                    <button class="carousel-btn prev" onclick="moveSlide(-1)">❮</button>
-                    <div class="carousel-track-container">
-                        <img loading="lazy" id="modal-img" src="" alt="Project Detail" class="modal-main-image">
-                    </div>
-                    <button class="carousel-btn next" onclick="moveSlide(1)">❯</button>
-                </div>
-
-                <!-- Details -->
-                <div class="modal-details">
-                    <h2 id="modal-title" style="color: var(--primary-color); margin-bottom: 20px;">Project Title</h2>
-                    <div class="modal-info-grid">
-                        <div class="info-item">
-                            <span class="label">Location</span>
-                            <span id="modal-location" class="value">Location</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label">Area</span>
-                            <span id="modal-area" class="value">0000 Sqft</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label">Weight</span>
-                            <span id="modal-weight" class="value">000 Tons</span>
-                        </div>
-                    </div>
-                    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-                    <p id="modal-desc" style="line-height: 1.6; color: #555;">
-                        Detailed project description goes here.
-                    </p>
-                </div>
+        <div class="modal-body-grid">
+          <!-- Carousel -->
+          <div class="modal-carousel">
+            <button class="carousel-btn prev" onclick="moveSlide(-1)">❮</button>
+            <div class="carousel-track-container">
+              <img
+                loading="lazy"
+                id="modal-img"
+                src=""
+                alt="Project Detail"
+                class="modal-main-image"
+              />
             </div>
+            <button class="carousel-btn next" onclick="moveSlide(1)">❯</button>
+          </div>
+
+          <!-- Details -->
+          <div class="modal-details">
+            <h2
+              id="modal-title"
+              style="color: var(--primary-color); margin-bottom: 20px"
+            >
+              Project Title
+            </h2>
+            <div class="modal-info-grid">
+              <div class="info-item">
+                <span class="label">Location</span>
+                <span id="modal-location" class="value">Location</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Area</span>
+                <span id="modal-area" class="value">0000 Sqft</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Weight</span>
+                <span id="modal-weight" class="value">000 Tons</span>
+              </div>
+            </div>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee" />
+            <p id="modal-desc" style="line-height: 1.6; color: #555">
+              Detailed project description goes here.
+            </p>
+          </div>
         </div>
+      </div>
     </div>
 
     <style>
-        .tab-btn {
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            padding: 10px 20px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #888;
-            cursor: pointer;
-            transition: all 0.3s ease;
+      .tab-btn {
+        background: none;
+        border: none;
+        border-bottom: 3px solid transparent;
+        padding: 10px 20px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #888;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .tab-btn.active {
+        color: var(--primary-color);
+        border-bottom: 3px solid var(--primary-color);
+      }
+
+      .tab-btn:hover {
+        color: var(--primary-color);
+      }
+
+      /* Card Styles */
+      .project-card {
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-image-wrapper {
+        position: relative;
+        height: 350px;
+        width: 100%;
+      }
+
+      .project-card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+      }
+
+      .project-card:hover .project-card-image {
+        transform: scale(1.1);
+      }
+
+      .card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.95),
+          rgba(0, 0, 0, 0.6) 80%,
+          transparent
+        );
+        padding: 20px;
+        color: #fff;
+        transition: all 0.4s ease;
+        transform: translateY(calc(100% - 70px));
+        /* Only show title initially */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        height: 100%;
+      }
+
+      .project-card:hover .card-overlay {
+        transform: translateY(0);
+        background: rgba(0, 0, 0, 0.85);
+        /* Darker full overlay on hover */
+      }
+
+      .project-title {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+        color: #fff;
+        /* White title on overlay */
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      .card-hidden-details {
+        opacity: 0;
+        transition: opacity 0.3s ease 0.1s;
+      }
+
+      .project-card:hover .card-hidden-details {
+        opacity: 1;
+      }
+
+      .project-meta {
+        margin: 5px 0;
+        font-size: 0.95rem;
+        color: #ddd;
+      }
+
+      .btn-more-details {
+        margin-top: 15px;
+        background: var(--brand-green);
+        /* Assuming Green from screenshot or primary */
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+        font-weight: 600;
+        background-color: #28a745;
+        /* Green as per ref */
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .modal-content {
+        background: #fff;
+        width: 95%;
+        max-width: 1200px;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        animation: slideUp 0.3s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
         }
 
-        .tab-btn.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
+        to {
+          transform: translateY(0);
+          opacity: 1;
         }
+      }
 
-        .tab-btn:hover {
-            color: var(--primary-color);
-        }
+      .modal-body-grid {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr;
+      }
 
-        /* Card Styles */
-        .project-card {
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
+      .modal-carousel {
+        position: relative;
+        background: #000;
+        height: 550px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-        .card-image-wrapper {
-            position: relative;
-            height: 350px;
-            width: 100%;
-        }
+      .modal-main-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
 
-        .project-card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
+      .carousel-btn {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: #fff;
+        font-size: 2rem;
+        padding: 10px;
+        cursor: pointer;
+        z-index: 10;
+      }
 
-        .project-card:hover .project-card-image {
-            transform: scale(1.1);
-        }
+      .carousel-btn:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
 
-        .card-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.6) 80%, transparent);
-            padding: 20px;
-            color: #fff;
-            transition: all 0.4s ease;
-            transform: translateY(calc(100% - 70px));
-            /* Only show title initially */
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            height: 100%;
-        }
+      .carousel-btn.prev {
+        left: 0;
+      }
 
-        .project-card:hover .card-overlay {
-            transform: translateY(0);
-            background: rgba(0, 0, 0, 0.85);
-            /* Darker full overlay on hover */
-        }
+      .carousel-btn.next {
+        right: 0;
+      }
 
-        .project-title {
-            font-size: 1.4rem;
-            margin-bottom: 10px;
-            color: #fff;
-            /* White title on overlay */
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
+      .modal-details {
+        padding: 40px;
+        overflow-y: auto;
+        max-height: 550px;
+      }
 
-        .card-hidden-details {
-            opacity: 0;
-            transition: opacity 0.3s ease 0.1s;
-        }
+      .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 2rem;
+        background: none;
+        border: none;
+        color: #fff;
+        /* If on image, else #333 */
+        z-index: 20;
+        cursor: pointer;
+      }
 
-        .project-card:hover .card-hidden-details {
-            opacity: 1;
-        }
-
-        .project-meta {
-            margin: 5px 0;
-            font-size: 0.95rem;
-            color: #ddd;
-        }
-
-        .btn-more-details {
-            margin-top: 15px;
-            background: var(--brand-green);
-            /* Assuming Green from screenshot or primary */
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-weight: 600;
-            background-color: #28a745;
-            /* Green as per ref */
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: #fff;
-            width: 95%;
-            max-width: 1200px;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
+      @media (max-width: 768px) {
         .modal-body-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
+          grid-template-columns: 1fr;
         }
 
         .modal-carousel {
-            position: relative;
-            background: #000;
-            height: 550px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-main-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .carousel-btn {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: #fff;
-            font-size: 2rem;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .carousel-btn:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .carousel-btn.prev {
-            left: 0;
-        }
-
-        .carousel-btn.next {
-            right: 0;
-        }
-
-        .modal-details {
-            padding: 40px;
-            overflow-y: auto;
-            max-height: 550px;
+          height: 250px;
         }
 
         .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 2rem;
-            background: none;
-            border: none;
-            color: #fff;
-            /* If on image, else #333 */
-            z-index: 20;
-            cursor: pointer;
+          color: #333;
+          top: 5px;
+          right: 10px;
         }
-
-        @media (max-width: 768px) {
-            .modal-body-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-carousel {
-                height: 250px;
-            }
-
-            .close-modal {
-                color: #333;
-                top: 5px;
-                right: 10px;
-            }
-        }
+      }
     </style>
 
     <script>
-        let currentImages = [];
-        let currentSlide = 0;
-        let cachedProjects = {}; // Store fetched projects for modal
+      let currentImages = [];
+      let currentSlide = 0;
+      let cachedProjects = {}; // Store fetched projects for modal
 
-        function openModal(id) {
-            const project = cachedProjects[id]; // cachedProjects will be an object id -> project
+      function openModal(id) {
+        const project = cachedProjects[id]; // cachedProjects will be an object id -> project
 
-            if (!project) return;
+        if (!project) return;
 
-            document.getElementById('project-modal').style.display = 'flex';
-            document.getElementById('modal-title').textContent = project.title;
-            document.getElementById('modal-location').textContent = project.location || '-';
-            document.getElementById('modal-area').textContent = project.area || '-';
-            document.getElementById('modal-weight').textContent = project.weight || '-';
-            document.getElementById('modal-desc').textContent = project.description || 'No description available.';
+        document.getElementById("project-modal").style.display = "flex";
+        document.getElementById("modal-title").textContent = project.title;
+        document.getElementById("modal-location").textContent =
+          project.location || "-";
+        document.getElementById("modal-area").textContent = project.area || "-";
+        document.getElementById("modal-weight").textContent =
+          project.weight || "-";
+        document.getElementById("modal-desc").textContent =
+          project.description || "No description available.";
 
-            // Setup images
-            currentImages = project.images && project.images.length > 0 ? project.images : [];
-            // If no images, maybe show placeholder?
-            if (currentImages.length === 0 && project.image) currentImages.push(project.image);
+        // Setup images
+        currentImages =
+          project.images && project.images.length > 0 ? project.images : [];
+        // If no images, maybe show placeholder?
+        if (currentImages.length === 0 && project.image)
+          currentImages.push(project.image);
 
-            currentSlide = 0;
-            updateSlide();
+        currentSlide = 0;
+        updateSlide();
+      }
+
+      function closeModal(e) {
+        if (e) e.preventDefault();
+        document.getElementById("project-modal").style.display = "none";
+      }
+
+      function moveSlide(dir) {
+        currentSlide += dir;
+        if (currentSlide >= currentImages.length) currentSlide = 0;
+        if (currentSlide < 0) currentSlide = currentImages.length - 1;
+        updateSlide();
+      }
+
+      function updateSlide() {
+        document.getElementById("modal-img").src = currentImages[currentSlide];
+      }
+
+      function switchTab(tabName) {
+        // Buttons
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+          if (btn.dataset.tab === tabName) btn.classList.add("active");
+        });
+
+        // Content
+        if (tabName === "ongoing") {
+          document.getElementById("ongoing-projects").style.display = "grid";
+          document.getElementById("completed-projects").style.display = "none";
+        } else {
+          document.getElementById("ongoing-projects").style.display = "none";
+          document.getElementById("completed-projects").style.display = "grid";
         }
-
-        function closeModal(e) {
-            if (e) e.preventDefault();
-            document.getElementById('project-modal').style.display = 'none';
-        }
-
-        function moveSlide(dir) {
-            currentSlide += dir;
-            if (currentSlide >= currentImages.length) currentSlide = 0;
-            if (currentSlide < 0) currentSlide = currentImages.length - 1;
-            updateSlide();
-        }
-
-        function updateSlide() {
-            document.getElementById('modal-img').src = currentImages[currentSlide];
-        }
-
-        function switchTab(tabName) {
-            // Buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.tab === tabName) btn.classList.add('active');
-            });
-
-            // Content
-            if (tabName === 'ongoing') {
-                document.getElementById('ongoing-projects').style.display = 'grid';
-                document.getElementById('completed-projects').style.display = 'none';
-            } else {
-                document.getElementById('ongoing-projects').style.display = 'none';
-                document.getElementById('completed-projects').style.display = 'grid';
-            }
-        }
+      }
     </script>
 
     <!-- MODERN FOOTER (3 PARTS) -->
-        <!-- Footer Placeholder -->
+    <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
+  </body>
 
-    
-</body>
-
-<script src="/animations.js" defer></script>
-
+  <script src="/animations.js" defer></script>
 </html>

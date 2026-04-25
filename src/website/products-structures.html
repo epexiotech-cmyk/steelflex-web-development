@@ -1,742 +1,1358 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-<meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Products & Structures | SteelFlex Structures</title>
-    <meta name="description" content="Explore our comprehensive range of PEB products, including industrial sheds, multi-story buildings, aircraft hangars, and custom steel structures.">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.steelflexstructures.com/products-structures">
+    <meta
+      name="description"
+      content="Explore our comprehensive range of PEB products, including industrial sheds, multi-story buildings, aircraft hangars, and custom steel structures."
+    />
+    <meta name="robots" content="index, follow" />
+    <link
+      rel="canonical"
+      href="https://www.steelflexstructures.com/products-structures"
+    />
 
     <!-- Open Graph Tags -->
-    <meta property="og:title" content="Products & Structures | SteelFlex Structures">
-    <meta property="og:description" content="Explore our comprehensive range of PEB products, including industrial sheds, multi-story buildings, aircraft hangars, and custom steel structures.">
-    <meta property="og:image" content="https://www.steelflexstructures.com/og-image.jpg">
-    <meta property="og:url" content="https://www.steelflexstructures.com/products-structures">
-    <meta property="og:type" content="website">
+    <meta
+      property="og:title"
+      content="Products & Structures | SteelFlex Structures"
+    />
+    <meta
+      property="og:description"
+      content="Explore our comprehensive range of PEB products, including industrial sheds, multi-story buildings, aircraft hangars, and custom steel structures."
+    />
+    <meta
+      property="og:image"
+      content="https://www.steelflexstructures.com/og-image.jpg"
+    />
+    <meta
+      property="og:url"
+      content="https://www.steelflexstructures.com/products-structures"
+    />
+    <meta property="og:type" content="website" />
 
     <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Products & Structures | SteelFlex Structures">
-    <meta name="twitter:description" content="Explore our comprehensive range of PEB products, including industrial sheds, multi-story buildings, aircraft hangars, and custom steel structures.">
-    <meta name="twitter:image" content="https://www.steelflexstructures.com/og-image.jpg">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Products & Structures | SteelFlex Structures"
+    />
+    <meta
+      name="twitter:description"
+      content="Explore our comprehensive range of PEB products, including industrial sheds, multi-story buildings, aircraft hangars, and custom steel structures."
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.steelflexstructures.com/og-image.jpg"
+    />
 
-    
-    
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css" />
     <style>
-        /* Reusing About Us styles for consistency */
-        /* Toggle Switch Styles */
-        .toggle-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0 30px;
+      /* Reusing About Us styles for consistency */
+      /* Toggle Switch Styles */
+      .toggle-container {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0 30px;
+      }
+
+      .toggle-wrapper {
+        background: #fff;
+        border: 2px solid var(--primary-color);
+        border-radius: 50px;
+        display: flex;
+        padding: 5px;
+        gap: 10px;
+      }
+
+      .toggle-btn {
+        background: transparent;
+        border: none;
+        padding: 10px 40px;
+        border-radius: 40px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-btn.active {
+        background: var(--primary-color);
+        color: #fff;
+      }
+
+      /* View Containers */
+      .view-section {
+        display: none;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .view-section.active {
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
         }
 
-        .toggle-wrapper {
-            background: #fff;
-            border: 2px solid var(--primary-color);
-            border-radius: 50px;
-            display: flex;
-            padding: 5px;
-            gap: 10px;
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
+      }
 
-        .toggle-btn {
-            background: transparent;
-            border: none;
-            padding: 10px 40px;
-            border-radius: 40px;
-            font-size: 1rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
+      /* Structures Grid (Diagram Style) */
+      .structure-card {
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .structure-card:hover {
+        border-color: var(--primary-color);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      }
+
+      .structure-img {
+        width: 100%;
+        height: 180px;
+        object-fit: contain;
+        margin-bottom: 20px;
+        /* Placeholder styling */
+        background-color: #f9f9f9;
+        padding: 20px;
+      }
+
+      .structure-title {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+      }
+
+      .structure-label {
+        font-size: 0.85rem;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* New section divider */
+      .section-divider-title {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 40px;
+        border-top: 1px solid #eee;
+      }
+
+      .sectors-section .why-card-new {
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        filter: grayscale(100%);
+        opacity: 0.8;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      }
+
+      /* Revolving Glow Effect */
+      .sectors-section .why-card-new::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(
+          from 0deg,
+          transparent 0deg,
+          transparent 160deg,
+          var(--primary-color) 180deg,
+          transparent 200deg,
+          transparent 360deg
+        );
+        transform: translate(-50%, -50%) rotate(0deg);
+        animation: rotateGlow 4s linear infinite;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      /* Card background to overlay the center of the glow */
+      .sectors-section .why-card-new::after {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        background: var(--background-section);
+        border-radius: inherit;
+        z-index: -1;
+        transition: background 0.3s ease;
+      }
+
+      .sectors-section .why-card-new:hover::before {
+        opacity: 1;
+      }
+
+      .sectors-section .why-card-new:hover::after {
+        background: #ffffff;
+      }
+
+      .sectors-section .why-card-new:hover {
+        filter: grayscale(0%);
+        opacity: 1;
+        box-shadow: 0 10px 40px rgba(38, 71, 150, 0.2);
+      }
+
+      @keyframes rotateGlow {
+        from {
+          transform: translate(-50%, -50%) rotate(0deg);
         }
-
-        .toggle-btn.active {
-            background: var(--primary-color);
-            color: #fff;
+        to {
+          transform: translate(-50%, -50%) rotate(360deg);
         }
-
-        /* View Containers */
-        .view-section {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .view-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Structures Grid (Diagram Style) */
-        .structure-card {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .structure-card:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .structure-img {
-            width: 100%;
-            height: 180px;
-            object-fit: contain;
-            margin-bottom: 20px;
-            /* Placeholder styling */
-            background-color: #f9f9f9;
-            padding: 20px;
-        }
-
-        .structure-title {
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .structure-label {
-            font-size: 0.85rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* New section divider */
-        .section-divider-title {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 40px;
-            border-top: 1px solid #eee;
-        }
-
-        .sectors-section .why-card-new {
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-            filter: grayscale(100%);
-            opacity: 0.8;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-
-        /* Revolving Glow Effect */
-        .sectors-section .why-card-new::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(
-                from 0deg,
-                transparent 0deg,
-                transparent 160deg,
-                var(--primary-color) 180deg,
-                transparent 200deg,
-                transparent 360deg
-            );
-            transform: translate(-50%, -50%) rotate(0deg);
-            animation: rotateGlow 4s linear infinite;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Card background to overlay the center of the glow */
-        .sectors-section .why-card-new::after {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            background: var(--background-section);
-            border-radius: inherit;
-            z-index: -1;
-            transition: background 0.3s ease;
-        }
-
-        .sectors-section .why-card-new:hover::before {
-            opacity: 1;
-        }
-
-        .sectors-section .why-card-new:hover::after {
-            background: #ffffff;
-        }
-
-        .sectors-section .why-card-new:hover {
-            filter: grayscale(0%);
-            opacity: 1;
-            box-shadow: 0 10px 40px rgba(38, 71, 150, 0.2);
-        }
-
-        @keyframes rotateGlow {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
+      }
     </style>
     <script src="/src/shared/storage.js" defer></script>
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
     <!-- JSON-LD Product/Service Schema -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Product",
-      "name": "Pre-Engineered Buildings (PEB) & Steel Structures",
-      "image": "https://steelflexstructures.com/assets/Logo/Steelflex Logo.png",
-      "description": "High-quality, customized pre-engineered buildings and structural steel solutions by SteelFlex Structures.",
-      "brand": {
-        "@type": "Brand",
-        "name": "SteelFlex Structures"
-      },
-      "category": "Industrial Real Estate & Construction",
-      "offers": {
-        "@type": "AggregateOffer",
-        "priceCurrency": "INR",
-        "availability": "https://schema.org/InStock"
+      {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        "name": "Pre-Engineered Buildings (PEB) & Steel Structures",
+        "image": "https://steelflexstructures.com/assets/Logo/Steelflex Logo.png",
+        "description": "High-quality, customized pre-engineered buildings and structural steel solutions by SteelFlex Structures.",
+        "brand": {
+          "@type": "Brand",
+          "name": "SteelFlex Structures"
+        },
+        "category": "Industrial Real Estate & Construction",
+        "offers": {
+          "@type": "AggregateOffer",
+          "priceCurrency": "INR",
+          "availability": "https://schema.org/InStock"
+        }
       }
-    }
     </script>
-    <link rel="stylesheet" href="/components/components.css">
+    <link rel="stylesheet" href="/components/components.css" />
     <script src="/components/components.js" defer></script>
-    <link rel="icon" href="/favicon.ico">
-</head>
+    <link rel="icon" href="/favicon.ico" />
+  </head>
 
-<body>
-
+  <body>
     <!-- Header (Consistent) -->
     <!-- Header Placeholder -->
     <div id="navbar-placeholder"></div>
 
     <!-- SECTION 1: CORE PRODUCTS -->
-    <section class="hero-section" style="padding: 140px 0 40px; text-align: center; background: #fff;">
-        <div class="container">
-            <h1 class="reveal-on-scroll" style="color: var(--primary-color); font-size: 3rem; margin-bottom: 10px;">
-                Industrial
-                Steel Solutions
-            </h1>
-            <p class="reveal-on-scroll delay-1"
-                style="font-size: 1.2rem; max-width: 600px; margin: 0 auto 15px; color: var(--secondary-color); font-weight: 500;">
-                Engineered for durability. Fabrication for the future.</p>
-            <p class="reveal-on-scroll delay-2"
-                style="font-size: 1.1rem; line-height: 1.6; max-width: 850px; margin: 0 auto; color: var(--secondary-color); text-align: center;">
-                As a premier <strong>PEB manufacturer</strong>, SteelFlex Structures specializes in designing
-                high-performance <strong>industrial steel structures</strong> that optimize operational efficiency. Our
-                expertise in <strong>warehouse buildings</strong> and <strong>pre-engineered buildings India</strong>
-                ensures that every project benefits from precision <strong>steel fabrication</strong> and engineering
-                excellence. We provide end-to-end solutions that meet the most demanding technical standards, ensuring
-                durability and rapid deployment for modern industrial requirements.
-            </p>
+    <section
+      class="hero-section"
+      style="padding: 140px 0 40px; text-align: center; background: #fff"
+    >
+      <div class="container">
+        <h1
+          class="reveal-on-scroll"
+          style="
+            color: var(--primary-color);
+            font-size: 3rem;
+            margin-bottom: 10px;
+          "
+        >
+          Industrial Steel Solutions
+        </h1>
+        <p
+          class="reveal-on-scroll delay-1"
+          style="
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 15px;
+            color: var(--secondary-color);
+            font-weight: 500;
+          "
+        >
+          Engineered for durability. Fabrication for the future.
+        </p>
+        <p
+          class="reveal-on-scroll delay-2"
+          style="
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 850px;
+            margin: 0 auto;
+            color: var(--secondary-color);
+            text-align: center;
+          "
+        >
+          As a premier <strong>PEB manufacturer</strong>, SteelFlex Structures
+          specializes in designing high-performance
+          <strong>industrial steel structures</strong> that optimize operational
+          efficiency. Our expertise in <strong>warehouse buildings</strong> and
+          <strong>pre-engineered buildings India</strong> ensures that every
+          project benefits from precision <strong>steel fabrication</strong> and
+          engineering excellence. We provide end-to-end solutions that meet the
+          most demanding technical standards, ensuring durability and rapid
+          deployment for modern industrial requirements.
+        </p>
 
-            <!-- Option A: Steel Divider + Motion -->
-            <div class="steel-divider reveal-on-scroll delay-3">
-                <span></span>
-            </div>
+        <!-- Option A: Steel Divider + Motion -->
+        <div class="steel-divider reveal-on-scroll delay-3">
+          <span></span>
         </div>
-    </section>
-
+      </div>
     </section>
 
     <!-- Products Grid (Using 'Why Choose Us' Visual Style) -->
-    <section class="products-section" style="padding-bottom: 40px;">
-        <div class="container">
-            <div class="product-grid" data-stagger>
-                <!-- Product 1 -->
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy"
-                        src="/assets/Industrial Steel Solutions/Pre-Engineered Buildings (PEB).webp"
-                        alt="PEB"
-                        style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
-                    <span class="why-title-new">Pre-Engineered Buildings (PEB)</span>
-                    <span class="why-desc-new">Versatile, cost-effective, and rapid-deployment building solutions for
-                        warehouses, factories, and commercial hubs. Designed for diverse load requirements.</span>
-                </div>
+    <section class="products-section" style="padding-bottom: 40px">
+      <div class="container">
+        <div class="product-grid" data-stagger>
+          <!-- Product 1 -->
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Industrial Steel Solutions/Pre-Engineered Buildings (PEB).webp"
+              alt="PEB"
+              style="
+                width: 100%;
+                aspect-ratio: 3 / 2;
+                object-fit: cover;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                display: block;
+              "
+            />
+            <span class="why-title-new">Pre-Engineered Buildings (PEB)</span>
+            <span class="why-desc-new"
+              >Versatile, cost-effective, and rapid-deployment building
+              solutions for warehouses, factories, and commercial hubs. Designed
+              for diverse load requirements.</span
+            >
+          </div>
 
-                <!-- Product 2 -->
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/assets/Industrial Steel Solutions/Heavy Structural Steel.webp"
-                        alt="Heavy Structural Steel"
-                        style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
-                    <span class="why-title-new">Heavy Structural Steel</span>
-                    <span class="why-desc-new">Robust frameworks for high-rise manufacturing plants and power stations.
-                        Fabricated to withstand extreme industrial loads and environmental conditions.</span>
-                </div>
+          <!-- Product 2 -->
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Industrial Steel Solutions/Heavy Structural Steel.webp"
+              alt="Heavy Structural Steel"
+              style="
+                width: 100%;
+                aspect-ratio: 3 / 2;
+                object-fit: cover;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                display: block;
+              "
+            />
+            <span class="why-title-new">Heavy Structural Steel</span>
+            <span class="why-desc-new"
+              >Robust frameworks for high-rise manufacturing plants and power
+              stations. Fabricated to withstand extreme industrial loads and
+              environmental conditions.</span
+            >
+          </div>
 
-                <!-- Product 3 -->
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy"
-                        src="/assets/Industrial Steel Solutions/Industrial Sheds & Roofing.webp"
-                        alt="Industrial Sheds"
-                        style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
-                    <span class="why-title-new">Industrial Sheds & Roofing</span>
-                    <span class="why-desc-new">High-span roofing systems and customized industrial sheds providing
-                        superior weather protection, ventilation, and natural lighting.</span>
-                </div>
+          <!-- Product 3 -->
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Industrial Steel Solutions/Industrial Sheds & Roofing.webp"
+              alt="Industrial Sheds"
+              style="
+                width: 100%;
+                aspect-ratio: 3 / 2;
+                object-fit: cover;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                display: block;
+              "
+            />
+            <span class="why-title-new">Industrial Sheds & Roofing</span>
+            <span class="why-desc-new"
+              >High-span roofing systems and customized industrial sheds
+              providing superior weather protection, ventilation, and natural
+              lighting.</span
+            >
+          </div>
 
-                <!-- Product 4 -->
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/assets/Industrial Steel Solutions/Mezzanine Floors.webp"
-                        alt="Mezzanine Floors"
-                        style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
-                    <span class="why-title-new">Mezzanine Floors</span>
-                    <span class="why-desc-new">Space-optimizing steel mezzanine systems designed to double your
-                        operational floor area without new construction. Ideal for storage optimization.</span>
-                </div>
+          <!-- Product 4 -->
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Industrial Steel Solutions/Mezzanine Floors.webp"
+              alt="Mezzanine Floors"
+              style="
+                width: 100%;
+                aspect-ratio: 3 / 2;
+                object-fit: cover;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                display: block;
+              "
+            />
+            <span class="why-title-new">Mezzanine Floors</span>
+            <span class="why-desc-new"
+              >Space-optimizing steel mezzanine systems designed to double your
+              operational floor area without new construction. Ideal for storage
+              optimization.</span
+            >
+          </div>
 
-                <!-- Product 5 -->
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/assets/Industrial Steel Solutions/Crane Support Systems.webp"
-                        alt="Crane Support Systems"
-                        style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
-                    <span class="why-title-new">Crane Support Systems</span>
-                    <span class="why-desc-new">Heavy-duty crane girders and support structures engineered for EOT
-                        cranes, ensuring safe and efficient material handling operations.</span>
-                </div>
+          <!-- Product 5 -->
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Industrial Steel Solutions/Crane Support Systems.webp"
+              alt="Crane Support Systems"
+              style="
+                width: 100%;
+                aspect-ratio: 3 / 2;
+                object-fit: cover;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                display: block;
+              "
+            />
+            <span class="why-title-new">Crane Support Systems</span>
+            <span class="why-desc-new"
+              >Heavy-duty crane girders and support structures engineered for
+              EOT cranes, ensuring safe and efficient material handling
+              operations.</span
+            >
+          </div>
 
-                <!-- Product 6 -->
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy"
-                        src="/assets/Industrial Steel Solutions/Custom Metal Fabrication.webp"
-                        alt="Custom Fabrication"
-                        style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
-                    <span class="why-title-new">Custom Metal Fabrication</span>
-                    <span class="why-desc-new">Tailored fabrication services for specialized industrial components,
-                        walkways, staircases, and safety railings built to your specs.</span>
-                </div>
-            </div>
+          <!-- Product 6 -->
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Industrial Steel Solutions/Custom Metal Fabrication.webp"
+              alt="Custom Fabrication"
+              style="
+                width: 100%;
+                aspect-ratio: 3 / 2;
+                object-fit: cover;
+                border-radius: 8px;
+                margin-bottom: 15px;
+                display: block;
+              "
+            />
+            <span class="why-title-new">Custom Metal Fabrication</span>
+            <span class="why-desc-new"
+              >Tailored fabrication services for specialized industrial
+              components, walkways, staircases, and safety railings built to
+              your specs.</span
+            >
+          </div>
         </div>
+      </div>
     </section>
-
 
     <!-- SECTION 2: ACCESSORIES & STRUCTURES (New Toggle Section) -->
     <section class="section-divider-title container">
-        <h2 class="reveal-on-scroll" style="color: var(--primary-color); font-size: 2.5rem; margin-bottom: 10px;">
-            Products &
-            Structures</h2>
-        <p class="reveal-on-scroll delay-1"
-            style="font-size: 1.1rem; max-width: 700px; margin: 0 auto; color: var(--secondary-color);">Complete
-            building
-            accessories and proven structural frame systems.</p>
+      <h2
+        class="reveal-on-scroll"
+        style="
+          color: var(--primary-color);
+          font-size: 2.5rem;
+          margin-bottom: 10px;
+        "
+      >
+        Products & Structures
+      </h2>
+      <p
+        class="reveal-on-scroll delay-1"
+        style="
+          font-size: 1.1rem;
+          max-width: 700px;
+          margin: 0 auto;
+          color: var(--secondary-color);
+        "
+      >
+        Complete building accessories and proven structural frame systems.
+      </p>
 
-        <!-- Toggle Switch -->
-        <div class="toggle-container reveal-on-scroll delay-2">
-            <div class="toggle-wrapper">
-                <button class="toggle-btn active" onclick="switchView('products')">Products</button>
-                <button class="toggle-btn" onclick="switchView('structures')">Structures</button>
-            </div>
+      <!-- Toggle Switch -->
+      <div class="toggle-container reveal-on-scroll delay-2">
+        <div class="toggle-wrapper">
+          <button class="toggle-btn active" onclick="switchView('products')">
+            Products
+          </button>
+          <button class="toggle-btn" onclick="switchView('structures')">
+            Structures
+          </button>
         </div>
+      </div>
     </section>
 
     <!-- Main Content Area for Toggle Views -->
-    <main style="padding-bottom: 40px; min-height: 600px;">
-        <div class="container">
+    <main style="padding-bottom: 40px; min-height: 600px">
+      <div class="container">
+        <!-- VIEW 1: PRODUCTS (ACCESSORIES & PROFILES) -->
+        <section id="products-view" class="view-section active">
+          <!-- Subsection: Accessories -->
+          <h3
+            class="reveal-on-scroll"
+            style="
+              text-align: center;
+              color: var(--primary-color);
+              margin-bottom: 30px;
+              font-size: 1.8rem;
+            "
+          >
+            Building Accessories
+          </h3>
+          <div
+            class="product-grid grid-cols-3"
+            style="margin-bottom: 60px"
+            data-stagger
+          >
+            <!-- Accessory 1 -->
+            <div
+              class="why-card-new reveal-on-scroll"
+              style="text-align: center"
+            >
+              <img
+                loading="lazy"
+                src="/assets/Building Accessories/Turbo Ventilators.webp"
+                alt="Turbo Ventilators"
+                style="
+                  width: 73%;
+                  aspect-ratio: 3/2;
+                  object-fit: cover;
+                  border-radius: 8px;
+                  margin: 0 auto 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Turbo Ventilators</span>
+              <span class="why-desc-new"
+                >Wind-driven roof ventilators for zero-energy air
+                circulation.</span
+              >
+            </div>
 
-            <!-- VIEW 1: PRODUCTS (ACCESSORIES & PROFILES) -->
-            <section id="products-view" class="view-section active">
+            <!-- Accessory 2 -->
+            <div
+              class="why-card-new reveal-on-scroll"
+              style="text-align: center"
+            >
+              <img
+                loading="lazy"
+                src="/assets/Building Accessories/Skylights & Roof Monitors.webp"
+                alt="Skylights"
+                style="
+                  width: 73%;
+                  aspect-ratio: 3/2;
+                  object-fit: cover;
+                  border-radius: 8px;
+                  margin: 0 auto 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Skylights & Roof Monitors</span>
+              <span class="why-desc-new"
+                >Polycarbonate sheets and monitors for natural daylight
+                optimization.</span
+              >
+            </div>
 
-                <!-- Subsection: Accessories -->
-                <h3 class="reveal-on-scroll"
-                    style="text-align: center; color: var(--primary-color); margin-bottom: 30px; font-size: 1.8rem;">
-                    Building Accessories</h3>
-                <div class="product-grid grid-cols-3" style="margin-bottom: 60px;" data-stagger>
-                    <!-- Accessory 1 -->
-                    <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/assets/Building Accessories/Turbo Ventilators.webp"
-                            alt="Turbo Ventilators"
-                            style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
-                        <span class="why-title-new">Turbo Ventilators</span>
-                        <span class="why-desc-new">Wind-driven roof ventilators for zero-energy air circulation.</span>
-                    </div>
+            <!-- Accessory 3 -->
+            <div
+              class="why-card-new reveal-on-scroll"
+              style="text-align: center"
+            >
+              <img
+                loading="lazy"
+                src="/assets/Building Accessories/Sliding & Rolling Shutters.webp"
+                alt="Shutters"
+                style="
+                  width: 73%;
+                  aspect-ratio: 3/2;
+                  object-fit: cover;
+                  border-radius: 8px;
+                  margin: 0 auto 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Sliding & Rolling Shutters</span>
+              <span class="why-desc-new"
+                >Heavy-duty motorized and manual shutters for industrial
+                bays.</span
+              >
+            </div>
 
-                    <!-- Accessory 2 -->
-                    <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy"
-                            src="/assets/Building Accessories/Skylights & Roof Monitors.webp"
-                            alt="Skylights"
-                            style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
-                        <span class="why-title-new">Skylights & Roof Monitors</span>
-                        <span class="why-desc-new">Polycarbonate sheets and monitors for natural daylight
-                            optimization.</span>
-                    </div>
+            <!-- Accessory 4 -->
+            <div
+              class="why-card-new reveal-on-scroll"
+              style="text-align: center"
+            >
+              <img
+                loading="lazy"
+                src="/assets/Building Accessories/Insulation Solutions.webp"
+                alt="Insulation"
+                style="
+                  width: 73%;
+                  aspect-ratio: 3/2;
+                  object-fit: cover;
+                  border-radius: 8px;
+                  margin: 0 auto 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Insulation Solutions</span>
+              <span class="why-desc-new"
+                >PUF panels and Rockwool insulation for superior thermal
+                efficiency.</span
+              >
+            </div>
 
-                    <!-- Accessory 3 -->
-                    <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy"
-                            src="/assets/Building Accessories/Sliding & Rolling Shutters.webp"
-                            alt="Shutters"
-                            style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
-                        <span class="why-title-new">Sliding & Rolling Shutters</span>
-                        <span class="why-desc-new">Heavy-duty motorized and manual shutters for industrial bays.</span>
-                    </div>
+            <!-- Accessory 5 -->
+            <div
+              class="why-card-new reveal-on-scroll"
+              style="text-align: center"
+            >
+              <img
+                loading="lazy"
+                src="/assets/Building Accessories/Windows & Louvers.webp"
+                alt="Louvers"
+                style="
+                  width: 73%;
+                  aspect-ratio: 3/2;
+                  object-fit: cover;
+                  border-radius: 8px;
+                  margin: 0 auto 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Windows & Louvers</span>
+              <span class="why-desc-new"
+                >Fixed and adjustable louvers engineered for
+                cross-ventilation.</span
+              >
+            </div>
 
-                    <!-- Accessory 4 -->
-                    <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/assets/Building Accessories/Insulation Solutions.webp"
-                            alt="Insulation"
-                            style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
-                        <span class="why-title-new">Insulation Solutions</span>
-                        <span class="why-desc-new">PUF panels and Rockwool insulation for superior thermal
-                            efficiency.</span>
-                    </div>
+            <!-- Accessory 6 -->
+            <div
+              class="why-card-new reveal-on-scroll"
+              style="text-align: center"
+            >
+              <img
+                loading="lazy"
+                src="/assets/Building Accessories/Fasteners & Sealants.webp"
+                alt="Fasteners"
+                style="
+                  width: 73%;
+                  aspect-ratio: 3/2;
+                  object-fit: cover;
+                  border-radius: 8px;
+                  margin: 0 auto 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Fasteners & Sealants</span>
+              <span class="why-desc-new"
+                >High-grade galvanized fasteners and weather-proof silicon
+                sealants.</span
+              >
+            </div>
+          </div>
 
-                    <!-- Accessory 5 -->
-                    <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/assets/Building Accessories/Windows & Louvers.webp"
-                            alt="Louvers"
-                            style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
-                        <span class="why-title-new">Windows & Louvers</span>
-                        <span class="why-desc-new">Fixed and adjustable louvers engineered for cross-ventilation.</span>
-                    </div>
+          <!-- New Subsection: Sheeting Profiles -->
+          <div class="steel-divider reveal-on-scroll"><span></span></div>
+          <h3
+            class="reveal-on-scroll"
+            style="
+              text-align: center;
+              color: var(--primary-color);
+              margin: 40px 0 30px;
+              font-size: 1.8rem;
+            "
+          >
+            Sheeting Profiles
+          </h3>
+          <div
+            class="product-grid grid-cols-3"
+            style="margin-bottom: 60px"
+            data-stagger
+          >
+            <!-- Profile 1 -->
+            <div
+              class="why-card-new reveal-on-scroll"
+              style="text-align: center"
+            >
+              <img
+                loading="lazy"
+                src="/assets/Sheeting Profiles/1100 PROFILE (HI-COVER).jpg"
+                alt="Hi-Cover Profile"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">1100 Profile (Hi-Cover)</span>
+              <span class="why-desc-new"
+                >Ribbed steel for roof & wall. <br /><strong>Specs:</strong>
+                0.47-0.8mm High Tensile Steel (340/550 MPA). Galvalume
+                AZ150.</span
+              >
+            </div>
 
-                    <!-- Accessory 6 -->
-                    <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/assets/Building Accessories/Fasteners & Sealants.webp"
-                            alt="Fasteners"
-                            style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
-                        <span class="why-title-new">Fasteners & Sealants</span>
-                        <span class="why-desc-new">High-grade galvanized fasteners and weather-proof silicon
-                            sealants.</span>
-                    </div>
-                </div>
+            <!-- Profile 2 -->
+            <div
+              class="why-card-new reveal-on-scroll"
+              style="text-align: center"
+            >
+              <img
+                loading="lazy"
+                src="/assets/Sheeting Profiles/4 FEET PROFILE (ULTRA SHINE).jpg"
+                alt="Ultrashine Profile"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">4 Feet Profile (Ultra Shine)</span>
+              <span class="why-desc-new"
+                >Multi-layer coated profile for enhanced durability and
+                aesthetics. ideal for wide coverage requirements.</span
+              >
+            </div>
 
-                <!-- New Subsection: Sheeting Profiles -->
-                <div class="steel-divider reveal-on-scroll"><span></span></div>
-                <h3 class="reveal-on-scroll"
-                    style="text-align: center; color: var(--primary-color); margin: 40px 0 30px; font-size: 1.8rem;">
-                    Sheeting Profiles</h3>
-                <div class="product-grid grid-cols-3" style="margin-bottom: 60px;" data-stagger>
-                    <!-- Profile 1 -->
-                    <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/assets/Sheeting Profiles/1100 PROFILE (HI-COVER).jpg"
-                            alt="Hi-Cover Profile"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">1100 Profile (Hi-Cover)</span>
-                        <span class="why-desc-new">Ribbed steel for roof & wall. <br><strong>Specs:</strong> 0.47-0.8mm
-                            High Tensile Steel (340/550 MPA). Galvalume AZ150.</span>
-                    </div>
+            <!-- Profile 3 -->
+            <div
+              class="why-card-new reveal-on-scroll"
+              style="text-align: center"
+            >
+              <img
+                loading="lazy"
+                src="/assets/Sheeting Profiles/1100 PROFILE (HI-SHRENGTH).jpg"
+                alt="Hi-Strength Profile"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">1100 Profile (Hi-Strength)</span>
+              <span class="why-desc-new"
+                >Optimized load-bearing profile for heavy-duty applications.
+                Width: 1100mm total (1030mm cover).</span
+              >
+            </div>
+          </div>
+        </section>
 
-                    <!-- Profile 2 -->
-                    <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/assets/Sheeting Profiles/4 FEET PROFILE (ULTRA SHINE).jpg"
-                            alt="Ultrashine Profile"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">4 Feet Profile (Ultra Shine)</span>
-                        <span class="why-desc-new">Multi-layer coated profile for enhanced durability and aesthetics.
-                            ideal for wide coverage requirements.</span>
-                    </div>
+        <!-- VIEW 2: STRUCTURES (FRAMES, FASCIA, MEZZANINE) -->
+        <section id="structures-view" class="view-section">
+          <!-- Subsection: Standard Frames -->
+          <h3
+            class="reveal-on-scroll"
+            style="
+              text-align: center;
+              color: var(--primary-color);
+              margin-bottom: 30px;
+              font-size: 1.8rem;
+            "
+          >
+            Standard Frame Types
+          </h3>
+          <div
+            class="product-grid grid-cols-3"
+            style="margin-bottom: 60px"
+            data-stagger
+          >
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Tapered Column Clear Span (TCCS).png"
+                alt="Tapered Column Clear Span (TCCS)"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Tapered Column Clear Span</span>
+              <span class="why-desc-new">(TCCS)</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Multi Gable (MG) l-ll.png"
+                alt="Multi Gable (MG) l-ll"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Multi Gable (MG)</span>
+              <span class="why-desc-new">l-ll</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Multi Span l.png"
+                alt="Multi Span l"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Multi Span l</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Multi Span ll.png"
+                alt="Multi Span ll"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Multi Span ll</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Multi Span lll.png"
+                alt="Multi Span lll"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Multi Span lll</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Clear Span With Crane.png"
+                alt="Clear Span With Crane"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Clear Span</span>
+              <span class="why-desc-new">With Crane</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Multi Span (l) With Crane & Mezzanine.png"
+                alt="Multi Span (l) With Crane & Mezzanine"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Multi Span (l)</span>
+              <span class="why-desc-new">With Crane & Mezzanine</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Mono Slope.png"
+                alt="Mono Slope"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Mono Slope</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Lean - To.png"
+                alt="Lean - To"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Lean - To</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Rafter System.png"
+                alt="Rafter System"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Rafter System</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Mezzanine Systems.png"
+                alt="Mezzanine Systems"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Mezzanine Systems</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Jack Beam At Interior Column Location.png"
+                alt="Jack Beam At Interior Column Location"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Jack Beam</span>
+              <span class="why-desc-new">At Interior Column Location</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Standard Frame Types/Jack Beam At Sidewall.png"
+                alt="Jack Beam At Sidewall"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Jack Beam</span>
+              <span class="why-desc-new">At Sidewall</span>
+            </div>
+          </div>
 
-                    <!-- Profile 3 -->
-                    <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/assets/Sheeting Profiles/1100 PROFILE (HI-SHRENGTH).jpg"
-                            alt="Hi-Strength Profile"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">1100 Profile (Hi-Strength)</span>
-                        <span class="why-desc-new">Optimized load-bearing profile for heavy-duty applications. Width:
-                            1100mm total (1030mm cover).</span>
-                    </div>
-                </div>
-            </section>
+          <!-- Subsection: Fascia Systems -->
+          <div class="steel-divider reveal-on-scroll"><span></span></div>
+          <h3
+            class="reveal-on-scroll"
+            style="
+              text-align: center;
+              color: var(--primary-color);
+              margin: 40px 0 30px;
+              font-size: 1.8rem;
+            "
+          >
+            Fascia & Gutter Systems
+          </h3>
+          <div class="product-grid grid-cols-4" style="gap: 20px" data-stagger>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Fascia & Gutter Systems/Flush Fascias With Eave Gutter.png"
+                alt="Flush Fascias With Eave Gutter"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new" style="font-size: 1.1rem"
+                >Flush Fascias</span
+              >
+              <span class="why-desc-new">With Eave Gutter</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Fascia & Gutter Systems/Flushed Fascia Or Parapet Fascia.png"
+                alt="Flushed Fascia Or Parapet Fascia"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new" style="font-size: 1.1rem"
+                >Flushed Fascia</span
+              >
+              <span class="why-desc-new">Or Parapet Fascia</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Fascia & Gutter Systems/Section - Vertical Fascia With Valley Gutter.png"
+                alt="Section - Vertical Fascia With Valley Gutter"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new" style="font-size: 1.1rem"
+                >Vertical Fascia</span
+              >
+              <span class="why-desc-new">With Valley Gutter</span>
+            </div>
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Fascia & Gutter Systems/Section - Bottom Curved Fascia With Velly Gutter.png"
+                alt="Section - Bottom Curved Fascia With Velly Gutter"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new" style="font-size: 1.1rem"
+                >Bottom Curved Fascia</span
+              >
+              <span class="why-desc-new">With Velly Gutter</span>
+            </div>
+          </div>
 
-            <!-- VIEW 2: STRUCTURES (FRAMES, FASCIA, MEZZANINE) -->
-            <section id="structures-view" class="view-section">
-                <!-- Subsection: Standard Frames -->
-                <h3 class="reveal-on-scroll"
-                    style="text-align: center; color: var(--primary-color); margin-bottom: 30px; font-size: 1.8rem;">
-                    Standard Frame Types</h3>
-                <div class="product-grid grid-cols-3" style="margin-bottom: 60px;" data-stagger>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy"
-                            src="/assets/Standard Frame Types/Tapered Column Clear Span (TCCS).png"
-                            alt="Tapered Column Clear Span (TCCS)"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Tapered Column Clear Span</span>
-                        <span class="why-desc-new">(TCCS)</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Multi Gable (MG) l-ll.png"
-                            alt="Multi Gable (MG) l-ll"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Multi Gable (MG)</span>
-                        <span class="why-desc-new">l-ll</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Multi Span l.png"
-                            alt="Multi Span l"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Multi Span l</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Multi Span ll.png"
-                            alt="Multi Span ll"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Multi Span ll</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Multi Span lll.png"
-                            alt="Multi Span lll"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Multi Span lll</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Clear Span With Crane.png"
-                            alt="Clear Span With Crane"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Clear Span</span>
-                        <span class="why-desc-new">With Crane</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy"
-                            src="/assets/Standard Frame Types/Multi Span (l) With Crane & Mezzanine.png"
-                            alt="Multi Span (l) With Crane & Mezzanine"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Multi Span (l)</span>
-                        <span class="why-desc-new">With Crane & Mezzanine</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Mono Slope.png"
-                            alt="Mono Slope"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Mono Slope</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Lean - To.png" alt="Lean - To"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Lean - To</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Rafter System.png"
-                            alt="Rafter System"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Rafter System</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Mezzanine Systems.png"
-                            alt="Mezzanine Systems"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Mezzanine Systems</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy"
-                            src="/assets/Standard Frame Types/Jack Beam At Interior Column Location.png"
-                            alt="Jack Beam At Interior Column Location"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Jack Beam</span>
-                        <span class="why-desc-new">At Interior Column Location</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Standard Frame Types/Jack Beam At Sidewall.png"
-                            alt="Jack Beam At Sidewall"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Jack Beam</span>
-                        <span class="why-desc-new">At Sidewall</span>
-                    </div>
-                </div>
-
-                <!-- Subsection: Fascia Systems -->
-                <div class="steel-divider reveal-on-scroll"><span></span></div>
-                <h3 class="reveal-on-scroll"
-                    style="text-align: center; color: var(--primary-color); margin: 40px 0 30px; font-size: 1.8rem;">
-                    Fascia & Gutter Systems</h3>
-                <div class="product-grid grid-cols-4" style="gap: 20px;" data-stagger>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy"
-                            src="/assets/Fascia & Gutter Systems/Flush Fascias With Eave Gutter.png"
-                            alt="Flush Fascias With Eave Gutter"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new" style="font-size: 1.1rem;">Flush Fascias</span>
-                        <span class="why-desc-new">With Eave Gutter</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy"
-                            src="/assets/Fascia & Gutter Systems/Flushed Fascia Or Parapet Fascia.png"
-                            alt="Flushed Fascia Or Parapet Fascia"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new" style="font-size: 1.1rem;">Flushed Fascia</span>
-                        <span class="why-desc-new">Or Parapet Fascia</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy"
-                            src="/assets/Fascia & Gutter Systems/Section - Vertical Fascia With Valley Gutter.png"
-                            alt="Section - Vertical Fascia With Valley Gutter"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new" style="font-size: 1.1rem;">Vertical Fascia</span>
-                        <span class="why-desc-new">With Valley Gutter</span>
-                    </div>
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy"
-                            src="/assets/Fascia & Gutter Systems/Section - Bottom Curved Fascia With Velly Gutter.png"
-                            alt="Section - Bottom Curved Fascia With Velly Gutter"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new" style="font-size: 1.1rem;">Bottom Curved Fascia</span>
-                        <span class="why-desc-new">With Velly Gutter</span>
-                    </div>
-                </div>
-
-                <!-- Subsection: Mezzanine Systems -->
-                <div class="steel-divider reveal-on-scroll" style="margin-top: 40px;"><span></span></div>
-                <h3 class="reveal-on-scroll"
-                    style="text-align: center; color: var(--primary-color); margin: 40px 0 30px; font-size: 1.8rem;">
-                    Mezzanine Systems</h3>
-                <div class="product-grid grid-cols-2" data-stagger>
-                    <!-- Card 1 -->
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/assets/Mezzanine Systems/Advanced Mezzanine Systems.webp"
-                            alt="Advanced Mezzanine Systems"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Advanced Mezzanine Systems</span>
-                        <span class="why-desc-new">Optimize vertical space with our rigid frame columns for multi-level
-                            storage and operations.</span>
-                    </div>
-                    <!-- Card 2 -->
-                    <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy"
-                            src="/assets/Mezzanine Systems/Jack Beam Technology Mezzanine Systems.webp"
-                            alt="Jack Beam Technology"
-                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">Jack Beam Technology</span>
-                        <span class="why-desc-new">Create wide column-free spaces with Jack Beams at sidewalls or
-                            interior columns.</span>
-                    </div>
-                </div>
-
-            </section>
-
-        </div>
+          <!-- Subsection: Mezzanine Systems -->
+          <div class="steel-divider reveal-on-scroll" style="margin-top: 40px">
+            <span></span>
+          </div>
+          <h3
+            class="reveal-on-scroll"
+            style="
+              text-align: center;
+              color: var(--primary-color);
+              margin: 40px 0 30px;
+              font-size: 1.8rem;
+            "
+          >
+            Mezzanine Systems
+          </h3>
+          <div class="product-grid grid-cols-2" data-stagger>
+            <!-- Card 1 -->
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Mezzanine Systems/Advanced Mezzanine Systems.webp"
+                alt="Advanced Mezzanine Systems"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Advanced Mezzanine Systems</span>
+              <span class="why-desc-new"
+                >Optimize vertical space with our rigid frame columns for
+                multi-level storage and operations.</span
+              >
+            </div>
+            <!-- Card 2 -->
+            <div class="why-card-new reveal-on-scroll">
+              <img
+                loading="lazy"
+                src="/assets/Mezzanine Systems/Jack Beam Technology Mezzanine Systems.webp"
+                alt="Jack Beam Technology"
+                style="
+                  width: 100%;
+                  height: auto;
+                  border-radius: 8px;
+                  margin-bottom: 15px;
+                  display: block;
+                "
+              />
+              <span class="why-title-new">Jack Beam Technology</span>
+              <span class="why-desc-new"
+                >Create wide column-free spaces with Jack Beams at sidewalls or
+                interior columns.</span
+              >
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <!-- NEW SECTION: SECTORS SERVED -->
-    <section class="sectors-section" style="padding: 60px 0; background-color: #f4f7fb;">
-        <div class="container">
-            <h2 class="section-divider-title reveal-on-scroll"
-                style="margin-top: 0; padding-top: 0; border: none; font-size: 2.5rem; color: var(--primary-color);">
-                Sectors We Serve</h2>
-            <div class="product-grid grid-cols-4" style="margin-top: 40px;" data-stagger>
+    <section
+      class="sectors-section"
+      style="padding: 60px 0; background-color: #f4f7fb"
+    >
+      <div class="container">
+        <h2
+          class="section-divider-title reveal-on-scroll"
+          style="
+            margin-top: 0;
+            padding-top: 0;
+            border: none;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+          "
+        >
+          Sectors We Serve
+        </h2>
+        <div
+          class="product-grid grid-cols-4"
+          style="margin-top: 40px"
+          data-stagger
+        >
+          <!-- Row 1 -->
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Sectors We Serve/Industrial Sheds & Manufacturing Units.png"
+              alt="Industrial Sheds & Manufacturing Units"
+              style="
+                width: 73%;
+                height: auto;
+                object-fit: contain;
+                border-radius: 8px;
+                margin: 0 auto 15px;
+                display: block;
+              "
+            />
+            <h4
+              class="why-title-new"
+              style="font-size: 1rem; text-align: center"
+            >
+              Industrial Sheds & Manufacturing Units
+            </h4>
+          </div>
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Sectors We Serve/Warehouses & Logistics Parks.png"
+              alt="Warehouses & Logistics Parks"
+              style="
+                width: 73%;
+                height: auto;
+                object-fit: contain;
+                border-radius: 8px;
+                margin: 0 auto 15px;
+                display: block;
+              "
+            />
+            <h4
+              class="why-title-new"
+              style="font-size: 1rem; text-align: center"
+            >
+              Warehouses & Logistics Parks
+            </h4>
+          </div>
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Sectors We Serve/Commercial Complexes & Showrooms.png"
+              alt="Commercial Complexes & Showrooms"
+              style="
+                width: 73%;
+                height: auto;
+                object-fit: contain;
+                border-radius: 8px;
+                margin: 0 auto 15px;
+                display: block;
+              "
+            />
+            <h4
+              class="why-title-new"
+              style="font-size: 1rem; text-align: center"
+            >
+              Commercial Complexes & Showrooms
+            </h4>
+          </div>
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Sectors We Serve/Institutional Buildings & Schools.png"
+              alt="Institutional Buildings & Schools"
+              style="
+                width: 73%;
+                height: auto;
+                object-fit: contain;
+                border-radius: 8px;
+                margin: 0 auto 15px;
+                display: block;
+              "
+            />
+            <h4
+              class="why-title-new"
+              style="font-size: 1rem; text-align: center"
+            >
+              Institutional Buildings & Schools
+            </h4>
+          </div>
 
-                <!-- Row 1 -->
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy"
-                        src="/assets/Sectors We Serve/Industrial Sheds & Manufacturing Units.png"
-                        alt="Industrial Sheds & Manufacturing Units"
-                        style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Industrial Sheds &
-                        Manufacturing Units</h4>
-                </div>
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/assets/Sectors We Serve/Warehouses & Logistics Parks.png"
-                        alt="Warehouses & Logistics Parks"
-                        style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Warehouses & Logistics Parks
-                    </h4>
-                </div>
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/assets/Sectors We Serve/Commercial Complexes & Showrooms.png"
-                        alt="Commercial Complexes & Showrooms"
-                        style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Commercial Complexes &
-                        Showrooms</h4>
-                </div>
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/assets/Sectors We Serve/Institutional Buildings & Schools.png"
-                        alt="Institutional Buildings & Schools"
-                        style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Institutional Buildings &
-                        Schools</h4>
-                </div>
-
-                <!-- Row 2 -->
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy"
-                        src="/assets/Sectors We Serve/Agricultural Buildings & Storage Yards.png"
-                        alt="Agricultural Buildings & Storage Yards"
-                        style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Agricultural Buildings &
-                        Storage Yards</h4>
-                </div>
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy"
-                        src="/assets/Sectors We Serve/Automobile Workshop & Service Center.png"
-                        alt="Automobile Workshop & Service Center"
-                        style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Automobile Workshop & Service
-                        Center</h4>
-                </div>
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/assets/Sectors We Serve/Poultry Sheds & Dairy Farms.png"
-                        alt="Poultry Sheds & Dairy Farms"
-                        style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Poultry Sheds & Dairy Farms
-                    </h4>
-                </div>
-                <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy"
-                        src="/assets/Sectors We Serve/Exhibition Halls & Recreational Facilities.png"
-                        alt="Exhibition Halls & Recreational Facilities"
-                        style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Exhibition Halls &
-                        Recreational Facilities</h4>
-                </div>
-
-            </div>
+          <!-- Row 2 -->
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Sectors We Serve/Agricultural Buildings & Storage Yards.png"
+              alt="Agricultural Buildings & Storage Yards"
+              style="
+                width: 73%;
+                height: auto;
+                object-fit: contain;
+                border-radius: 8px;
+                margin: 0 auto 15px;
+                display: block;
+              "
+            />
+            <h4
+              class="why-title-new"
+              style="font-size: 1rem; text-align: center"
+            >
+              Agricultural Buildings & Storage Yards
+            </h4>
+          </div>
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Sectors We Serve/Automobile Workshop & Service Center.png"
+              alt="Automobile Workshop & Service Center"
+              style="
+                width: 73%;
+                height: auto;
+                object-fit: contain;
+                border-radius: 8px;
+                margin: 0 auto 15px;
+                display: block;
+              "
+            />
+            <h4
+              class="why-title-new"
+              style="font-size: 1rem; text-align: center"
+            >
+              Automobile Workshop & Service Center
+            </h4>
+          </div>
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Sectors We Serve/Poultry Sheds & Dairy Farms.png"
+              alt="Poultry Sheds & Dairy Farms"
+              style="
+                width: 73%;
+                height: auto;
+                object-fit: contain;
+                border-radius: 8px;
+                margin: 0 auto 15px;
+                display: block;
+              "
+            />
+            <h4
+              class="why-title-new"
+              style="font-size: 1rem; text-align: center"
+            >
+              Poultry Sheds & Dairy Farms
+            </h4>
+          </div>
+          <div class="why-card-new reveal-on-scroll" style="text-align: center">
+            <img
+              loading="lazy"
+              src="/assets/Sectors We Serve/Exhibition Halls & Recreational Facilities.png"
+              alt="Exhibition Halls & Recreational Facilities"
+              style="
+                width: 73%;
+                height: auto;
+                object-fit: contain;
+                border-radius: 8px;
+                margin: 0 auto 15px;
+                display: block;
+              "
+            />
+            <h4
+              class="why-title-new"
+              style="font-size: 1rem; text-align: center"
+            >
+              Exhibition Halls & Recreational Facilities
+            </h4>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- MODERN FOOTER (3 PARTS) -->
     <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
+  </body>
 
-
-</body>
-
-<script>
+  <script>
     function switchView(viewId) {
-        // Update buttons
-        const buttons = document.querySelectorAll('.toggle-btn');
-        buttons.forEach(btn => {
-            if (btn.getAttribute('onclick').includes(viewId)) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
+      // Update buttons
+      const buttons = document.querySelectorAll(".toggle-btn");
+      buttons.forEach((btn) => {
+        if (btn.getAttribute("onclick").includes(viewId)) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
 
-        // Update views
-        const views = document.querySelectorAll('.view-section');
-        views.forEach(view => {
-            if (view.id === viewId + '-view') {
-                view.classList.add('active');
-            } else {
-                view.classList.remove('active');
-            }
-        });
+      // Update views
+      const views = document.querySelectorAll(".view-section");
+      views.forEach((view) => {
+        if (view.id === viewId + "-view") {
+          view.classList.add("active");
+        } else {
+          view.classList.remove("active");
+        }
+      });
     }
-</script>
-<script src="/animations.js" defer></script>
-
+  </script>
+  <script src="/animations.js" defer></script>
 </html>
