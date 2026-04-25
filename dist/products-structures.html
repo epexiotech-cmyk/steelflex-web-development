@@ -110,19 +110,83 @@
             padding-top: 40px;
             border-top: 1px solid #eee;
         }
+
+        .sectors-section .why-card-new {
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+            filter: grayscale(100%);
+            opacity: 0.8;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Revolving Glow Effect */
+        .sectors-section .why-card-new::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                transparent 160deg,
+                var(--primary-color) 180deg,
+                transparent 200deg,
+                transparent 360deg
+            );
+            transform: translate(-50%, -50%) rotate(0deg);
+            animation: rotateGlow 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Card background to overlay the center of the glow */
+        .sectors-section .why-card-new::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: var(--background-section);
+            border-radius: inherit;
+            z-index: -1;
+            transition: background 0.3s ease;
+        }
+
+        .sectors-section .why-card-new:hover::before {
+            opacity: 1;
+        }
+
+        .sectors-section .why-card-new:hover::after {
+            background: #ffffff;
+        }
+
+        .sectors-section .why-card-new:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+            box-shadow: 0 10px 40px rgba(38, 71, 150, 0.2);
+        }
+
+        @keyframes rotateGlow {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
     </style>
-<script src="/src/shared/storage.js" defer></script>
+    <script src="/src/shared/storage.js" defer></script>
 
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://steelflexstructures.com/products-structures" />
     <meta property="og:title" content="SteelFlex Structures | Products Structures" />
-    <meta property="og:description" content="Learn more about Products Structures at SteelFlex Structures, providing end-to-end Pre-Engineered Building (PEB) solutions in Gujarat, India." />
+    <meta property="og:description"
+        content="Learn more about Products Structures at SteelFlex Structures, providing end-to-end Pre-Engineered Building (PEB) solutions in Gujarat, India." />
     <meta property="og:image" content="https://steelflexstructures.com/Logo/Steelflex Logo.png" />
     <meta property="og:url" content="https://steelflexstructures.com/products-structures" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" type="image/png" href="/steelflex-web-development/Logo/Steelflex Logo.png" />
-    
+    <link rel="icon" type="image/png" href="/Logo/Steelflex Logo.png" />
+
     <!-- JSON-LD Product/Service Schema -->
     <script type="application/ld+json">
     {
@@ -142,32 +206,17 @@
         "availability": "https://schema.org/InStock"
       }
     }
-    </script>
-  <link rel="stylesheet" crossorigin href="/steelflex-web-development/assets/styles-Cy0lN1vC.css">
+    </script>
+    <script src="/components/components.js" defer></script>
+  <link rel="stylesheet" crossorigin href="/assets/styles-D7Jpqh2a.css">
+  <link rel="stylesheet" crossorigin href="/assets/components-CeRYPo9Q.css">
 </head>
 
 <body>
 
     <!-- Header (Consistent) -->
-    <header class="main-header">
-        <div class="container nav-container">
-            <div class="logo">
-                <a href="/steelflex-web-development/"><img loading="lazy" src="/steelflex-web-development/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
-            </div>
-            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="/steelflex-web-development/about-us">About Us</a></li>
-                    <li><a href="/steelflex-web-development/products-structures" class="active">Products & Structures</a></li>
-                    <li><a href="/steelflex-web-development/capabilities">Capabilities</a></li>
-                    <li><a href="/steelflex-web-development/machineries">Machineries</a></li>
-                    <li><a href="/steelflex-web-development/projects">Projects</a></li>
-                    <li><a href="/steelflex-web-development/careers">Careers</a></li>
-                    <li><a href="/steelflex-web-development/contact-us">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <!-- Header Placeholder -->
+    <div id="navbar-placeholder"></div>
 
     <!-- SECTION 1: CORE PRODUCTS -->
     <section class="hero-section" style="padding: 140px 0 40px; text-align: center; background: #fff;">
@@ -204,7 +253,8 @@
             <div class="product-grid" data-stagger>
                 <!-- Product 1 -->
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Pre-Engineered%20Buildings%20(PEB)-DG3Q1h69.webp"
+                    <img loading="lazy"
+                        src="/assets/Pre-Engineered%20Buildings%20(PEB)-DG3Q1h69.webp"
                         alt="PEB"
                         style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
                     <span class="why-title-new">Pre-Engineered Buildings (PEB)</span>
@@ -214,7 +264,7 @@
 
                 <!-- Product 2 -->
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Heavy%20Structural%20Steel-DSUZS53r.webp"
+                    <img loading="lazy" src="/assets/Heavy%20Structural%20Steel-DSUZS53r.webp"
                         alt="Heavy Structural Steel"
                         style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
                     <span class="why-title-new">Heavy Structural Steel</span>
@@ -224,7 +274,8 @@
 
                 <!-- Product 3 -->
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Industrial%20Sheds%20_%20Roofing-DEW3RXSf.webp"
+                    <img loading="lazy"
+                        src="/assets/Industrial%20Sheds%20_%20Roofing-D2iSMq0K.webp"
                         alt="Industrial Sheds"
                         style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
                     <span class="why-title-new">Industrial Sheds & Roofing</span>
@@ -234,7 +285,7 @@
 
                 <!-- Product 4 -->
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Mezzanine%20Floors-5uAbi1Qw.webp"
+                    <img loading="lazy" src="/assets/Mezzanine%20Floors-5uAbi1Qw.webp"
                         alt="Mezzanine Floors"
                         style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
                     <span class="why-title-new">Mezzanine Floors</span>
@@ -244,7 +295,7 @@
 
                 <!-- Product 5 -->
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Crane%20Support%20Systems-Dj-U-Z1r.webp"
+                    <img loading="lazy" src="/assets/Crane%20Support%20Systems-wR-N5neh.webp"
                         alt="Crane Support Systems"
                         style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
                     <span class="why-title-new">Crane Support Systems</span>
@@ -254,7 +305,8 @@
 
                 <!-- Product 6 -->
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Custom%20Metal%20Fabrication-FOL7cSkK.webp"
+                    <img loading="lazy"
+                        src="/assets/Custom%20Metal%20Fabrication-FOL7cSkK.webp"
                         alt="Custom Fabrication"
                         style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
                     <span class="why-title-new">Custom Metal Fabrication</span>
@@ -299,7 +351,7 @@
                 <div class="product-grid grid-cols-3" style="margin-bottom: 60px;" data-stagger>
                     <!-- Accessory 1 -->
                     <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Turbo%20Ventilators-DFAo-gkT.webp"
+                        <img loading="lazy" src="/assets/Turbo%20Ventilators-DFAo-gkT.webp"
                             alt="Turbo Ventilators"
                             style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
                         <span class="why-title-new">Turbo Ventilators</span>
@@ -308,7 +360,8 @@
 
                     <!-- Accessory 2 -->
                     <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Skylights%20_%20Roof%20Monitors-4hdphR7n.webp"
+                        <img loading="lazy"
+                            src="/assets/Skylights%20_%20Roof%20Monitors-4hdphR7n.webp"
                             alt="Skylights"
                             style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
                         <span class="why-title-new">Skylights & Roof Monitors</span>
@@ -318,7 +371,8 @@
 
                     <!-- Accessory 3 -->
                     <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Sliding%20_%20Rolling%20Shutters-DgMdbTMg.webp"
+                        <img loading="lazy"
+                            src="/assets/Sliding%20_%20Rolling%20Shutters-DgMdbTMg.webp"
                             alt="Shutters"
                             style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
                         <span class="why-title-new">Sliding & Rolling Shutters</span>
@@ -327,7 +381,7 @@
 
                     <!-- Accessory 4 -->
                     <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Insulation%20Solutions-BrGoeDWG.webp"
+                        <img loading="lazy" src="/assets/Insulation%20Solutions-BrGoeDWG.webp"
                             alt="Insulation"
                             style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
                         <span class="why-title-new">Insulation Solutions</span>
@@ -337,7 +391,7 @@
 
                     <!-- Accessory 5 -->
                     <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Windows%20_%20Louvers-DJ3f4FQQ.webp"
+                        <img loading="lazy" src="/assets/Windows%20_%20Louvers-DJ3f4FQQ.webp"
                             alt="Louvers"
                             style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
                         <span class="why-title-new">Windows & Louvers</span>
@@ -346,7 +400,7 @@
 
                     <!-- Accessory 6 -->
                     <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Fasteners%20_%20Sealants-C73UvE7-.webp"
+                        <img loading="lazy" src="/assets/Fasteners%20_%20Sealants-CYpFw_PP.webp"
                             alt="Fasteners"
                             style="width:73%; aspect-ratio: 3/2; object-fit:cover; border-radius:8px; margin: 0 auto 15px; display:block;">
                         <span class="why-title-new">Fasteners & Sealants</span>
@@ -363,9 +417,9 @@
                 <div class="product-grid grid-cols-3" style="margin-bottom: 60px;" data-stagger>
                     <!-- Profile 1 -->
                     <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/steelflex-web-development/assets/1100%20Profile%20(Hi-Cover)%20Sheeting-BnBLfukn.webp"
+                        <img loading="lazy" src="/assets/1100%20PROFILE%20(HI-COVER)---PwtPH1.jpg"
                             alt="Hi-Cover Profile"
-                            style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">1100 Profile (Hi-Cover)</span>
                         <span class="why-desc-new">Ribbed steel for roof & wall. <br><strong>Specs:</strong> 0.47-0.8mm
                             High Tensile Steel (340/550 MPA). Galvalume AZ150.</span>
@@ -373,19 +427,19 @@
 
                     <!-- Profile 2 -->
                     <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/steelflex-web-development/assets/4Feet%20Profile%20(Ultrashine)%20Sheeting-B1EteLX1.webp"
+                        <img loading="lazy" src="/assets/4%20FEET%20PROFILE%20(ULTRA%20SHINE)-DUj9NbHC.jpg"
                             alt="Ultrashine Profile"
-                            style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
-                        <span class="why-title-new">4Feet Profile (Ultrashine)</span>
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <span class="why-title-new">4 Feet Profile (Ultra Shine)</span>
                         <span class="why-desc-new">Multi-layer coated profile for enhanced durability and aesthetics.
                             ideal for wide coverage requirements.</span>
                     </div>
 
                     <!-- Profile 3 -->
                     <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                        <img loading="lazy" src="/steelflex-web-development/assets/1100%20Profile%20(Hi-Strength)%20Sheeting-xG7xIX7E.webp"
+                        <img loading="lazy" src="/assets/1100%20PROFILE%20(HI-SHRENGTH)-DqeceFKJ.jpg"
                             alt="Hi-Strength Profile"
-                            style="width:100%; aspect-ratio: 3 / 2; object-fit:cover; border-radius:8px; margin-bottom:15px; display:block;">
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">1100 Profile (Hi-Strength)</span>
                         <span class="why-desc-new">Optimized load-bearing profile for heavy-duty applications. Width:
                             1100mm total (1030mm cover).</span>
@@ -401,60 +455,88 @@
                     Standard Frame Types</h3>
                 <div class="product-grid grid-cols-3" style="margin-bottom: 60px;" data-stagger>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Tapered%20Column%20Clear%20Span%20(TCCS)-CvBnd569.png" alt="Tapered Column Clear Span (TCCS)" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy"
+                            src="/assets/Tapered%20Column%20Clear%20Span%20(TCCS)-CvBnd569.png"
+                            alt="Tapered Column Clear Span (TCCS)"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Tapered Column Clear Span</span>
                         <span class="why-desc-new">(TCCS)</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Multi%20Gable%20(MG)%20l-ll-D-fXKf2n.png" alt="Multi Gable (MG) l-ll" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Multi%20Gable%20(MG)%20l-ll-D-fXKf2n.png"
+                            alt="Multi Gable (MG) l-ll"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Multi Gable (MG)</span>
                         <span class="why-desc-new">l-ll</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Multi%20Span%20l-WTtoxgmk.png" alt="Multi Span l" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Multi%20Span%20l-WTtoxgmk.png"
+                            alt="Multi Span l"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Multi Span l</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Multi%20Span%20ll-DS-0UITb.png" alt="Multi Span ll" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Multi%20Span%20ll-DS-0UITb.png"
+                            alt="Multi Span ll"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Multi Span ll</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Multi%20Span%20lll-CgbVdBCJ.png" alt="Multi Span lll" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Multi%20Span%20lll-CgbVdBCJ.png"
+                            alt="Multi Span lll"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Multi Span lll</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Clear%20Span%20With%20Crane-DIRldORV.png" alt="Clear Span With Crane" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Clear%20Span%20With%20Crane-DIRldORV.png"
+                            alt="Clear Span With Crane"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Clear Span</span>
                         <span class="why-desc-new">With Crane</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Multi%20Span%20(l)%20With%20Crane%20_%20Mezzanine-oV7h6-AQ.png" alt="Multi Span (l) With Crane & Mezzanine" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy"
+                            src="/assets/Multi%20Span%20(l)%20With%20Crane%20_%20Mezzanine-oV7h6-AQ.png"
+                            alt="Multi Span (l) With Crane & Mezzanine"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Multi Span (l)</span>
                         <span class="why-desc-new">With Crane & Mezzanine</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Mono%20Slope-B1JviziB.png" alt="Mono Slope" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Mono%20Slope-B1JviziB.png"
+                            alt="Mono Slope"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Mono Slope</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Lean%20-%20To-45Z7S6I9.png" alt="Lean - To" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Lean%20-%20To-45Z7S6I9.png" alt="Lean - To"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Lean - To</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Rafter%20System-C98HFxgI.png" alt="Rafter System" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Rafter%20System-C98HFxgI.png"
+                            alt="Rafter System"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Rafter System</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Mezzanine%20Systems-B-aaUxRS.png" alt="Mezzanine Systems" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Mezzanine%20Systems-B-aaUxRS.png"
+                            alt="Mezzanine Systems"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Mezzanine Systems</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Jack%20Beam%20At%20Interior%20Column%20Location-EA58P2Wv.png" alt="Jack Beam At Interior Column Location" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy"
+                            src="/assets/Jack%20Beam%20At%20Interior%20Column%20Location-EA58P2Wv.png"
+                            alt="Jack Beam At Interior Column Location"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Jack Beam</span>
                         <span class="why-desc-new">At Interior Column Location</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Jack%20Beam%20At%20Sidewall-D-JfkNr9.png" alt="Jack Beam At Sidewall" style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
+                        <img loading="lazy" src="/assets/Jack%20Beam%20At%20Sidewall-D-JfkNr9.png"
+                            alt="Jack Beam At Sidewall"
+                            style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Jack Beam</span>
                         <span class="why-desc-new">At Sidewall</span>
                     </div>
@@ -467,28 +549,32 @@
                     Fascia & Gutter Systems</h3>
                 <div class="product-grid grid-cols-4" style="gap: 20px;" data-stagger>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Flush%20Fascias%20With%20Eave%20Gutter-5hjyh6pL.png"
+                        <img loading="lazy"
+                            src="/assets/Flush%20Fascias%20With%20Eave%20Gutter-5hjyh6pL.png"
                             alt="Flush Fascias With Eave Gutter"
                             style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new" style="font-size: 1.1rem;">Flush Fascias</span>
                         <span class="why-desc-new">With Eave Gutter</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Flushed%20Fascia%20Or%20Parapet%20Fascia-DCN1tB5i.png"
+                        <img loading="lazy"
+                            src="/assets/Flushed%20Fascia%20Or%20Parapet%20Fascia-DCN1tB5i.png"
                             alt="Flushed Fascia Or Parapet Fascia"
                             style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new" style="font-size: 1.1rem;">Flushed Fascia</span>
                         <span class="why-desc-new">Or Parapet Fascia</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Section%20-%20Vertical%20Fascia%20With%20Valley%20Gutter-DquzgFj3.png"
+                        <img loading="lazy"
+                            src="/assets/Section%20-%20Vertical%20Fascia%20With%20Valley%20Gutter-DquzgFj3.png"
                             alt="Section - Vertical Fascia With Valley Gutter"
                             style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new" style="font-size: 1.1rem;">Vertical Fascia</span>
                         <span class="why-desc-new">With Valley Gutter</span>
                     </div>
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Section%20-%20Bottom%20Curved%20Fascia%20With%20Velly%20Gutter-BGt4Bat2.png"
+                        <img loading="lazy"
+                            src="/assets/Section%20-%20Bottom%20Curved%20Fascia%20With%20Velly%20Gutter-BGt4Bat2.png"
                             alt="Section - Bottom Curved Fascia With Velly Gutter"
                             style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new" style="font-size: 1.1rem;">Bottom Curved Fascia</span>
@@ -504,7 +590,7 @@
                 <div class="product-grid grid-cols-2" data-stagger>
                     <!-- Card 1 -->
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Advanced%20Mezzanine%20Systems-ioxxXeQ9.webp"
+                        <img loading="lazy" src="/assets/Advanced%20Mezzanine%20Systems-ioxxXeQ9.webp"
                             alt="Advanced Mezzanine Systems"
                             style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Advanced Mezzanine Systems</span>
@@ -513,7 +599,8 @@
                     </div>
                     <!-- Card 2 -->
                     <div class="why-card-new reveal-on-scroll">
-                        <img loading="lazy" src="/steelflex-web-development/assets/Jack%20Beam%20Technology%20Mezzanine%20Systems-t70yUmmw.webp"
+                        <img loading="lazy"
+                            src="/assets/Jack%20Beam%20Technology%20Mezzanine%20Systems-t70yUmmw.webp"
                             alt="Jack Beam Technology"
                             style="width:100%; height:auto; border-radius:8px; margin-bottom:15px; display:block;">
                         <span class="why-title-new">Jack Beam Technology</span>
@@ -537,54 +624,66 @@
 
                 <!-- Row 1 -->
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Industrial%20Sheds%20_%20Manufacturing%20Units-De1vT8K-.png"
+                    <img loading="lazy"
+                        src="/assets/Industrial%20Sheds%20_%20Manufacturing%20Units-De1vT8K-.png"
                         alt="Industrial Sheds & Manufacturing Units"
                         style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Industrial Sheds & Manufacturing Units</h4>
+                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Industrial Sheds &
+                        Manufacturing Units</h4>
                 </div>
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Warehouses%20_%20Logistics%20Parks-oM-6bzTm.png"
+                    <img loading="lazy" src="/assets/Warehouses%20_%20Logistics%20Parks-oM-6bzTm.png"
                         alt="Warehouses & Logistics Parks"
                         style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Warehouses & Logistics Parks</h4>
+                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Warehouses & Logistics Parks
+                    </h4>
                 </div>
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Commercial%20Complexes%20_%20Showrooms-CVDZSEHQ.png"
+                    <img loading="lazy" src="/assets/Commercial%20Complexes%20_%20Showrooms-CVDZSEHQ.png"
                         alt="Commercial Complexes & Showrooms"
                         style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Commercial Complexes & Showrooms</h4>
+                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Commercial Complexes &
+                        Showrooms</h4>
                 </div>
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Institutional%20Buildings%20_%20Schools-CbZMMff8.png"
+                    <img loading="lazy" src="/assets/Institutional%20Buildings%20_%20Schools-CbZMMff8.png"
                         alt="Institutional Buildings & Schools"
                         style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Institutional Buildings & Schools</h4>
+                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Institutional Buildings &
+                        Schools</h4>
                 </div>
 
                 <!-- Row 2 -->
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Agricultural%20Buildings%20_%20Storage%20Yards-6Odw-dB-.png"
+                    <img loading="lazy"
+                        src="/assets/Agricultural%20Buildings%20_%20Storage%20Yards-6Odw-dB-.png"
                         alt="Agricultural Buildings & Storage Yards"
                         style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Agricultural Buildings & Storage Yards</h4>
+                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Agricultural Buildings &
+                        Storage Yards</h4>
                 </div>
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Automobile%20Workshop%20_%20Service%20Center-B50zZx6m.png"
+                    <img loading="lazy"
+                        src="/assets/Automobile%20Workshop%20_%20Service%20Center-B50zZx6m.png"
                         alt="Automobile Workshop & Service Center"
                         style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Automobile Workshop & Service Center</h4>
+                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Automobile Workshop & Service
+                        Center</h4>
                 </div>
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Poultry%20Sheds%20_%20Dairy%20Farms-D1spwuiE.png"
+                    <img loading="lazy" src="/assets/Poultry%20Sheds%20_%20Dairy%20Farms-D1spwuiE.png"
                         alt="Poultry Sheds & Dairy Farms"
                         style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Poultry Sheds & Dairy Farms</h4>
+                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Poultry Sheds & Dairy Farms
+                    </h4>
                 </div>
                 <div class="why-card-new reveal-on-scroll" style="text-align: center;">
-                    <img loading="lazy" src="/steelflex-web-development/assets/Exhibition%20Halls%20_%20Recreational%20Facilities-DF352hFw.png"
+                    <img loading="lazy"
+                        src="/assets/Exhibition%20Halls%20_%20Recreational%20Facilities-DF352hFw.png"
                         alt="Exhibition Halls & Recreational Facilities"
                         style="width:73%; height:auto; object-fit:contain; border-radius:8px; margin: 0 auto 15px; display:block;">
-                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Exhibition Halls & Recreational Facilities</h4>
+                    <h4 class="why-title-new" style="font-size: 1rem; text-align: center;">Exhibition Halls &
+                        Recreational Facilities</h4>
                 </div>
 
             </div>
@@ -592,102 +691,35 @@
     </section>
 
     <!-- MODERN FOOTER (3 PARTS) -->
-    <footer class="site-footer-redesign">
-        <!-- Part 1: CTA Bridge -->
-        <div class="footer-cta-bridge">
-            <div class="container">
-                <h2 class="footer-cta-title">Need a specific structural solution?</h2>
-                <a href="/steelflex-web-development/contact-us" class="btn-footer-cta">Request a Quote</a>
-            </div>
-        </div>
+    <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
 
-        <!-- Part 2: Main Footer Content -->
-        <div class="footer-main">
-            <div class="container">
-                <div class="footer-grid-modern">
-                    <!-- Column 1: Brand -->
-                    <div class="footer-col">
-                        <span class="footer-brand-title"><img loading="lazy" src="/steelflex-web-development/Logo/Steelflex Logo.png" alt="SteelFlex"
-                                style="height: 50px;"></span>
-                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
-                            steel construction solutions.</p>
-                    </div>
 
-                    <!-- Column 2: Quick Links -->
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Quick Links</h4>
-                        <ul class="footer-links-list">
-                            <li><a href="/steelflex-web-development/">Home</a></li>
-                            <li><a href="/steelflex-web-development/about-us">About Us</a></li>
-                            <li><a href="/steelflex-web-development/products-structures">Products & Structures</a></li>
-                            <li><a href="/steelflex-web-development/capabilities">Capabilities</a></li>
-                            <li><a href="/steelflex-web-development/machineries">Machineries</a></li>
-                            <li><a href="/steelflex-web-development/projects">Projects</a></li>
-                            <li><a href="/steelflex-web-development/careers">Careers</a></li>
-                            <li><a href="/steelflex-web-development/contact-us">Contact Us</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 3: Contact Info -->
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Contact</h4>
-                        <div class="footer-contact-item">
-                            <span>Phone</span>
-                            +91 94264 43442
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Email</span>
-                            md@steelflexstructures.com
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Location</span>
-                            Vadodara, Gujarat
-                        </div>
-                        <a href="/steelflex-web-development/review" class="btn-footer-review">Add Review</a>
-                    
-                </div>
-            </div>
-        </div>
-
-        <!-- Part 3: Legal Strip -->
-        <div class="footer-legal">
-            <div class="container">
-                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved. | Designed by
-                    <a href="https://www.epexio.in" target="_blank"
-                        style="color: #2F528F; text-decoration: none;">Epexio
-                        Techno Solutions</a>
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
-            document.querySelector('.main-nav').classList.toggle('active');
-        });
-
-        // Toggle Logic
-        function switchView(viewName) {
-            const productsBtn = document.querySelectorAll('.toggle-btn')[0];
-            const structuresBtn = document.querySelectorAll('.toggle-btn')[1];
-            const productsView = document.getElementById('products-view');
-            const structuresView = document.getElementById('structures-view');
-
-            if (viewName === 'products') {
-                productsBtn.classList.add('active');
-                structuresBtn.classList.remove('active');
-                productsView.classList.add('active');
-                structuresView.classList.remove('active');
-            } else {
-                structuresBtn.classList.add('active');
-                productsBtn.classList.remove('active');
-                structuresView.classList.add('active');
-                productsView.classList.remove('active');
-            }
-        }
-    </script>
 </body>
 
-<script src="animations.js" defer></script>
+<script>
+    function switchView(viewId) {
+        // Update buttons
+        const buttons = document.querySelectorAll('.toggle-btn');
+        buttons.forEach(btn => {
+            if (btn.getAttribute('onclick').includes(viewId)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        // Update views
+        const views = document.querySelectorAll('.view-section');
+        views.forEach(view => {
+            if (view.id === viewId + '-view') {
+                view.classList.add('active');
+            } else {
+                view.classList.remove('active');
+            }
+        });
+    }
+</script>
+<script src="/animations.js" defer></script>
 
 </html>

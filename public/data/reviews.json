@@ -5,7 +5,8 @@
     "companyName": "Urban Developers Inc.",
     "reviewText": "Steelflex delivered exceptional quality on our foundation project. Their team was professional and on schedule.",
     "rating": "5",
-    "status": "Accepted"
+    "status": "Rejected",
+    "updatedAt": "2026-04-25T12:42:06.368Z"
   },
   {
     "id": "rev_2",
@@ -13,7 +14,8 @@
     "companyName": "SkyNet Logistics",
     "reviewText": "Solid work and great communication throughout easier than expected.",
     "rating": "4",
-    "status": "Active"
+    "status": "Rejected",
+    "updatedAt": "2026-04-25T12:42:32.811Z"
   },
   {
     "id": "rev_3",
@@ -21,7 +23,8 @@
     "companyName": "Chang Properties",
     "reviewText": "Very reliable partners for large-scale infrastructure projects.",
     "rating": "5",
-    "status": "Active"
+    "status": "Rejected",
+    "updatedAt": "2026-04-25T12:42:30.207Z"
   },
   {
     "id": "1771054317460934",
@@ -36,7 +39,8 @@
       "/uploads/reviews/seed-1771054317460934-pi-0.webp",
       "/uploads/reviews/seed-1771054317460934-pi-1.webp"
     ],
-    "createdAt": "2026-02-14T07:31:58.360Z"
+    "createdAt": "2026-02-14T07:31:58.360Z",
+    "updatedAt": "2026-04-25T12:42:21.700Z"
   },
   {
     "id": "1771054318360627",
@@ -44,11 +48,12 @@
     "companyName": "Ross Constructions",
     "reviewText": "We've been working with Steelflex for over 5 years. Their consistency and attention to client needs are what keep us coming back.",
     "rating": 5,
-    "status": "Accepted",
+    "status": "Rejected",
     "reviewerPhoto": "/uploads/reviews/seed-1771054318360627-rp.webp",
     "companyLogo": null,
     "reviewImages": [],
-    "createdAt": "2026-02-14T07:31:59.383Z"
+    "createdAt": "2026-02-14T07:31:59.383Z",
+    "updatedAt": "2026-04-25T12:44:20.959Z"
   },
   {
     "id": "1771054319383449",

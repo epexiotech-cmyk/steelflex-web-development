@@ -7,6 +7,15 @@
     <title>Capabilities | SteelFlex Structures | Premier PEB Manufacturer in India</title>
     <meta name="description"
         content="Discover our structural engineering capabilities, workflow, and quality assurance standards.">
+    <meta property="og:title" content="SteelFlex Structures | Capabilities" />
+    <meta property="og:description" content="Learn more about Capabilities at SteelFlex Structures, providing end-to-end Pre-Engineered Building (PEB) solutions in Gujarat, India." />
+    <meta property="og:image" content="https://steelflexstructures.com/Logo/Steelflex Logo.png" />
+    <meta property="og:url" content="https://steelflexstructures.com/capabilities" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/png" href="/Logo/Steelflex Logo.png" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <style>
         /* Capabilities specific overrides for layout */
         .vm-block {
@@ -67,55 +76,224 @@
             flex-shrink: 0;
         }
 
+        /* --- Production Capacity Spotlight Effect --- */
+        .physics-scene {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            perspective: 1000px;
+            margin-top: 30px;
+        }
+
+        .physics-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        .peephole-card {
+            position: relative;
+            width: 264px; /* Increased from 220px (+20%) */
+            height: 264px; /* Increased from 220px (+20%) */
+            border-radius: 20px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.8);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --mask-top: 30%;
+            --mask-right: 30%;
+            --mask-bottom: 30%;
+            --mask-left: 30%;
+            --mask-radius: 50%;
+        }
+
+        .physics-node:hover .peephole-card {
+            box-shadow: 0 25px 50px rgba(38, 71, 150, 0.2);
+            transform: translateY(-5px);
+            border-radius: 12px;
+            width: 275px; /* Proportional hover increase */
+            height: 275px;
+        }
+
+        .card-img-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-img-layer img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Muted background layer - Neon Tinted */
+        .card-img-layer.muted {
+            filter: brightness(0.25) blur(6px) saturate(1.5);
+            opacity: 1;
+            z-index: 1;
+        }
+
+        /* Neon Overlay */
+        .card-neon-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(38, 71, 150, 0.5), rgba(0, 242, 255, 0.4));
+            mix-blend-mode: overlay;
+            z-index: 1.5;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .physics-node:hover .card-neon-overlay {
+            opacity: 0;
+        }
+
+        /* Clear spotlight layer */
+        .card-img-layer.clear {
+            z-index: 2;
+            /* Using inset for smooth interpolation between circle and square */
+            clip-path: inset(var(--mask-top, 30%) var(--mask-right, 30%) var(--mask-bottom, 30%) var(--mask-left, 30%) round var(--mask-radius, 50%));
+            /* Remove clip-path from transition to avoid lag behind physics engine */
+            transition: opacity 0.4s ease; 
+            will-change: clip-path;
+        }
+
+        /* Hover Reveal: Transition to full rectangle */
+        .physics-node:hover .card-img-layer.clear {
+            clip-path: inset(0% 0% 0% 0% round 12px);
+            /* Ensure JS variables don't override hover state */
+            --mask-top: 0% !important;
+            --mask-right: 0% !important;
+            --mask-bottom: 0% !important;
+            --mask-left: 0% !important;
+            --mask-radius: 12px !important;
+        }
+
+        /* Glowing Ring around the spotlight */
+        .spotlight-ring {
+            position: absolute;
+            inset: var(--mask-top) var(--mask-right) var(--mask-bottom) var(--mask-left);
+            border-radius: var(--mask-radius);
+            border: 2px solid #00f2ff;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.8), inset 0 0 10px rgba(0, 242, 255, 0.4);
+            z-index: 4;
+            pointer-events: none;
+            /* Instant movement to stay synced with mask, only animate opacity */
+            transition: opacity 0.4s ease;
+            will-change: inset;
+        }
+
+        .physics-node:hover .spotlight-ring {
+            opacity: 0;
+        }
+
+        .physics-node:hover .card-img-layer.muted {
+            opacity: 0;
+            filter: brightness(1) blur(0) grayscale(0);
+        }
+
+        /* Glass border glow */
+        .card-border-glow {
+            position: absolute;
+            inset: 0;
+            border: 2px solid transparent;
+            border-radius: inherit;
+            background: linear-gradient(135deg, rgba(255,255,255,0.4), transparent, rgba(255,255,255,0.2)) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0.5;
+            transition: opacity 0.4s ease;
+        }
+
+        .physics-node:hover .card-border-glow {
+            opacity: 1;
+            background: linear-gradient(135deg, var(--primary-color), transparent, var(--primary-color)) border-box;
+        }
+
+        .node-info {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .physics-node:hover .node-info {
+            transform: translateY(8px);
+        }
+
+        .node-number {
+            display: block;
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            font-weight: 800;
+            line-height: 1;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .node-unit {
+            display: block;
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .node-label {
+            margin-top: 12px;
+            font-weight: 700;
+            color: #333;
+            font-size: 1rem;
+        }
+
         @media (max-width: 900px) {
-
-            .vm-block,
-            .vm-block.reverse {
-                flex-direction: column;
-                gap: 30px;
+            .physics-scene {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 40px 20px;
             }
-
-            .capability-grid {
+            .peephole-card {
+                width: 160px;
+                height: 160px;
+                --mask-size: 40px;
+            }
+            /* On mobile/touch, maybe simplify or just allow the tap hover */
+        }
+        
+        @media (max-width: 480px) {
+            .physics-scene {
                 grid-template-columns: 1fr;
+            }
+            .peephole-card {
+                width: 280px;
+                height: 200px;
             }
         }
     </style>
     <script src="/src/shared/storage.js" defer></script>
+    <script src="/components/components.js" defer></script>
 
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://steelflexstructures.com/capabilities" />
-    <meta property="og:title" content="SteelFlex Structures | Capabilities" />
-    <meta property="og:description" content="Learn more about Capabilities at SteelFlex Structures, providing end-to-end Pre-Engineered Building (PEB) solutions in Gujarat, India." />
-    <meta property="og:image" content="https://steelflexstructures.com/Logo/Steelflex Logo.png" />
-    <meta property="og:url" content="https://steelflexstructures.com/capabilities" />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" type="image/png" href="/steelflex-web-development/Logo/Steelflex Logo.png" />
-  <link rel="stylesheet" crossorigin href="/steelflex-web-development/assets/styles-Cy0lN1vC.css">
+  <link rel="stylesheet" crossorigin href="/assets/styles-D7Jpqh2a.css">
+  <link rel="stylesheet" crossorigin href="/assets/components-CeRYPo9Q.css">
 </head>
 
 <body>
 
     <!-- Header -->
-    <header class="main-header">
-        <div class="container nav-container">
-            <div class="logo">
-                <a href="/steelflex-web-development/"><img loading="lazy" src="/steelflex-web-development/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
-            </div>
-            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="/steelflex-web-development/about-us">About Us</a></li>
-                    <li><a href="/steelflex-web-development/products-structures">Products & Structures</a></li>
-                    <li><a href="/steelflex-web-development/capabilities" class="active">Capabilities</a></li>
-                    <li><a href="/steelflex-web-development/machineries">Machineries</a></li>
-                    <li><a href="/steelflex-web-development/projects">Projects</a></li>
-                    <li><a href="/steelflex-web-development/careers">Careers</a></li>
-                    <li><a href="/steelflex-web-development/contact-us">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+        <!-- Header Placeholder -->
+    <div id="navbar-placeholder"></div>
 
     <!-- Page Hero -->
     <!-- Page Hero -->
@@ -138,401 +316,646 @@
     <!-- Main Content -->
     <main>
 
-        <!-- SECTION 1: CAPACITY AT A GLANCE -->
-        <section class="capacity-section" style="padding: 40px 0 80px;">
+        <!-- SECTION 1: CAPACITY AT A GLANCE (REIMAGINED) -->
+        <section class="capacity-section" style="padding: 40px 0 80px; overflow: hidden;">
             <div class="container">
                 <div class="why-card-new reveal-on-scroll"
-                    style="background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%); padding: 40px; border: 1px solid #e0e0e0;">
-                    <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 40px;">Production
-                        Capacity</h2>
-                    <div class="capacity-grid" data-stagger>
+                    style="background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%); padding: 60px 40px; border: 1px solid #e0e0e0; position: relative;">
+                    <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 60px; font-size: 2.5rem;">Production Capacity</h2>
+                    
+                    <div class="capacity-grid physics-scene" id="capacityPhysicsScene">
                         <!-- Item 1: Primary Members -->
-                        <div class="capacity-item reveal-on-scroll">
-                            <div class="capacity-emoji">🏗️</div>
-                            <span style="font-size: 2.5rem; color: var(--primary-color); font-weight: 700;">6,000</span>
-                            <span style="display: block; font-size: 0.9rem; color: #666; text-transform: uppercase;">MT
-                                / Year</span>
-                            <p style="margin-top: 10px; font-weight: 600;">Primary Members</p>
+                        <div class="capacity-item reveal-on-scroll physics-node" data-speed="1.2">
+                            <div class="peephole-card">
+                                <div class="card-img-layer muted">
+                                    <img src="/assets/Production Capacity/Primary Members.webp" alt="Primary Members">
+                                </div>
+                                <div class="card-img-layer clear">
+                                    <img src="/assets/Production Capacity/Primary Members.webp" alt="Primary Members">
+                                </div>
+                                <div class="card-neon-overlay"></div>
+                                <div class="spotlight-ring"></div>
+                                <div class="card-border-glow"></div>
+                            </div>
+                            <div class="node-info">
+                                <span class="node-number">6,000</span>
+                                <span class="node-unit">MT / Year</span>
+                                <p class="node-label">Primary Members</p>
+                            </div>
                         </div>
 
                         <!-- Item 2: Secondary Members -->
-                        <div class="capacity-item reveal-on-scroll">
-                            <div class="capacity-emoji">🔩</div>
-                            <span style="font-size: 2.5rem; color: var(--primary-color); font-weight: 700;">4,000</span>
-                            <span style="display: block; font-size: 0.9rem; color: #666; text-transform: uppercase;">MT
-                                / Year</span>
-                            <p style="margin-top: 10px; font-weight: 600;">Secondary Members</p>
+                        <div class="capacity-item reveal-on-scroll physics-node" data-speed="0.8">
+                            <div class="peephole-card">
+                                <div class="card-img-layer muted">
+                                    <img src="/assets/Production Capacity/Secondary Members.webp" alt="Secondary Members">
+                                </div>
+                                <div class="card-img-layer clear">
+                                    <img src="/assets/Production Capacity/Secondary Members.webp" alt="Secondary Members">
+                                </div>
+                                <div class="card-neon-overlay"></div>
+                                <div class="spotlight-ring"></div>
+                                <div class="card-border-glow"></div>
+                            </div>
+                            <div class="node-info">
+                                <span class="node-number">4,000</span>
+                                <span class="node-unit">MT / Year</span>
+                                <p class="node-label">Secondary Members</p>
+                            </div>
                         </div>
 
                         <!-- Item 3: Color Coated Sheets -->
-                        <div class="capacity-item reveal-on-scroll">
-                            <div class="capacity-emoji">🎨</div>
-                            <span style="font-size: 2.5rem; color: var(--primary-color); font-weight: 700;">4,000</span>
-                            <span style="display: block; font-size: 0.9rem; color: #666; text-transform: uppercase;">MT
-                                / Year</span>
-                            <p style="margin-top: 10px; font-weight: 600;">Color Coated Sheets</p>
+                        <div class="capacity-item reveal-on-scroll physics-node" data-speed="1.5">
+                            <div class="peephole-card">
+                                <div class="card-img-layer muted">
+                                    <img src="/assets/Production Capacity/Color Coated Sheets.webp" alt="Color Coated Sheets">
+                                </div>
+                                <div class="card-img-layer clear">
+                                    <img src="/assets/Production Capacity/Color Coated Sheets.webp" alt="Color Coated Sheets">
+                                </div>
+                                <div class="card-neon-overlay"></div>
+                                <div class="spotlight-ring"></div>
+                                <div class="card-border-glow"></div>
+                            </div>
+                            <div class="node-info">
+                                <span class="node-number">4,000</span>
+                                <span class="node-unit">MT / Year</span>
+                                <p class="node-label">Color Coated Sheets</p>
+                            </div>
                         </div>
 
                         <!-- Item 4: Total Output -->
-                        <div class="capacity-item reveal-on-scroll">
-                            <div class="capacity-emoji">📈</div>
-                            <span style="font-size: 2.5rem; color: var(--primary-color); font-weight: 700;">16,000</span>
-                            <span style="display: block; font-size: 0.9rem; color: #666; text-transform: uppercase;">MT
-                                / Year</span>
-                            <p style="margin-top: 10px; font-weight: 600;">Total Output</p>
+                        <div class="capacity-item reveal-on-scroll physics-node" data-speed="1.0">
+                            <div class="peephole-card">
+                                <div class="card-img-layer muted">
+                                    <img src="/assets/Production Capacity/Total Output.webp" alt="Total Output">
+                                </div>
+                                <div class="card-img-layer clear">
+                                    <img src="/assets/Production Capacity/Total Output.webp" alt="Total Output">
+                                </div>
+                                <div class="card-neon-overlay"></div>
+                                <div class="spotlight-ring"></div>
+                                <div class="card-border-glow"></div>
+                            </div>
+                            <div class="node-info">
+                                <span class="node-number">16,000</span>
+                                <span class="node-unit">MT / Year</span>
+                                <p class="node-label">Total Output</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 2: CORE COMPETENCIES (GRID) -->
-        <section class="capabilities-grid-section" style="padding: 0 0 80px;">
-            <div class="container">
-                <h2 class="section-divider-title"
-                    style="margin-top: 0; border: none; font-size: 2.5rem; color: var(--primary-color); text-align: center; margin-bottom: 40px;">
-                    Core Capabilities</h2>
+        <!-- EPC Turnkey Solutions - Horizontal Sticky Scroll -->
+        <section id="epc-turnkey" class="epc-sticky-section">
+            <div class="epc-sticky-wrapper">
+                <div class="epc-header">
+                    <h2>EPC Turnkey Solutions</h2>
+                    <p>From concept to commissioning, we deliver fully integrated infrastructure solutions.</p>
+                </div>
 
-                <div class="product-grid grid-cols-2" style="gap: 40px;">
-
-                    <!-- Card 1: Design -->
-                    <div class="why-card-new reveal-on-scroll" style="align-items: flex-start; text-align: left;">
-                        <div
-                            style="width: 100%; height: 250px; overflow: hidden; border-radius: 8px; margin-bottom: 20px;">
-                            <img loading="lazy" src="/steelflex-web-development/assets/Design%20_%20Engineering-Bhu_Mn9G.webp"
-                                alt="Design & Engineering" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="epc-horizontal-track">
+                    <!-- Item 1 -->
+                    <div class="epc-item reveal-on-scroll" data-index="0">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="/assets/Capabilities/EPC Turnkey Solutions/1. Erection Services.webp" alt="Steel Erection">
+                            </div>
+                            <div class="epc-content">
+                                <h3>1. Erection Services</h3>
+                                <ul>
+                                    <li>Precision on-site assembly with certified teams</li>
+                                    <li>Fast-track execution with strict safety standards</li>
+                                    <li>Expertise in heavy structural installations</li>
+                                    <li>Advanced crane coordination for vertical expansion</li>
+                                    <li>Zero-accident site management policies</li>
+                                    <li>Real-time progress tracking with digital reporting</li>
+                                </ul>
+                            </div>
                         </div>
-                        <h3 class="why-title-new" style="font-size: 1.5rem; margin-bottom: 10px;">Design & Engineering
-                        </h3>
-                        <p class="why-desc-new" style="margin-bottom: 15px;">
-                            Using advanced <strong>Tekla Structures</strong> and <strong>STAAD.Pro</strong>, we execute
-                            complex structural analysis and 3D BIM modeling to ensure zero-error fabrication.
-                        </p>
-                        <ul style="list-style: none; padding: 0; color: #555;">
-                            <li style="margin-bottom: 5px;">✓ Cyclic Design Process</li>
-                            <li style="margin-bottom: 5px;">✓ Value Engineering</li>
-                            <li>✓ Load Optimization</li>
-                        </ul>
                     </div>
 
-                    <!-- Card 2: Manufacturing -->
-                    <div class="why-card-new reveal-on-scroll" style="align-items: flex-start; text-align: left;">
-                        <div
-                            style="width: 100%; height: 250px; overflow: hidden; border-radius: 8px; margin-bottom: 20px;">
-                            <img loading="lazy" src="/steelflex-web-development/assets/Advanced%20Manufacturing-CRcDgB83.webp"
-                                alt="Advanced Manufacturing" style="width: 100%; height: 100%; object-fit: cover;">
+                    <!-- Item 2 -->
+                    <div class="epc-item reveal-on-scroll" data-index="1">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="/assets/Capabilities/EPC Turnkey Solutions/2. MEP Services.webp" alt="MEP Systems">
+                            </div>
+                            <div class="epc-content">
+                                <h3>2. MEP Services</h3>
+                                <ul>
+                                    <li>Complete electrical, plumbing, and HVAC systems</li>
+                                    <li>Integrated utility management for industrial units</li>
+                                    <li>Focus on energy efficiency and compliance</li>
+                                    <li>Customized power distribution for high-load machinery</li>
+                                    <li>Industrial-grade air filtration and ventilation units</li>
+                                    <li>Smart monitoring systems for remote utility control</li>
+                                </ul>
+                            </div>
                         </div>
-                        <h3 class="why-title-new" style="font-size: 1.5rem; margin-bottom: 10px;">Advanced Manufacturing
-                        </h3>
-                        <p class="why-desc-new" style="margin-bottom: 15px;">
-                            Our Vadodara facility features fully automated lines including H-Beam SAW welding, CNC
-                            Plasma cutting, and heavy-duty turret punching.
-                        </p>
-                        <ul style="list-style: none; padding: 0; color: #555;">
-                            <li style="margin-bottom: 5px;">✓ Automated SAW Welding</li>
-                            <li style="margin-bottom: 5px;">✓ CNC Precision Cutting</li>
-                            <li>✓ Shot Blasting Finish</li>
-                        </ul>
                     </div>
 
-                    <!-- Card 3: Quality -->
-                    <div class="why-card-new reveal-on-scroll" style="align-items: flex-start; text-align: left;">
-                        <div
-                            style="width: 100%; height: 250px; overflow: hidden; border-radius: 8px; margin-bottom: 20px;">
-                            <img loading="lazy" src="/steelflex-web-development/assets/Quality%20Assurance-CAxfyEJe.webp"
-                                alt="Quality Assurance" style="width: 100%; height: 100%; object-fit: cover;">
+                    <!-- Item 3 -->
+                    <div class="epc-item reveal-on-scroll" data-index="2">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="/assets/Capabilities/EPC Turnkey Solutions/3. Design & Detailing.webp" alt="Design">
+                            </div>
+                            <div class="epc-content">
+                                <h3>3. Design & Detailing</h3>
+                                <ul>
+                                    <li>Advanced 3D BIM modeling and structural analysis</li>
+                                    <li>Accurate shop drawings for flawless manufacturing</li>
+                                    <li>Optimized engineering to reduce material waste</li>
+                                    <li>Virtual reality (VR) walkthroughs for design validation</li>
+                                    <li>Complex geometric structural detailing and drafting</li>
+                                    <li>Value engineering to optimize project costs and time</li>
+                                </ul>
+                            </div>
                         </div>
-                        <h3 class="why-title-new" style="font-size: 1.5rem; margin-bottom: 10px;">Quality Assurance</h3>
-                        <p class="why-desc-new" style="margin-bottom: 15px;">
-                            We adhere to strict international standards. Every component undergoes rigorous testing
-                            including Ultrasonic Testing (UT) and Magnetic Particle Inspection (MPI).
-                        </p>
-                        <ul style="list-style: none; padding: 0; color: #555;">
-                            <li style="margin-bottom: 5px;">✓ UT & MPI Testing</li>
-                            <li style="margin-bottom: 5px;">✓ Material Certification</li>
-                            <li>✓ Dimensional Accuracy</li>
-                        </ul>
                     </div>
 
-                    <!-- Card 4: EPC Execution -->
-                    <div class="why-card-new reveal-on-scroll" style="align-items: flex-start; text-align: left;">
-                        <div
-                            style="width: 100%; height: 250px; overflow: hidden; border-radius: 8px; margin-bottom: 20px;">
-                            <img loading="lazy" src="/steelflex-web-development/assets/Turnkey%20EPC%20Execution-BhiJ2o2M.webp"
-                                alt="Turnkey EPC Execution" style="width: 100%; height: 100%; object-fit: cover;">
+                    <!-- Item 4 -->
+                    <div class="epc-item reveal-on-scroll" data-index="3">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="/assets/Capabilities/EPC Turnkey Solutions/4. Civil Foundations.webp" alt="Civil">
+                            </div>
+                            <div class="epc-content">
+                                <h3>4. Civil Foundations</h3>
+                                <ul>
+                                    <li>Robust civil engineering and site development</li>
+                                    <li>High-precision foundation works for heavy structures</li>
+                                    <li>End-to-end site preparation and drainage solutions</li>
+                                    <li>Advanced soil testing and seismic stability analysis</li>
+                                    <li>Retaining walls and specialized piling for soft terrains</li>
+                                    <li>High-strength reinforced concrete (RCC) works</li>
+                                </ul>
+                            </div>
                         </div>
-                        <h3 class="why-title-new" style="font-size: 1.5rem; margin-bottom: 10px;">Turnkey EPC Execution
-                        </h3>
-                        <p class="why-desc-new" style="margin-bottom: 15px;">
-                            From foundation design to final handover, we manage the complete lifecycle. Our safety-first
-                            erection teams ensure rapid and accident-free onsite assembly.
-                        </p>
-                        <ul style="list-style: none; padding: 0; color: #555;">
-                            <li style="margin-bottom: 5px;">✓ Smart & Green Buildings</li>
-                            <li style="margin-bottom: 5px;">✓ Logistics Management</li>
-                            <li>✓ Safety First Policy</li>
-                        </ul>
                     </div>
 
+                    <!-- Item 5 -->
+                    <div class="epc-item reveal-on-scroll" data-index="4">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="/assets/Capabilities/EPC Turnkey Solutions/5. Fire & Safety.webp" alt="Fire">
+                            </div>
+                            <div class="epc-content">
+                                <h3>5. Fire & Safety</h3>
+                                <ul>
+                                    <li>Integrated fire suppression and alarm systems</li>
+                                    <li>Compliance with international safety protocols</li>
+                                    <li>Industrial-grade emergency management systems</li>
+                                    <li>Automated sprinkler and high-velocity water spray systems</li>
+                                    <li>Smoke detection and heat-sensitive early warning units</li>
+                                    <li>Regular safety audits and certification maintenance</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 6 -->
+                    <div class="epc-item reveal-on-scroll" data-index="5">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="/assets/Capabilities/EPC Turnkey Solutions/6. Smart & Green Buildings.webp" alt="Green">
+                            </div>
+                            <div class="epc-content">
+                                <h3>6. Smart & Green Buildings</h3>
+                                <ul>
+                                    <li>Solar-ready and energy-efficient designs</li>
+                                    <li>Sustainable material sourcing and recycling</li>
+                                    <li>LEED compliant industrial infrastructure</li>
+                                    <li>Rainwater harvesting and greywater recycling units</li>
+                                    <li>Passive cooling designs to reduce HVAC dependency</li>
+                                    <li>Real-time energy consumption dashboards and IoT integration</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 7 -->
+                    <div class="epc-item reveal-on-scroll" data-index="6">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="/assets/Capabilities/EPC Turnkey Solutions/7. Pre Engineered Building (PEB).jpg" alt="PEB">
+                            </div>
+                            <div class="epc-content">
+                                <h3>7. Pre Engineered Building (PEB)</h3>
+                                <ul>
+                                    <li>Full turnkey structural design and fabrication</li>
+                                    <li>High-tensile steel frames for large clear spans</li>
+                                    <li>Weather-tight roofing and wall cladding systems</li>
+                                    <li>Thermal insulation and skylight integrations</li>
+                                    <li>Scalable and modular construction techniques</li>
+                                    <li>Seismic and wind load optimized structures</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 8 -->
+                    <div class="epc-item reveal-on-scroll" data-index="7">
+                        <div class="epc-card">
+                            <div class="epc-img-box">
+                                <img src="/assets/Capabilities/EPC Turnkey Solutions/8. Industrial Flooring.webp" alt="Flooring">
+                            </div>
+                            <div class="epc-content">
+                                <h3>8. Industrial Flooring</h3>
+                                <ul>
+                                    <li>Heavy-duty concrete flooring and laser screeding</li>
+                                    <li>Epoxy and polyurethane (PU) coating systems</li>
+                                    <li>Expansion joints and load-transfer mechanism</li>
+                                    <li>Dust-proof and chemical-resistant surfacing</li>
+                                    <li>Precision leveling for high-bay warehousing</li>
+                                    <li>Floor maintenance and structural health monitoring</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="epc-indicators">
+                    <div class="epc-capsule active" data-index="0"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="1"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="2"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="3"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="4"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="5"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="6"><div class="epc-fill"></div></div>
+                    <div class="epc-capsule" data-index="7"><div class="epc-fill"></div></div>
+                </div>
+
+                <div class="epc-footer-note">
+                    Scroll to explore our end-to-end turnkey solutions
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 3: THE PROCESS -->
-        <section class="process-section" style="padding: 60px 0; background-color: #f4f7fb;">
+        <!-- SECTION 2: CORE CAPABILITIES (REIMAGINED FLOW) -->
+        <section id="capabilities-flow" class="capabilities-flow-section">
+            <div class="capabilities-flow-bg"></div>
             <div class="container">
-                <div style="text-align: center; margin-bottom: 50px;">
-                    <h2 class="section-divider-title"
-                        style="margin-top: 0; border: none; font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px;">
-                        The SteelFlex Workflow</h2>
-                    <p style="font-size: 1.1rem; color: var(--secondary-color);">From concept to completion, every
-                        SteelFlex project follows a structured, precision-driven workflow.</p>
+                <div class="flow-header reveal-on-scroll">
+                    <h2 class="flow-title">Core Capabilities</h2>
+                    <p class="flow-subtitle">An integrated engineering ecosystem designed for precision and scale.</p>
                 </div>
 
-                <div class="workflow-container">
-                    <!-- Left Rail with Animated Nut/Bolt -->
-                    <div class="workflow-rail">
-                        <div class="rail-line"></div>
-                        <div class="rail-fill"></div>
-                        <div class="nut-bolt-wrapper">
-                            <svg width="60" height="60" viewBox="0 0 100 100" class="nut-bolt-icon">
-                                <!-- Static Bolt Head -->
-                                <circle cx="50" cy="50" r="20" fill="#8899A6" />
-                                <rect x="42" y="30" width="16" height="40" fill="#556677" rx="2" />
-                                <!-- Rotating Nut Assembly -->
-                                <g id="nut-assembly" transform-origin="center">
-                                    <path d="M50 10 L85 30 L85 70 L50 90 L15 70 L15 30 Z" fill="none" stroke="#264796"
-                                        stroke-width="8" />
-                                    <path d="M50 25 L72 37 L72 63 L50 75 L28 63 L28 37 Z" fill="#264796"
-                                        opacity="0.2" />
-                                </g>
-                            </svg>
+                <div class="flow-container">
+                    <!-- Central Animated Line -->
+                    <div class="flow-line-main">
+                        <div class="flow-line-progress" id="flowLineProgress"></div>
+                    </div>
+
+                    <!-- Item 1: Design & Engineering (Left) -->
+                    <div class="flow-item flow-item-left reveal-on-scroll" id="flow-item-1">
+                        <div class="flow-content">
+                            <div class="flow-text">
+                                <span class="flow-number">01</span>
+                                <h3 class="flow-item-title">Design & Engineering</h3>
+                                <p>Using advanced <strong>Tekla Structures</strong> and <strong>STAAD.Pro</strong>, we execute complex structural analysis and 3D BIM modeling to ensure zero-error fabrication.</p>
+                                <ul class="flow-tags">
+                                    <li>Cyclic Design</li>
+                                    <li>Value Engineering</li>
+                                    <li>Load Optimization</li>
+                                </ul>
+                            </div>
+                            <div class="flow-visual">
+                                <div class="flow-image-wrapper">
+                                    <img src="/assets/Capabilities/Core Capabilities/01 Design & Engineering.webp" alt="Design & Engineering">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flow-node" id="node-1"></div>
+                    </div>
+
+                    <!-- Item 2: Advanced Manufacturing (Right) -->
+                    <div class="flow-item flow-item-right reveal-on-scroll" id="flow-item-2">
+                        <div class="flow-content">
+                            <div class="flow-text">
+                                <span class="flow-number">02</span>
+                                <h3 class="flow-item-title">Advanced Manufacturing</h3>
+                                <p>Our Vadodara facility features fully automated lines including H-Beam SAW welding, CNC Plasma cutting, and heavy-duty turret punching for peak precision.</p>
+                                <ul class="flow-tags">
+                                    <li>Automated SAW</li>
+                                    <li>CNC Precision</li>
+                                    <li>Shot Blasting</li>
+                                </ul>
+                            </div>
+                            <div class="flow-visual">
+                                <div class="flow-image-wrapper">
+                                    <img src="/assets/Capabilities/Core Capabilities/02 Advanced Manufacturing.webp" alt="Advanced Manufacturing">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flow-node" id="node-2"></div>
+                    </div>
+
+                    <!-- Item 3: Quality Assurance (Left) -->
+                    <div class="flow-item flow-item-left reveal-on-scroll" id="flow-item-3">
+                        <div class="flow-content">
+                            <div class="flow-text">
+                                <span class="flow-number">03</span>
+                                <h3 class="flow-item-title">Quality Assurance</h3>
+                                <p>Every component undergoes rigorous testing including Ultrasonic Testing (UT) and Magnetic Particle Inspection (MPI) to meet international safety standards.</p>
+                                <ul class="flow-tags">
+                                    <li>UT & MPI Testing</li>
+                                    <li>Material Certification</li>
+                                    <li>Dimensional Accuracy</li>
+                                </ul>
+                            </div>
+                            <div class="flow-visual">
+                                <div class="flow-image-wrapper">
+                                    <img src="/assets/Capabilities/Core Capabilities/03 Quality Assurance.webp" alt="Quality Assurance">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flow-node" id="node-3"></div>
+                    </div>
+
+                    <!-- Item 4: Turnkey EPC Execution (Right) -->
+                    <div class="flow-item flow-item-right reveal-on-scroll" id="flow-item-4">
+                        <div class="flow-content">
+                            <div class="flow-text">
+                                <span class="flow-number">04</span>
+                                <h3 class="flow-item-title">Turnkey EPC Execution</h3>
+                                <p>From foundation design to final handover, our safety-first teams manage the complete lifecycle ensuring rapid, accident-free onsite assembly.</p>
+                                <ul class="flow-tags">
+                                    <li>Smart Foundations</li>
+                                    <li>Logistics Management</li>
+                                    <li>Safety First Policy</li>
+                                </ul>
+                            </div>
+                            <div class="flow-visual">
+                                <div class="flow-image-wrapper">
+                                    <img src="/assets/Capabilities/Core Capabilities/04 Turnkey EPC Execution.webp" alt="Turnkey Execution">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flow-node" id="node-4"></div>
+                    </div>
+
+                    <!-- Item 5: Project Management (Left) -->
+                    <div class="flow-item flow-item-left reveal-on-scroll" id="flow-item-5">
+                        <div class="flow-content">
+                            <div class="flow-text">
+                                <span class="flow-number">05</span>
+                                <h3 class="flow-item-title">Project Management</h3>
+                                <p>We provide end-to-end coordination, ensuring timelines and budgets are met through agile scheduling and proactive risk mitigation strategies.</p>
+                                <ul class="flow-tags">
+                                    <li>Agile Scheduling</li>
+                                    <li>Risk Mitigation</li>
+                                    <li>Cost Control</li>
+                                </ul>
+                            </div>
+                            <div class="flow-visual">
+                                <div class="flow-image-wrapper">
+                                    <img src="/assets/Capabilities/Core Capabilities/05 Project Management.webp" alt="Project Management">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flow-node" id="node-5"></div>
+                    </div>
+
+                    <!-- Item 6: Research & Development (Right) -->
+                    <div class="flow-item flow-item-right reveal-on-scroll" id="flow-item-6">
+                        <div class="flow-content">
+                            <div class="flow-text">
+                                <span class="flow-number">06</span>
+                                <h3 class="flow-item-title">Research & Development</h3>
+                                <p>Our dedicated R&D team continuously innovates in structural material science and eco-friendly manufacturing to deliver state-of-the-art solutions.</p>
+                                <ul class="flow-tags">
+                                    <li>Material Science</li>
+                                    <li>System Innovation</li>
+                                    <li>Eco-Efficiency</li>
+                                </ul>
+                            </div>
+                            <div class="flow-visual">
+                                <div class="flow-image-wrapper">
+                                    <img src="/assets/Capabilities/Core Capabilities/06 Research & Development.webp" alt="R&D">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flow-node" id="node-6"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: THE PROCESS (REIMAGINED HORIZONTAL) -->
+        <section id="workflow-h" class="workflow-h-section">
+            <div class="workflow-h-sticky">
+                <div class="workflow-h-header">
+                    <div class="container">
+                        <h2 class="workflow-main-title">The SteelFlex Workflow</h2>
+                        <p class="workflow-main-subtitle">A synchronized pipeline from initial concept to lifecycle support, engineered for precision.</p>
+                    </div>
+                </div>
+                <!-- Background Layers -->
+                <div class="workflow-h-bg-grid"></div>
+                <div class="workflow-h-parallax-bg"></div>
+                
+                <!-- Mechanical Gear Track -->
+                <div class="gear-track-system">
+                    <div class="track-highlight" id="trackHighlight"></div>
+                    <div class="gear-container">
+                        <svg class="gear-icon small cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <svg class="gear-icon medium ccw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <svg class="gear-icon large cw center-gear" id="centerGear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <svg class="gear-icon medium ccw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <svg class="gear-icon small cw" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Scroll Content -->
+                <div class="workflow-h-container" id="workflowTrack">
+                    <!-- Step 1: Concept -->
+                    <div class="workflow-h-station" data-step="1">
+                        <div class="station-visual">
+                            <img loading="lazy" src="/assets/Capabilities/The SteelFlex Workflow/01 Concept.webp" alt="Concept">
+                            <div class="station-anim-layer" id="anim-concept">
+                                <svg class="blueprint-svg" viewBox="0 0 100 100">
+                                    <path class="draw-path" d="M10,10 L90,10 L90,90 L10,90 Z M10,50 L90,50 M50,10 L50,90" fill="none" stroke="rgba(0,123,255,0.5)" stroke-width="0.5"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="station-info">
+                            <div class="station-top">
+                                <span class="station-number">01</span>
+                                <h3 class="station-title">Concept</h3>
+                            </div>
+                            <div class="station-bottom">
+                                <p class="station-desc">Understanding vision, site constraints, and operational needs to define execution strategy.</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Right Content Steps -->
-                    <div class="workflow-steps">
-                        <!-- Step 1: Concept -->
-                        <div class="workflow-step reveal-on-scroll" data-step="1">
-                            <div class="step-image-container">
-                                <img loading="lazy" src="https://images.unsplash.com/photo-1542621334-a254cf47733d?auto=format&fit=crop&w=600&q=80"
-                                    alt="Concept Planning" class="step-image">
-                            </div>
-                            <div class="step-content">
-                                <h3>1. Concept</h3>
-                                <h4>Requirement Analysis & Planning</h4>
-                                <p class="step-story">We start by understanding your vision, site constraints, and
-                                    operational needs. This phase defines scope, feasibility, and execution strategy.
-                                </p>
+                    <!-- Step 2: Design -->
+                    <div class="workflow-h-station" data-step="2">
+                        <div class="station-visual">
+                            <img loading="lazy" src="/assets/Capabilities/The SteelFlex Workflow/02 Design.webp" alt="Design">
+                            <div class="station-anim-layer" id="anim-design">
+                                <div class="wireframe-box"></div>
                             </div>
                         </div>
-
-                        <!-- Step 2: Design -->
-                        <div class="workflow-step reveal-on-scroll" data-step="2">
-                            <div class="step-image-container">
-                                <img loading="lazy" src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=600&q=80"
-                                    alt="Structural Design" class="step-image">
+                        <div class="station-info">
+                            <div class="station-top">
+                                <span class="station-number">02</span>
+                                <h3 class="station-title">Design</h3>
                             </div>
-                            <div class="step-content">
-                                <h3>2. Design</h3>
-                                <h4>Structural Analysis & Detailing</h4>
-                                <p class="step-story">Our engineers use advanced BIM and simulation tools to design
-                                    structures optimized for strength, speed, and cost efficiency.</p>
+                            <div class="station-bottom">
+                                <p class="station-desc">Advanced BIM and simulation tools optimizing structures for strength, speed, and cost efficiency.</p>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Step 3: Fabrication -->
-                        <div class="workflow-step reveal-on-scroll" data-step="3">
-                            <div class="step-image-container">
-                                <img loading="lazy" src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=80"
-                                    alt="Fabrication" class="step-image">
-                            </div>
-                            <div class="step-content">
-                                <h3>3. Fabrication</h3>
-                                <h4>Precision Manufacturing</h4>
-                                <p class="step-story">Components are manufactured in controlled environments with strict
-                                    quality checks to ensure dimensional accuracy and durability.</p>
+                    <!-- Step 3: Fabrication -->
+                    <div class="workflow-h-station" data-step="3">
+                        <div class="station-visual">
+                            <img loading="lazy" src="/assets/Capabilities/The SteelFlex Workflow/03 Fabrication.webp" alt="Fabrication">
+                            <div class="station-anim-layer" id="anim-fabrication">
+                                <div class="sparks-container"></div>
                             </div>
                         </div>
-
-                        <!-- Step 4: Logistics -->
-                        <div class="workflow-step reveal-on-scroll" data-step="4">
-                            <div class="step-image-container">
-                                <img loading="lazy" src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80"
-                                    alt="Logistics" class="step-image">
+                        <div class="station-info">
+                            <div class="station-top">
+                                <span class="station-number">03</span>
+                                <h3 class="station-title">Fabrication</h3>
                             </div>
-                            <div class="step-content">
-                                <h3>4. Logistics</h3>
-                                <h4>Safe & Timely Transport</h4>
-                                <p class="step-story">Planned logistics ensure just-in-time delivery to site. Each
-                                    component is tracked, handled, and transported safely to minimize delays and on-site
-                                    congestion.</p>
+                            <div class="station-bottom">
+                                <p class="station-desc">Precision manufacturing in controlled environments with strict quality checks for durability.</p>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Step 5: Assembly -->
-                        <div class="workflow-step reveal-on-scroll" data-step="5">
-                            <div class="step-image-container">
-                                <img loading="lazy" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80"
-                                    alt="Assembly" class="step-image">
+                    <!-- Step 4: Logistics -->
+                    <div class="workflow-h-station" data-step="4">
+                        <div class="station-visual">
+                            <img loading="lazy" src="/assets/Capabilities/The SteelFlex Workflow/04 Logistics.webp" alt="Logistics">
+                            <div class="station-anim-layer" id="anim-logistics">
+                                <div class="truck-path"></div>
                             </div>
-                            <div class="step-content">
-                                <h3>5. Assembly</h3>
-                                <h4>Site Erection & Handover</h4>
-                                <p class="step-story">Expert erection teams assemble structures efficiently with
-                                    safety-first protocols, followed by inspection and handover.</p>
+                        </div>
+                        <div class="station-info">
+                            <div class="station-top">
+                                <span class="station-number">04</span>
+                                <h3 class="station-title">Logistics</h3>
+                            </div>
+                            <div class="station-bottom">
+                                <p class="station-desc">Just-in-time delivery to site with real-time tracking to minimize delays and congestion.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Assembly -->
+                    <div class="workflow-h-station" data-step="5">
+                        <div class="station-visual">
+                            <img loading="lazy" src="/assets/Capabilities/The SteelFlex Workflow/05 Assembly.webp" alt="Assembly">
+                            <div class="station-anim-layer" id="anim-assembly">
+                                <div class="assembly-pieces"></div>
+                            </div>
+                        </div>
+                        <div class="station-info">
+                            <div class="station-top">
+                                <span class="station-number">05</span>
+                                <h3 class="station-title">Assembly</h3>
+                            </div>
+                            <div class="station-bottom">
+                                <p class="station-desc">Expert erection teams assembling structures with safety-first protocols and inspections.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Delivery -->
+                    <div class="workflow-h-station" data-step="6">
+                        <div class="station-visual">
+                            <img loading="lazy" src="/assets/Capabilities/The SteelFlex Workflow/06 Delivery.webp" alt="Delivery">
+                            <div class="station-anim-layer" id="anim-delivery">
+                                <div class="checkmark-burst"></div>
+                            </div>
+                        </div>
+                        <div class="station-info">
+                            <div class="station-top">
+                                <span class="station-number">06</span>
+                                <h3 class="station-title">Delivery</h3>
+                            </div>
+                            <div class="station-bottom">
+                                <p class="station-desc">Final handover with complete documentation, quality assurance, and client satisfaction.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 7: Lifecycle Support -->
+                    <div class="workflow-h-station" data-step="7">
+                        <div class="station-visual">
+                            <img loading="lazy" src="/assets/Capabilities/The SteelFlex Workflow/07 Lifecycle Support.webp" alt="Lifecycle Support">
+                            <div class="station-anim-layer" id="anim-lifecycle">
+                                <div class="pulse-glow"></div>
+                            </div>
+                        </div>
+                        <div class="station-info">
+                            <div class="station-top">
+                                <span class="station-number">07</span>
+                                <h3 class="station-title">Lifecycle Support</h3>
+                            </div>
+                            <div class="station-bottom">
+                                <p class="station-desc">Ongoing maintenance guidance and performance monitoring for peak long-term efficiency.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Taglines -->
+                <div class="workflow-taglines">
+                    <p class="tagline-main">Not Just Steps. A <span>SSIPL</span> System.</p>
+                    <p class="tagline-sub">From Concept to Completion — Engineered as One Continuous System.</p>
+                </div>
+
+                <!-- Workflow Indicators -->
+                <div class="workflow-indicators">
+                    <div class="workflow-capsule active" data-index="0"><div class="workflow-fill"></div></div>
+                    <div class="workflow-capsule" data-index="1"><div class="workflow-fill"></div></div>
+                    <div class="workflow-capsule" data-index="2"><div class="workflow-fill"></div></div>
+                    <div class="workflow-capsule" data-index="3"><div class="workflow-fill"></div></div>
+                    <div class="workflow-capsule" data-index="4"><div class="workflow-fill"></div></div>
+                    <div class="workflow-capsule" data-index="5"><div class="workflow-fill"></div></div>
+                    <div class="workflow-capsule" data-index="6"><div class="workflow-fill"></div></div>
+                </div>
+
+                <!-- Scroll Indicator -->
+                <div class="workflow-h-scroll-hint">
+                    <span class="hint-line"></span>
+                    <span class="hint-text">SCROLL TO NAVIGATE PIPELINE</span>
+                </div>
             </div>
         </section>
 
     </main>
 
     <!-- MODERN FOOTER (3 PARTS) -->
-    <footer class="site-footer-redesign">
-        <!-- Part 1: CTA Bridge -->
-        <div class="footer-cta-bridge">
-            <div class="container">
-                <h2 class="footer-cta-title">Ready to start your project?</h2>
-                <a href="/steelflex-web-development/contact-us" class="btn-footer-cta">Get in Touch</a>
-            </div>
-        </div>
-
-        <!-- Part 2: Main Footer Content -->
-        <div class="footer-main">
-            <div class="container">
-                <div class="footer-grid-modern">
-                    <!-- Column 1: Brand -->
-                    <div class="footer-col">
-                        <span class="footer-brand-title"><img loading="lazy" src="/steelflex-web-development/Logo/Steelflex Logo.png" alt="SteelFlex"
-                                style="height: 50px;"></span>
-                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
-                            steel construction solutions.</p>
-                    </div>
-
-                    <!-- Column 2: Quick Links -->
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Quick Links</h4>
-                        <ul class="footer-links-list">
-                            <li><a href="/steelflex-web-development/">Home</a></li>
-                            <li><a href="/steelflex-web-development/about-us">About Us</a></li>
-                            <li><a href="/steelflex-web-development/products-structures">Products</a></li>
-                            <li><a href="/steelflex-web-development/capabilities">Capabilities</a></li>
-                            <li><a href="/steelflex-web-development/machineries">Machineries</a></li>
-                            <li><a href="/steelflex-web-development/projects">Projects</a></li>
-                            <li><a href="/steelflex-web-development/careers">Careers</a></li>
-                            <li><a href="/steelflex-web-development/contact-us">Contact Us</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 3: Contact Info -->
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Contact</h4>
-                        <div class="footer-contact-item">
-                            <span>Phone</span>
-                            +91 94264 43442
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Email</span>
-                            md@steelflexstructures.com
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Location</span>
-                            Vadodara, Gujarat
-                        </div>
-                        <a href="/steelflex-web-development/review" class="btn-footer-review">Add Review</a>
-
-                    </div>
-                </div>
-            </div>
-
-            <!-- Part 3: Legal Strip -->
-            <div class="footer-legal">
-                <div class="container">
-                    <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved. | Designed by
-                        <a href="https://www.epexio.in" target="_blank"
-                            style="color: #2F528F; text-decoration: none;">Epexio
-                            Techno Solutions</a>
-                    </p>
-                </div>
-            </div>
-    </footer>
-
-    <script>
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
-            document.querySelector('.main-nav').classList.toggle('active');
-        });
-    </script>
-    <style>
-        /* FORCE OVERFLOW FIX for Sticky Nut */
-        .process-section {
-            overflow: visible !important;
-        }
-    </style>
-    <script>
-        (function () {
-            const nutAssembly = document.getElementById('nut-assembly');
-            const railFill = document.querySelector('.rail-fill');
-            const steps = document.querySelectorAll('.workflow-step');
-            const workflowSection = document.querySelector('.process-section'); // Section to track
-
-            // --- Continuous Scroll Animation ---
-            function updateScrollAnimation() {
-                if (!workflowSection || !nutAssembly) return;
-
-                const sectionRect = workflowSection.getBoundingClientRect();
-                const sectionTop = sectionRect.top;
-                const sectionHeight = sectionRect.height;
-                const viewportHeight = window.innerHeight;
-
-                // Calculate progress for rotation
-                const start = viewportHeight;
-                const end = -sectionHeight;
-                const progress = (start - sectionTop) / (start - end);
-
-                // Rotate Nut
-                const rotationDeg = progress * 1080;
-                nutAssembly.style.transformOrigin = '50px 50px';
-                nutAssembly.style.transform = `rotate(${rotationDeg}deg)`;
-
-                // Sync Line Fill DIRECTLY to Nut Position
-                if (railFill) {
-                    const rail = document.querySelector('.workflow-rail');
-                    const nutWrapper = document.querySelector('.nut-bolt-wrapper');
-
-                    if (rail && nutWrapper) {
-                        const railRect = rail.getBoundingClientRect();
-                        const nutRect = nutWrapper.getBoundingClientRect();
-
-                        // Distance = (Nut Top - Rail Top) + (Offset to center)
-                        const fillHeight = (nutRect.top - railRect.top) + (nutRect.height / 2);
-                        railFill.style.height = `${Math.max(0, fillHeight)}px`;
-                    }
-                }
-            }
-
-            // Use requestAnimationFrame for smooth scroll
-            let ticking = false;
-            window.addEventListener('scroll', () => {
-                if (!ticking) {
-                    window.requestAnimationFrame(() => {
-                        updateScrollAnimation();
-                        ticking = false;
-                    });
-                    ticking = true;
-                }
-            });
-            // Initial call
-            updateScrollAnimation();
+        <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
 
 
-            // Old observer removed - handled by animations.js
-        })();
-    </script>
-    <script src="animations.js" defer></script>
+    
+    <script src="/animations.js" defer></script>
 </body>
-
 </html>

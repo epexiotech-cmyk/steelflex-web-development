@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const sharp = require('sharp');
+const AdmZip = require('adm-zip');
 
 
 const app = express();
@@ -56,7 +57,7 @@ app.use("/uploads", express.static(uploadDir));
 // Initial upload to temp folder with filtering
 const upload = multer({ 
     dest: tempDir,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    // No strict limit for backups, but we still filter for security
     fileFilter: (req, file, cb) => {
         const isCareer = req.query.context === 'career';
         const isImage = file.mimetype.startsWith("image/");
@@ -66,12 +67,18 @@ const upload = multer({
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         ].includes(file.mimetype);
 
-        if (isImage) {
+        const isBackup = file.fieldname === 'backup';
+        const isZip = file.mimetype === 'application/zip' || 
+                      file.mimetype === 'application/x-zip-compressed' ||
+                      file.originalname.toLowerCase().endsWith('.zip');
+
+        if (isImage || (isBackup && isZip)) {
             cb(null, true);
         } else if (isCareer && isDoc) {
             cb(null, true);
         } else {
-            const msg = isCareer ? "Only images and PDF/DOC files allowed" : "Only images allowed";
+            const msg = isBackup ? "Only ZIP files allowed for backup" : 
+                       (isCareer ? "Only images and PDF/DOC files allowed" : "Only images allowed");
             cb(new Error(msg));
         }
     }
@@ -171,9 +178,7 @@ app.get(/^\/admin($|\/)/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// --- NEW DATA API ROUTES ---
-const apiRouter = express.Router();
-app.use('/api/data', apiRouter);
+// --- API COMPATIBILITY & DATA ROUTES ---
 
 const getDataFilePath = (type) => {
     const fileMap = {
@@ -187,8 +192,19 @@ const getDataFilePath = (type) => {
     return path.join(__dirname, 'public/data', fileMap[type] || `${type}.json`);
 };
 
-apiRouter.get('/:type', async (req, res) => {
-    const filePath = getDataFilePath(req.params.type);
+// Mock Login for Dev Environment
+app.post('/api/auth/login', (req, res) => {
+    res.json({
+        id: 'admin',
+        name: 'Super Admin',
+        role: 'SUPER_ADMIN',
+        accessToken: 'mock-token'
+    });
+});
+
+// Helper for data fetching
+async function handleDataGet(type, res) {
+    const filePath = getDataFilePath(type);
     if (!fs.existsSync(filePath)) return res.json([]);
     try {
         const data = await fs.promises.readFile(filePath, 'utf8');
@@ -196,10 +212,22 @@ apiRouter.get('/:type', async (req, res) => {
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
-});
+}
 
-apiRouter.post('/:type', async (req, res) => {
-    const filePath = getDataFilePath(req.params.type);
+// 1. Handle legacy routes (e.g. /api/users)
+app.get('/api/users', (req, res) => handleDataGet('users', res));
+app.get('/api/projects', (req, res) => handleDataGet('projects', res));
+app.get('/api/reviews', (req, res) => handleDataGet('reviews', res));
+app.get('/api/contact/admin', (req, res) => handleDataGet('contact', res));
+app.get('/api/careers/admin', (req, res) => handleDataGet('careers', res));
+
+// 2. Handle new data routes (e.g. /api/data/users)
+app.get('/api/data/:type', (req, res) => handleDataGet(req.params.type, res));
+
+// 3. Handle Mutations
+app.post(['/api/data/:type', '/api/:type'], async (req, res) => {
+    const type = req.params.type;
+    const filePath = getDataFilePath(type);
     try {
         let items = [];
         if (fs.existsSync(filePath)) {
@@ -213,8 +241,9 @@ apiRouter.post('/:type', async (req, res) => {
     }
 });
 
-apiRouter.put('/:type/:id', async (req, res) => {
-    const filePath = getDataFilePath(req.params.type);
+app.put(['/api/data/:type/:id', '/api/:type/:id'], async (req, res) => {
+    const type = req.params.type;
+    const filePath = getDataFilePath(type);
     try {
         if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Data not found' });
         let items = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
@@ -227,8 +256,9 @@ apiRouter.put('/:type/:id', async (req, res) => {
     }
 });
 
-apiRouter.delete('/:type/:id', async (req, res) => {
-    const filePath = getDataFilePath(req.params.type);
+app.delete(['/api/data/:type/:id', '/api/:type/:id'], async (req, res) => {
+    const type = req.params.type;
+    const filePath = getDataFilePath(type);
     try {
         if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Data not found' });
         let items = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
@@ -236,11 +266,118 @@ apiRouter.delete('/:type/:id', async (req, res) => {
         fs.writeFileSync(filePath, JSON.stringify(items, null, 2));
         res.json({ success: true });
     } catch (e) {
-        res.status(500).json({ error: e.message });
+        res.status(500).json({ success: false, error: e.message });
     }
 });
-// ----------------------------
 
+// --- BACKUP ROUTE ---
+const { createBackupZip } = require('./src/utils/backupUtil');
+
+app.get('/api/admin/backup', async (req, res) => {
+    try {
+        const buffer = await createBackupZip();
+        const fileName = `steelflex-backup-${new Date().toISOString().split('T')[0]}.zip`;
+
+        res.set({
+            'Content-Type': 'application/zip',
+            'Content-Disposition': `attachment; filename="${fileName}"`,
+            'Content-Length': buffer.length
+        });
+
+        res.send(buffer);
+    } catch (error) {
+        console.error('Backup generation failed:', error);
+        res.status(500).json({ error: 'Failed to create backup', message: error.message });
+    }
+});
+
+const { listBackups, downloadFile } = require('./src/services/googleDriveService');
+
+// Helper to handle the actual restoration logic
+async function processRestore(zipPath, res) {
+    try {
+        const zip = new AdmZip(zipPath);
+
+        // Safety: Internal backup before restore
+        try {
+            const safetyZip = new AdmZip();
+            const dataDir = path.join(__dirname, 'public/data');
+            if (fs.existsSync(dataDir)) safetyZip.addLocalFolder(dataDir, 'public/data');
+            const safetyPath = path.join(__dirname, 'backups', `pre-restore-${Date.now()}.zip`);
+            if (!fs.existsSync(path.join(__dirname, 'backups'))) fs.mkdirSync(path.join(__dirname, 'backups'));
+            safetyZip.writeZip(safetyPath);
+        } catch (e) {
+            console.warn('Safety backup failed, proceeding with restore anyway:', e);
+        }
+
+        // Extract ZIP - true means overwrite
+        zip.extractAllTo(__dirname, true);
+
+        // Cleanup temp file
+        if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
+
+        const restoredFolders = [];
+        if (fs.existsSync(path.join(__dirname, 'public/data'))) restoredFolders.push('Database JSONs');
+        if (fs.existsSync(path.join(__dirname, 'uploads'))) restoredFolders.push('Processed Media');
+        if (fs.existsSync(path.join(__dirname, 'public/uploads'))) restoredFolders.push('Project & Career Assets');
+
+        res.json({ 
+            success: true, 
+            message: 'Data restored successfully',
+            summary: restoredFolders
+        });
+    } catch (error) {
+        console.error('Restore Processing Error:', error);
+        if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
+        res.status(500).json({ error: 'Failed to process restore', message: error.message });
+    }
+}
+
+app.get('/api/admin/backup/cloud/list', async (req, res) => {
+    try {
+        const { date } = req.query;
+        const backups = await listBackups(30, date);
+        res.json({ success: true, backups });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to list cloud backups', message: error.message });
+    }
+});
+
+app.post('/api/admin/backup/cloud/restore/:fileId', async (req, res) => {
+    const tempPath = path.join(__dirname, 'uploads', 'temp', `cloud-restore-${Date.now()}.zip`);
+    try {
+        const fileId = req.params.fileId;
+        await downloadFile(fileId, tempPath);
+        await processRestore(tempPath, res);
+    } catch (error) {
+        console.error('Cloud Restore Error:', error);
+        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+        res.status(500).json({ error: 'Failed to restore from cloud', message: error.message });
+    }
+});
+
+app.post('/api/admin/backup/restore', upload.single('backup'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No backup file uploaded' });
+    }
+    await processRestore(req.file.path, res);
+});
+
+const { initCron, performCloudBackup } = require('./src/services/cronService');
+
+app.post('/api/admin/backup/cloud', async (req, res) => {
+    try {
+        const result = await performCloudBackup();
+        if (result.success) {
+            res.json({ success: true, message: 'Backup uploaded to Google Drive successfully', fileName: result.fileName });
+        } else {
+            throw new Error(result.error);
+        }
+    } catch (error) {
+        console.error('Cloud backup trigger failed:', error);
+        res.status(500).json({ error: 'Failed to sync with Google Drive', message: error.message });
+    }
+});
 
 // Start Server
 async function startServer() {
@@ -258,8 +395,8 @@ async function startServer() {
             }
         });
 
-        // Legacy JSON file initialization removed for static mode
-        // Legacy backups and seeders removed for static mode
+        // Initialize Backup Scheduler
+        initCron();
 
         app.listen(PORT, () => {
             console.log(`🚀 Server running on port ${PORT}`);

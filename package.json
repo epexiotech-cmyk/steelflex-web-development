@@ -16,20 +16,22 @@
     "type": "git",
     "url": "git+https://github.com/epexiotech-cmyk/steelflex-web-development.git"
   },
-  "homepage": "https://epexiotech-cmyk.github.io/steelflex-web-development",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "adm-zip": "^0.5.17",
     "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "fs-extra": "^11.3.3",
+    "googleapis": "^171.4.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
     "multer": "^2.1.1",
+    "node-cron": "^4.2.1",
     "sharp": "^0.34.5"
   },
   "devDependencies": {

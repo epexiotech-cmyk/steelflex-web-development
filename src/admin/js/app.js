@@ -185,6 +185,9 @@ function renderSidebar() {
         { id: 'queries', icon: 'envelope', label: 'Contact Queries', roles: ['SUPER_ADMIN', 'ADMIN'] },
         { id: 'projects', icon: 'building', label: 'Projects', roles: ['SUPER_ADMIN', 'ADMIN'] },
         { id: 'careers', icon: 'briefcase', label: 'Careers & Jobs', roles: ['SUPER_ADMIN', 'ADMIN'] },
+        { id: 'backup', icon: 'download', label: 'Download Backup', roles: ['SUPER_ADMIN'], action: downloadBackup },
+        { id: 'cloud', icon: 'cloud-upload-alt', label: 'Sync to Cloud', roles: ['SUPER_ADMIN'], action: syncToCloud },
+        { id: 'restore', icon: 'upload', label: 'Restore Backup', roles: ['SUPER_ADMIN'], action: restoreBackup },
     ];
 
     items.forEach(item => {
@@ -195,9 +198,13 @@ function renderSidebar() {
             a.innerHTML = `<i class="fas fa-${item.icon}"></i> ${item.label}`;
             a.onclick = (e) => {
                 e.preventDefault();
-                loadModule(item.id);
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                a.classList.add('active');
+                if (item.action) {
+                    item.action();
+                } else {
+                    loadModule(item.id);
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    a.classList.add('active');
+                }
 
                 // Auto close on mobile
                 if (window.innerWidth < 1024) {
@@ -635,6 +642,461 @@ window.updateCareerStatus = async (id, status) => {
     }
 };
 
+async function syncToCloud() {
+    showModal(`
+        <div style="text-align: center; padding: 1rem;">
+            <div style="color: var(--primary); font-size: 3rem; margin-bottom: 1rem;">
+                <i class="fas fa-cloud-upload-alt fa-beat"></i>
+            </div>
+            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: #1f2937;">Cloud Sync in Progress</h3>
+            <p id="cloud-sync-status" style="color: #4b5563; line-height: 1.6; margin-bottom: 2rem;">
+                Preparing your data and assets for cloud backup...
+            </p>
+            
+            <div style="height: 10px; width: 100%; background: #e5e7eb; border-radius: 5px; overflow: hidden; margin-bottom: 2rem;">
+                <div id="cloud-sync-bar" style="height: 100%; width: 30%; background: var(--primary); transition: width 0.5s; animation: pulse 2s infinite;"></div>
+            </div>
+
+            <button id="cloud-sync-close" class="btn btn-secondary" disabled style="opacity: 0.5; width: 100%;">
+                Please wait...
+            </button>
+        </div>
+    `, async () => {
+        const statusText = document.getElementById('cloud-sync-status');
+        const progressBar = document.getElementById('cloud-sync-bar');
+        const closeBtn = document.getElementById('cloud-sync-close');
+
+        try {
+            // Step 1: Initializing
+            setTimeout(() => { 
+                if (progressBar) {
+                    progressBar.style.width = '60%';
+                    statusText.textContent = 'Uploading backup to Google Drive...';
+                }
+            }, 2000);
+
+            const response = await fetch('/api/admin/backup/cloud', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${state.token}`
+                }
+            });
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                progressBar.style.width = '100%';
+                progressBar.style.background = '#10b981';
+                progressBar.style.animation = 'none';
+                statusText.innerHTML = `<span style="color: #10b981; font-weight: 600;">Success!</span><br>Backup uploaded to Google Drive successfully.`;
+                
+                const modalContent = document.querySelector('.modal-content');
+                modalContent.innerHTML = `
+                    <div style="text-align: center; padding: 1rem;">
+                        <div style="color: #10b981; font-size: 4rem; margin-bottom: 1.5rem;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 style="font-size: 1.8rem; margin-bottom: 1rem; color: #111827;">Sync Successful</h3>
+                        <p style="color: #4b5563; margin-bottom: 2rem;">Your backup is now safely stored on Google Drive.</p>
+                        
+                        <div style="text-align: left; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; margin-bottom: 2rem; font-family: monospace; font-size: 0.85rem; color: #15803d;">
+                            File: ${result.fileName}
+                        </div>
+
+                        <button class="btn btn-primary" onclick="closeModal()" style="width: 100%;">
+                            Close
+                        </button>
+                    </div>
+                `;
+            } else {
+                throw new Error(result.message || 'Cloud sync failed');
+            }
+        } catch (err) {
+            console.error('Cloud Sync Error:', err);
+            const modalContent = document.querySelector('.modal-content');
+            modalContent.innerHTML = `
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="color: #ef4444; font-size: 4rem; margin-bottom: 1.5rem;">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <h3 style="font-size: 1.8rem; margin-bottom: 1rem; color: #111827;">Sync Failed</h3>
+                    <p style="color: #4b5563; margin-bottom: 2rem;">An error occurred while uploading to Google Drive.</p>
+                    
+                    <div style="text-align: left; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+                        <p style="color: #991b1b; font-family: monospace; font-size: 0.9rem;">${err.message}</p>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="closeModal()" style="width: 100%;">
+                        Close
+                    </button>
+                </div>
+            `;
+        }
+    });
+}
+
+async function restoreBackup() {
+    showModal(`
+        <div style="padding: 1rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="color: #f59e0b; font-size: 3rem; margin-bottom: 1rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem; color: #111827;">Restore Backup</h3>
+                <p style="color: #4b5563;">Warning: Restoring will overwrite all current website data.</p>
+            </div>
+
+            <div id="restore-selection-view">
+                <div class="tabs" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.5rem;">
+                <button class="tab-btn active" data-tab="upload" style="background: none; border: none; padding: 0.5rem 1rem; cursor: pointer; font-weight: 600; color: var(--primary); border-bottom: 2px solid var(--primary);">
+                    <i class="fas fa-upload" style="margin-right: 8px;"></i> Upload ZIP
+                </button>
+                <button class="tab-btn" data-tab="cloud" style="background: none; border: none; padding: 0.5rem 1rem; cursor: pointer; font-weight: 600; color: #6b7280;">
+                    <i class="fab fa-google-drive" style="margin-right: 8px;"></i> From Cloud
+                </button>
+            </div>
+
+            <div id="tab-upload" class="tab-content">
+                <div id="restore-drop-zone" style="border: 2px dashed #d1d5db; border-radius: 12px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.3s ease; background: #f9fafb; margin-bottom: 1.5rem;">
+                    <input type="file" id="restore-file-input" accept=".zip" style="display: none;">
+                    <div id="restore-empty-state">
+                        <i class="fas fa-file-archive" style="font-size: 3rem; color: #9ca3af; margin-bottom: 1rem;"></i>
+                        <p style="color: #4b5563; font-weight: 500;">Select or Drop Backup ZIP file</p>
+                        <p style="color: #9ca3af; font-size: 0.875rem; margin-top: 0.5rem;">Only .zip files generated by this system are supported</p>
+                    </div>
+                    <div id="restore-selected-state" style="display: none;">
+                        <i class="fas fa-file-zip" style="font-size: 3rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <p id="restore-filename" style="color: #111827; font-weight: 600;"></p>
+                        <button id="change-file-btn" class="btn btn-secondary" style="margin-top: 1rem; font-size: 0.8rem;">Change File</button>
+                    </div>
+                </div>
+
+                <button id="start-restore-btn" class="btn btn-primary" disabled style="width: 100%; padding: 12px; font-weight: 600; opacity: 0.6;">
+                    Confirm & Start Restore
+                </button>
+            </div>
+
+            <div id="tab-cloud" class="tab-content" style="display: none;">
+                <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; background: #f3f4f6; padding: 0.75rem; border-radius: 8px;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: #4b5563;">Filter by Date:</label>
+                    <input type="date" id="cloud-backup-date" class="form-control" style="flex: 1; height: 32px; padding: 0 8px; font-size: 0.85rem;">
+                    <button id="cloud-backup-filter-btn" class="btn btn-primary" style="padding: 4px 12px; height: 32px; font-size: 0.8rem; margin: 0;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button id="cloud-backup-clear-btn" class="btn btn-secondary" style="padding: 4px 12px; height: 32px; font-size: 0.8rem; margin: 0;" title="Clear Filter">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="cloud-backups-list" style="max-height: 250px; overflow-y: auto; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.5rem;">
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Fetching backups from Google Drive...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Global Status Bar -->
+            <div id="restore-status-area" style="display: none; margin: 2rem 0; padding: 2rem; background: #f9fafb; border-radius: 12px; border: 1px solid #e5e7eb; animation: slideUp 0.4s ease;">
+                <div id="restore-progress-container" style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <p id="restore-progress-text" style="color: #111827; font-weight: 700; font-size: 1.1rem;">Initializing...</p>
+                        <span id="restore-progress-percent" style="color: var(--primary); font-weight: 800; font-size: 1.2rem; background: #e0e7ff; padding: 4px 12px; border-radius: 20px;">0%</span>
+                    </div>
+                    <div style="height: 16px; width: 100%; background: #e5e7eb; border-radius: 8px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);">
+                        <div id="restore-progress-bar" style="height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), #6366f1); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                    </div>
+                    <p style="color: #6b7280; font-size: 0.85rem; margin-top: 1rem; text-align: center;">
+                        <i class="fas fa-info-circle" style="margin-right: 5px;"></i> Please do not close this window or refresh the page.
+                    </p>
+                </div>
+                <div id="restore-error-box" style="display: none; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 10px; padding: 1.5rem; color: #991b1b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                    <div style="display: flex; gap: 15px;">
+                        <i class="fas fa-times-circle" style="font-size: 2rem; color: #ef4444;"></i>
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 5px 0; font-weight: 700;">Restoration Failed</h4>
+                            <span id="restore-error-text" style="font-size: 0.95rem; line-height: 1.5;"></span>
+                            <button class="btn btn-secondary" onclick="restoreBackup()" style="margin-top: 1rem; width: auto; padding: 6px 15px; font-size: 0.85rem;">Try Different Backup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `, async () => {
+        const fileInput = document.getElementById('restore-file-input');
+        const dropZone = document.getElementById('restore-drop-zone');
+        const emptyState = document.getElementById('restore-empty-state');
+        const selectedState = document.getElementById('restore-selected-state');
+        const filenameText = document.getElementById('restore-filename');
+        const changeBtn = document.getElementById('change-file-btn');
+        const startBtn = document.getElementById('start-restore-btn');
+        const progressContainer = document.getElementById('restore-progress-container');
+        const progressBar = document.getElementById('restore-progress-bar');
+        const progressText = document.getElementById('restore-progress-text');
+        const progressPercent = document.getElementById('restore-progress-percent');
+        const selectionView = document.getElementById('restore-selection-view');
+        const statusArea = document.getElementById('restore-status-area');
+        const errorBox = document.getElementById('restore-error-box');
+        const errorText = document.getElementById('restore-error-text');
+        
+        // Tab switching logic
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(btn => {
+            btn.onclick = () => {
+                tabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.style.color = '#6b7280';
+                    t.style.borderBottom = 'none';
+                });
+                btn.classList.add('active');
+                btn.style.color = 'var(--primary)';
+                btn.style.borderBottom = '2px solid var(--primary)';
+                
+                document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                const target = document.getElementById(`tab-${btn.dataset.tab}`);
+                target.style.display = 'block';
+                
+                if (btn.dataset.tab === 'cloud') {
+                    fetchCloudBackups();
+                }
+            };
+        });
+
+        async function fetchCloudBackups(date = '') {
+            const listContainer = document.getElementById('cloud-backups-list');
+            listContainer.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p>Fetching ${date ? 'backups for ' + date : 'latest backups'}...</p>
+                </div>
+            `;
+            try {
+                const url = date ? `/api/admin/backup/cloud/list?date=${date}` : '/api/admin/backup/cloud/list';
+                const response = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${state.token}` }
+                });
+                const result = await response.json();
+                
+                if (result.success && result.backups.length > 0) {
+                    listContainer.innerHTML = result.backups.map(file => `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='transparent'">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; color: #111827; font-size: 0.95rem;">${file.name}</div>
+                                <div style="font-size: 0.8rem; color: #6b7280; margin-top: 4px;">
+                                    <i class="far fa-calendar-alt" style="margin-right: 4px;"></i> ${new Date(file.createdTime).toLocaleString()}
+                                    <span style="margin-left: 12px;"><i class="fas fa-hdd" style="margin-right: 4px;"></i> ${(file.size / (1024 * 1024)).toFixed(2)} MB</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary restore-cloud-btn" data-id="${file.id}" data-name="${file.name}" style="padding: 6px 12px; font-size: 0.8rem; margin: 0;">
+                                Restore
+                            </button>
+                        </div>
+                    `).join('');
+                    
+                    document.querySelectorAll('.restore-cloud-btn').forEach(btn => {
+                        btn.onclick = () => confirmCloudRestore(btn.dataset.id, btn.dataset.name);
+                    });
+                } else {
+                    listContainer.innerHTML = `<div style="text-align: center; padding: 3rem; color: #6b7280;">
+                        <i class="fab fa-google-drive" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                        <p>${date ? 'No backups found for ' + date : 'No backups found on Google Drive'}</p>
+                    </div>`;
+                }
+            } catch (err) {
+                listContainer.innerHTML = `<div style="text-align: center; padding: 2rem; color: #ef4444;">Failed to load cloud backups</div>`;
+            }
+        }
+
+        // Initialize Cloud Tab UI Handlers
+        const dateInput = document.getElementById('cloud-backup-date');
+        const filterBtn = document.getElementById('cloud-backup-filter-btn');
+        const clearBtn = document.getElementById('cloud-backup-clear-btn');
+
+        if (filterBtn) {
+            filterBtn.onclick = () => {
+                if (dateInput.value) {
+                    fetchCloudBackups(dateInput.value);
+                } else {
+                    showToast('Please select a date', 'warning');
+                }
+            };
+        }
+
+        if (clearBtn) {
+            clearBtn.onclick = () => {
+                dateInput.value = '';
+                fetchCloudBackups();
+            };
+        }
+
+        // Status elements are declared at the top of the modal callback
+
+        async function confirmCloudRestore(fileId, fileName) {
+            window.customConfirm(`Are you sure you want to restore "${fileName}" from Cloud? All current website data will be overwritten.`, async (confirmed) => {
+                if (!confirmed) return;
+                
+                // Hide selection and show status
+                selectionView.style.display = 'none';
+                statusArea.style.display = 'block';
+                errorBox.style.display = 'none';
+                progressBar.style.width = '20%';
+                progressPercent.textContent = '20%';
+                progressText.textContent = `Downloading ${fileName}...`;
+
+                try {
+                    const response = await fetch(`/api/admin/backup/cloud/restore/${fileId}`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${state.token}` }
+                    });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        progressBar.style.width = '80%';
+                        progressPercent.textContent = '80%';
+                        progressText.textContent = 'Extracting and applying data...';
+                        setTimeout(() => handleRestoreResponse(result), 1000);
+                    } else {
+                        throw new Error(result.message || result.error || 'Restore failed');
+                    }
+                } catch (err) {
+                    console.error('Cloud Restore Error:', err);
+                    progressBar.style.width = '0%';
+                    progressPercent.textContent = 'Error';
+                    errorBox.style.display = 'block';
+                    errorText.textContent = err.message;
+                    progressText.textContent = 'Restoration Failed';
+                }
+            });
+        }
+
+        function handleRestoreResponse(result) {
+            if (result.success) {
+                progressBar.style.width = '100%';
+                progressPercent.textContent = '100%';
+                progressText.textContent = 'Restoration Complete!';
+                
+                const modalContent = document.querySelector('.modal-content');
+                modalContent.innerHTML = `
+                    <div style="text-align: center; padding: 1rem;">
+                        <div style="color: #10b981; font-size: 4rem; margin-bottom: 1.5rem;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h3 style="font-size: 1.8rem; margin-bottom: 1rem; color: #111827;">Restoration Successful</h3>
+                        <p style="color: #4b5563; margin-bottom: 2rem;">The backup has been fully applied to your system.</p>
+                        
+                        <div style="text-align: left; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
+                            <h4 style="font-size: 1rem; color: #166534; margin-bottom: 1rem; border-bottom: 1px solid #bbf7d0; padding-bottom: 0.5rem;">Restored Components:</h4>
+                            <ul style="list-style: none; padding: 0; margin: 0; color: #15803d;">
+                                ${(result.summary || []).map(item => `<li style="margin-bottom: 8px;"><i class="fas fa-check" style="margin-right: 10px;"></i> ${item}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="location.reload()" style="width: 100%; padding: 12px; font-weight: 600;">
+                            Finish & Refresh Dashboard
+                        </button>
+                    </div>
+                `;
+            } else {
+                throw new Error(result.message || result.error || 'Restore failed');
+            }
+        }
+
+        function handleRestoreError(err) {
+            console.error('Restore Error:', err);
+            progressBar.style.width = '0%';
+            progressPercent.textContent = 'Error';
+            errorBox.style.display = 'block';
+            errorText.textContent = err.message;
+            progressText.textContent = 'Restoration Failed';
+            
+            // Re-enable buttons if failed
+            startBtn.disabled = false;
+            startBtn.style.opacity = '1';
+            startBtn.textContent = 'Confirm & Start Restore';
+        }
+
+        dropZone.onclick = () => fileInput.click();
+        changeBtn.onclick = (e) => {
+            e.stopPropagation();
+            fileInput.click();
+        };
+
+        fileInput.onchange = () => {
+            if (fileInput.files.length > 0) {
+                emptyState.style.display = 'none';
+                selectedState.style.display = 'block';
+                filenameText.textContent = fileInput.files[0].name;
+                startBtn.disabled = false;
+                startBtn.style.opacity = '1';
+            }
+        };
+
+        startBtn.onclick = () => {
+            if (!fileInput.files.length) return;
+            
+            window.customConfirm(`Are you sure you want to restore from "${fileInput.files[0].name}"? This will overwrite all current website data.`, async (confirmed) => {
+                if (!confirmed) return;
+
+                // Hide selection and show status
+                selectionView.style.display = 'none';
+                statusArea.style.display = 'block';
+                errorBox.style.display = 'none';
+                
+                const formData = new FormData();
+                formData.append('backup', fileInput.files[0]);
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/api/admin/backup/restore', true);
+                xhr.setRequestHeader('Authorization', `Bearer ${state.token}`);
+
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 70); // 70% for upload
+                        progressBar.style.width = percent + '%';
+                        progressPercent.textContent = percent + '%';
+                        progressText.textContent = `Uploading backup: ${percent}%`;
+                    }
+                };
+
+                xhr.onload = () => {
+                    try {
+                        const result = JSON.parse(xhr.responseText);
+                        if (xhr.status === 200 && result.success) {
+                            progressBar.style.width = '90%';
+                            progressPercent.textContent = '90%';
+                            progressText.textContent = 'Applying data...';
+                            setTimeout(() => handleRestoreResponse(result), 1000);
+                        } else {
+                            throw new Error(result.message || result.error || 'Restore failed');
+                        }
+                    } catch (err) {
+                        handleRestoreError(err);
+                    }
+                };
+                
+                xhr.onerror = () => handleRestoreError(new Error('Network error during upload'));
+                xhr.send(formData);
+            });
+        };
+    });
+}
+
+async function downloadBackup() {
+    showToast('Preparing backup zip...', 'info');
+    try {
+        // Since we want to download a file, we navigate directly or create a hidden link
+        const a = document.createElement('a');
+        a.href = '/api/admin/backup';
+        a.download = `steelflex-backup-${new Date().toISOString().split('T')[0]}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showToast('Backup download started');
+    } catch (err) {
+        console.error('Backup download error:', err);
+        showToast('Failed to start backup download', 'error');
+    }
+}
+
 // deleteCareer removed, using event delegation
 async function loadUsers(container) {
     try {
@@ -652,7 +1114,8 @@ async function loadUsers(container) {
                                 <td>${u.userId}</td>
                                 <td>${u.role}</td>
                                 <td>
-                                    <button class="btn-sm btn-delete js-delete-btn" data-id="${u.id}" data-type="users"><i class="fas fa-trash"></i></button>
+                                    <button class="btn-sm btn-secondary" onclick="showEditUserModal('${u.id}')" title="Edit User"><i class="fas fa-edit"></i></button>
+                                    <button class="btn-sm btn-delete js-delete-btn" data-id="${u.id}" data-type="users" title="Delete User"><i class="fas fa-trash"></i></button>
                                 </td>
                             </tr>
                         `).join('')}
@@ -665,33 +1128,139 @@ async function loadUsers(container) {
     }
 }
 
+window.showEditUserModal = async (id) => {
+    try {
+        const users = await DataManager.getAll('users');
+        const user = users.find(u => u.id == id);
+        if (!user) throw new Error("User not found");
+
+        showModal(`
+            <div style="padding: 1rem;">
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <div style="color: var(--primary); font-size: 3rem; margin-bottom: 1rem;">
+                        <i class="fas fa-user-edit"></i>
+                    </div>
+                    <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem; color: #111827;">Edit Admin User</h3>
+                    <p style="color: #4b5563;">Update credentials for <strong>${user.name}</strong></p>
+                </div>
+
+                <form id="edit-user-form" class="admin-form">
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="${user.name}" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Email Address</label>
+                        <input type="email" name="email" class="form-control" value="${user.email}" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">User ID (Login ID)</label>
+                        <input type="text" name="userId" class="form-control" value="${user.userId}" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">New Password (Optional)</label>
+                        <div style="position: relative;">
+                            <input type="password" name="password" id="edit-user-password" class="form-control" placeholder="Leave blank to keep current" style="width: 100%; padding: 10px; padding-right: 40px; border: 1px solid #d1d5db; border-radius: 8px;">
+                            <button type="button" onclick="togglePasswordVisibility('edit-user-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6b7280;">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <p style="font-size: 0.75rem; color: #6b7280; margin-top: 5px;">Only fill this if you want to change the password.</p>
+                    </div>
+
+                    <div style="display: flex; gap: 1rem;">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()" style="flex: 1; padding: 12px;">Cancel</button>
+                        <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px; font-weight: 600;">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        `, () => {
+            const form = document.getElementById('edit-user-form');
+            if (!form) return;
+            
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                if (!data.password) {
+                    delete data.password;
+                }
+
+                try {
+                    await DataManager.update('users', id, data);
+                    closeModal();
+                    showToast('User updated successfully');
+                    loadModule('users');
+                } catch (err) {
+                    alert('Error updating user: ' + err.message);
+                }
+            };
+        });
+    } catch (err) {
+        showToast('Error loading user data', 'error');
+    }
+};
+
 window.showUserModal = () => {
     showModal(`
-        <h3>Add Admin User</h3>
-        <form id="add-user-form">
-            <div class="form-group"><label>Name</label><input type="text" name="name" class="form-control" required></div>
-            <div class="form-group"><label>Email</label><input type="email" name="email" class="form-control" required></div>
-            <div class="form-group"><label>User ID</label><input type="text" name="userId" class="form-control" required></div>
-            <div class="form-group"><label>Password</label><input type="password" name="password" class="form-control" required></div>
-            <button type="submit" class="btn btn-primary">Create User</button>
-        </form>
-    `, async () => {
-        document.getElementById('add-user-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
-            data.role = 'ADMIN'; // Default
-            try {
-                await DataManager.add('users', data);
-                closeModal();
-                showToast('User created');
-                loadModule('users');
-            } catch (err) {
-                console.error(err);
-                alert('Error creating user: ' + (err.message || 'Unknown error'));
-            }
-        };
-    });
+        <div style="padding: 1rem;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="color: var(--primary); font-size: 3rem; margin-bottom: 1rem;">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem; color: #111827;">Add New Admin</h3>
+                <p style="color: #4b5563;">Create a new administrator account</p>
+            </div>
+
+            <form id="add-user-form" class="admin-form">
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Full Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="e.g. John Doe" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Email Address</label>
+                    <input type="email" name="email" class="form-control" placeholder="e.g. john@example.com" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">User ID (Login ID)</label>
+                    <input type="text" name="userId" class="form-control" placeholder="e.g. admin_john" required style="width: 100%; padding: 10px; border: 1px solid #d1d5db; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Password</label>
+                    <div style="position: relative;">
+                        <input type="password" name="password" id="add-user-password" class="form-control" required style="width: 100%; padding: 10px; padding-right: 40px; border: 1px solid #d1d5db; border-radius: 8px;">
+                        <button type="button" onclick="togglePasswordVisibility('add-user-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #6b7280;">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()" style="flex: 1; padding: 12px;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px; font-weight: 600;">Create User</button>
+                </div>
+            </form>
+        </div>
+        `, () => {
+            const form = document.getElementById('add-user-form');
+            if (!form) return;
+
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                data.role = 'ADMIN'; // Default
+                try {
+                    await DataManager.add('users', data);
+                    closeModal();
+                    showToast('User created successfully');
+                    loadModule('users');
+                } catch (err) {
+                    alert('Error creating user: ' + err.message);
+                }
+            };
+        });
 };
 
 // deleteUser removed, using event delegation
@@ -1663,6 +2232,18 @@ window.customConfirm = (msg, callback) => {
     document.body.appendChild(div);
     document.getElementById('custom-confirm-yes').onclick = () => { div.remove(); callback(true); };
     document.getElementById('custom-confirm-no').onclick = () => { div.remove(); callback(false); };
+};
+
+window.togglePasswordVisibility = (inputId, btn) => {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
 };
 
 // --- Global Event Delegation for Delete Buttons ---

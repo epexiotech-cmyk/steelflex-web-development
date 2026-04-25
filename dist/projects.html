@@ -138,32 +138,17 @@
     <meta property="og:url" content="https://steelflexstructures.com/projects" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" type="image/png" href="/steelflex-web-development/Logo/Steelflex Logo.png" />
-  <link rel="stylesheet" crossorigin href="/steelflex-web-development/assets/styles-Cy0lN1vC.css">
+    <link rel="icon" type="image/png" href="/Logo/Steelflex Logo.png" />
+    <script src="/components/components.js" defer></script>
+  <link rel="stylesheet" crossorigin href="/assets/styles-D7Jpqh2a.css">
+  <link rel="stylesheet" crossorigin href="/assets/components-CeRYPo9Q.css">
 </head>
 
 <body>
 
     <!-- Header -->
-    <header class="main-header">
-        <div class="container nav-container">
-            <div class="logo">
-                <a href="/steelflex-web-development/"><img loading="lazy" src="/steelflex-web-development/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img"></a>
-            </div>
-            <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="/steelflex-web-development/about-us">About Us</a></li>
-                    <li><a href="/steelflex-web-development/products-structures">Products & Structures</a></li>
-                    <li><a href="/steelflex-web-development/capabilities">Capabilities</a></li>
-                    <li><a href="/steelflex-web-development/machineries">Machineries</a></li>
-                    <li><a href="/steelflex-web-development/projects" class="active">Projects</a></li>
-                    <li><a href="/steelflex-web-development/careers">Careers</a></li>
-                    <li><a href="/steelflex-web-development/contact-us">Contact</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+        <!-- Header Placeholder -->
+    <div id="navbar-placeholder"></div>
 
     <!-- Page Hero -->
     <section class="hero-section" style="padding: 120px 0 60px; text-align: center; background: #fff;">
@@ -535,91 +520,12 @@
     </script>
 
     <!-- MODERN FOOTER (3 PARTS) -->
-    <footer class="site-footer-redesign">
-        <!-- Part 1: CTA Bridge -->
-        <div class="footer-cta-bridge">
-            <div class="container">
-                <h2 class="footer-cta-title">Have a project in mind?</h2>
-                <a href="/steelflex-web-development/contact-us" class="btn-footer-cta">Start a Conversation</a>
-            </div>
-        </div>
+        <!-- Footer Placeholder -->
+    <div id="footer-placeholder"></div>
 
-        <!-- Part 2: Main Footer Content -->
-        <div class="footer-main">
-            <div class="container">
-                <div class="footer-grid-modern">
-                    <!-- Column 1: Brand -->
-                    <div class="footer-col">
-                        <span class="footer-brand-title"><img loading="lazy" src="/steelflex-web-development/Logo/Steelflex Logo.png" alt="SteelFlex"
-                                style="height: 50px;"></span>
-                        <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey
-                            steel construction solutions.</p>
-                    </div>
-
-                    <!-- Column 2: Quick Links -->
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Quick Links</h4>
-                        <ul class="footer-links-list">
-                            <li><a href="/steelflex-web-development/">Home</a></li>
-                            <li><a href="/steelflex-web-development/about-us">About Us</a></li>
-                            <li><a href="/steelflex-web-development/products-structures">Products</a></li>
-                            <li><a href="/steelflex-web-development/capabilities">Capabilities</a></li>
-                            <li><a href="/steelflex-web-development/machineries">Machineries</a></li>
-                            <li><a href="/steelflex-web-development/projects">Projects</a></li>
-                            <li><a href="/steelflex-web-development/careers">Careers</a></li>
-                            <li><a href="/steelflex-web-development/contact-us">Contact Us</a></li>
-                        </ul>
-                    </div>
-
-                    <!-- Column 3: Contact Info -->
-                    <div class="footer-col">
-                        <h4 class="footer-col-title">Contact</h4>
-                        <div class="footer-contact-item">
-                            <span>Phone</span>
-                            +91 94264 43442
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Email</span>
-                            md@steelflexstructures.com
-                        </div>
-                        <div class="footer-contact-item">
-                            <span>Location</span>
-                            Vadodara, Gujarat
-                        </div>
-                        <a href="/steelflex-web-development/review" class="btn-footer-review">Add Review</a>
-                    
-                </div>
-            </div>
-        </div>
-
-        <!-- Part 3: Legal Strip -->
-        <div class="footer-legal">
-            <div class="container">
-                <p class="copyright-text">&copy; 2026 SteelFlex Structures Pvt. Ltd. All rights reserved. | Designed by
-                    <a href="https://www.epexio.in" target="_blank"
-                        style="color: #2F528F; text-decoration: none;">Epexio
-                        Techno Solutions</a>
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function () {
-            document.querySelector('.main-nav').classList.toggle('active');
-        });
-
-        // Simple filter interactions for demo
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelector('.filter-btn.active').classList.remove('active');
-                btn.classList.add('active');
-            });
-        });
-    </script>
+    
 </body>
 
-<script src="animations.js" defer></script>
+<script src="/animations.js" defer></script>
 
 </html>

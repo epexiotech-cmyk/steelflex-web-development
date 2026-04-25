@@ -45,7 +45,7 @@ function initNavbar() {
     
     navLinks.forEach(link => {
         const href = link.getAttribute('href');
-        if (currentPath.endsWith(href) || (currentPath === '/' && href === 'index.html')) {
+        if (currentPath === href || (currentPath === '/' && href === '/')) {
             link.classList.add('active');
         } else {
             link.classList.remove('active');
@@ -77,7 +77,7 @@ function initFooter() {
     
     footerLinks.forEach(link => {
         const href = link.getAttribute('href');
-        if (currentPath.endsWith(href) || (currentPath === '/' && href === 'index.html')) {
+        if (currentPath === href || (currentPath === '/' && href === '/')) {
             link.classList.add('active');
         }
     });

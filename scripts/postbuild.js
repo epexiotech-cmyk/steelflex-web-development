@@ -6,50 +6,60 @@ const websiteDir = path.join(distDir, 'src', 'website');
 const adminDir = path.join(distDir, 'src', 'admin');
 const newAdminDir = path.join(distDir, 'admin');
 
-// 1. Ensure admin destination exists
-if (!fs.existsSync(newAdminDir)) {
-    fs.mkdirSync(newAdminDir, { recursive: true });
-}
-
-// 2. Move admin index.html
-const adminOldPath = path.join(adminDir, 'index.html');
-const adminNewPath = path.join(newAdminDir, 'index.html');
-if (fs.existsSync(adminOldPath)) {
-    fs.renameSync(adminOldPath, adminNewPath);
-}
-
-// 3. Move all website fles to root of dist
-if (fs.existsSync(websiteDir)) {
-    const websiteFiles = fs.readdirSync(websiteDir);
-    for (const file of websiteFiles) {
-        fs.renameSync(path.join(websiteDir, file), path.join(distDir, file));
+function copyRecursiveSync(src, dest) {
+    if (fs.existsSync(src)) {
+        if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
+        fs.readdirSync(src).forEach(file => {
+            const srcPath = path.join(src, file);
+            const destPath = path.join(dest, file);
+            if (fs.lstatSync(srcPath).isDirectory()) {
+                copyRecursiveSync(srcPath, destPath);
+            } else {
+                fs.copyFileSync(srcPath, destPath);
+            }
+        });
     }
 }
 
-// 4. Update anchor hrefs in all HTML files in dist
-const base = '/steelflex-web-development/';
+function deleteRecursiveSync(dirPath) {
+    if (fs.existsSync(dirPath)) {
+        fs.readdirSync(dirPath).forEach((file) => {
+            const curPath = path.join(dirPath, file);
+            if (fs.lstatSync(curPath).isDirectory()) {
+                deleteRecursiveSync(curPath);
+            } else {
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(dirPath);
+    }
+}
 
-function processDir(dir) {
-    const files = fs.readdirSync(dir);
+// 1. Move website files to root
+if (fs.existsSync(websiteDir)) {
+    console.log('Flattening website dist...');
+    const files = fs.readdirSync(websiteDir);
     for (const file of files) {
-        const filePath = path.join(dir, file);
-        if (fs.statSync(filePath).isDirectory()) {
-            processDir(filePath);
-        } else if (file.endsWith('.html')) {
-            let content = fs.readFileSync(filePath, 'utf-8');
-            
-            // Replace <a href="/something"> with <a href="/steelflex-web-development/something">
-            content = content.replace(/href="\/([^"]*)"/g, (match, p1) => {
-                if (p1.startsWith('steelflex-web-development') || p1.startsWith('http')) return match;
-                if (p1 === '') return `href="${base}"`;
-                return `href="${base}${p1}"`;
-            });
-            
-            fs.writeFileSync(filePath, content);
+        const oldPath = path.join(websiteDir, file);
+        const newPath = path.join(distDir, file);
+        if (fs.lstatSync(oldPath).isDirectory()) {
+            copyRecursiveSync(oldPath, newPath);
+        } else {
+            fs.renameSync(oldPath, newPath);
         }
     }
 }
 
-processDir(distDir);
+// 2. Move admin files
+if (fs.existsSync(adminDir)) {
+    console.log('Moving admin files to /admin...');
+    copyRecursiveSync(adminDir, newAdminDir);
+}
 
-console.log('Post-build optimizations complete.');
+// 3. Cleanup src
+if (fs.existsSync(path.join(distDir, 'src'))) {
+    console.log('Cleaning up src folder in dist...');
+    deleteRecursiveSync(path.join(distDir, 'src'));
+}
+
+console.log('Post-build flattening complete.');
