@@ -4591,7 +4591,8 @@ img {
 }
 
 .epc-item {
-    flex: 0 0 85vw;
+    flex: 0 0 90vw;
+    min-width: 1450px;
     /* Each item takes up most of viewport width */
     height: 100%;
     padding: 0 40px;
@@ -4604,8 +4605,9 @@ img {
 .epc-card {
     background: #ffffff;
     width: 100%;
-    max-width: 1200px;
+    max-width: 1400px;
     height: 100%;
+    max-height: 650px;
     border-radius: 40px;
     /* More rounded */
     display: flex;
@@ -4618,7 +4620,7 @@ img {
 }
 
 .epc-img-box {
-    flex: 1.2;
+    flex: 1.55;
     height: 100%;
     overflow: hidden;
     background: #f0f4f8;
@@ -4633,8 +4635,8 @@ img {
 
 .epc-content {
     flex: 1;
-    padding: 80px;
-    /* More padding */
+    padding: 60px 80px;
+    /* Slightly reduced vertical padding to protect height */
     background: #ffffff;
 }
 
@@ -5026,6 +5028,7 @@ img {
     .epc-item {
         flex: none !important;
         width: 100% !important;
+        min-width: 0 !important;
         height: auto !important;
         padding: 0 !important;
         transform: none !important;
@@ -5328,12 +5331,12 @@ img {
 
 /* Station Visual - Back to left side */
 .station-visual {
-    flex: 0 0 450px;
-    max-width: 450px;
+    flex: 0 0 495px;
+    max-width: 495px;
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 495 / 304;
     background: #f0f4f8;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
 }
@@ -5528,7 +5531,7 @@ img {
         flex: none;
         width: 100%;
         max-width: 100%;
-        aspect-ratio: 16 / 9;
+        aspect-ratio: 495 / 304;
         height: auto;
     }
 

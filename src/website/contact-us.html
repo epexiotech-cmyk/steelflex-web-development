@@ -106,7 +106,7 @@
         .contact-value a {
             color: var(--primary-color);
             text-decoration: none;
-            transition: color 0.3s;
+            transition: color 0.3;
             border-bottom: 1px solid transparent;
         }
 
@@ -169,6 +169,15 @@
             top: -20px;
             font-size: 0.85rem;
             color: var(--primary-color);
+        }
+
+        /* Invalid States */
+        .modern-input-group.invalid .modern-input {
+            border-bottom-color: #ef4444 !important;
+        }
+
+        .modern-input-group.invalid .modern-label {
+            color: #ef4444 !important;
         }
 
         .submit-btn {
@@ -267,7 +276,6 @@
 <body>
 
     <!-- Header -->
-    <!-- Header Placeholder -->
     <div id="navbar-placeholder"></div>
 
     <main>
@@ -319,28 +327,119 @@
                 <form class="interaction-form">
                     <div class="modern-input-group">
                         <input type="text" id="name" class="modern-input" required>
-                        <label for="name" class="modern-label">Full Name</label>
+                        <label for="name" class="modern-label">Full Name *</label>
                     </div>
 
                     <div class="modern-input-group">
                         <input type="email" id="email" class="modern-input" required>
-                        <label for="email" class="modern-label">Email Address</label>
+                        <label for="email" class="modern-label">Email Address *</label>
                     </div>
 
                     <div class="modern-input-group">
                         <input type="tel" id="mobile" class="modern-input" required>
-                        <label for="mobile" class="modern-label">Mobile Number</label>
+                        <label for="mobile" class="modern-label">Mobile Number *</label>
                     </div>
 
-                    <div class="modern-input-group">
-                        <input type="text" id="subject" class="modern-input">
-                        <label for="subject" class="modern-label">Project Type (e.g., Warehouse, Factory)</label>
+                    <div style="margin-bottom: 30px;">
+                        <label
+                            style="display: block; margin-bottom: 15px; color: var(--primary-color); font-weight: 600; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Project
+                            Type (Select all that apply)</label>
+                        <div class="checkbox-grid">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="PEB">
+                                <span>Pre-Engineered Building (PEB)</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Factory">
+                                <span>Industrial Shed / Factory Building</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Warehouse">
+                                <span>Warehouse / Storage Facility</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Cold Storage">
+                                <span>Cold Storage Building</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Commercial">
+                                <span>Commercial Building (Showroom / Mall)</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Multi-Storey">
+                                <span>Multi-Storey Steel Structure</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Roofing">
+                                <span>Roofing & Cladding Work</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Renovation">
+                                <span>Structural Repair / Renovation</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Design">
+                                <span>Design & Engineering Services</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Solar">
+                                <span>Solar Mounting Structures</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="project_type" value="Other" id="other-checkbox">
+                                <span>Other Than These</span>
+                            </label>
+                        </div>
+
+                        <!-- Conditional Other Input -->
+                        <div id="other-project-container" style="display: none; margin-top: 20px;">
+                            <div class="modern-input-group" style="margin-bottom: 0;">
+                                <input type="text" id="other-project-text" class="modern-input">
+                                <label for="other-project-text" class="modern-label">Please specify your project
+                                    type</label>
+                            </div>
+                        </div>
                     </div>
+
+                    <style>
+                        .checkbox-grid {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 12px;
+                        }
+
+                        .checkbox-item {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            cursor: pointer;
+                            font-size: 0.95rem;
+                            color: #555;
+                            transition: all 0.2s ease;
+                        }
+
+                        .checkbox-item:hover {
+                            color: var(--primary-color);
+                        }
+
+                        .checkbox-item input {
+                            width: 18px;
+                            height: 18px;
+                            cursor: pointer;
+                            accent-color: var(--primary-color);
+                        }
+
+                        @media (max-width: 600px) {
+                            .checkbox-grid {
+                                grid-template-columns: 1fr;
+                            }
+                        }
+                    </style>
 
                     <!-- Textarea with basic styling to match -->
                     <div class="modern-input-group">
                         <textarea id="message" rows="3" class="modern-input" style="resize: none;" required></textarea>
-                        <label for="message" class="modern-label">Project Details</label>
+                        <label for="message" class="modern-label">Project Details *</label>
                     </div>
 
                     <button type="submit" class="submit-btn">Send Message</button>
@@ -361,7 +460,6 @@
     </main>
 
     <!-- MODERN FOOTER -->
-    <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
 
 

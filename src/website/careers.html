@@ -233,6 +233,28 @@
             color: var(--primary-color);
         }
 
+        /* Invalid States */
+        .input-group.invalid input,
+        .input-group.invalid select,
+        .input-group.invalid textarea {
+            border-bottom-color: #ef4444 !important;
+        }
+
+        .input-group.invalid .floating-label {
+            color: #ef4444 !important;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .input-group.invalid .error-message {
+            display: block;
+        }
+
         /* File Upload Styling */
         .file-upload-wrapper {
             margin-top: 10px;
@@ -320,7 +342,8 @@
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://steelflexstructures.com/careers" />
     <meta property="og:title" content="SteelFlex Structures | Careers" />
-    <meta property="og:description" content="Learn more about Careers at SteelFlex Structures, providing end-to-end Pre-Engineered Building (PEB) solutions in Gujarat, India." />
+    <meta property="og:description"
+        content="Learn more about Careers at SteelFlex Structures, providing end-to-end Pre-Engineered Building (PEB) solutions in Gujarat, India." />
     <meta property="og:image" content="https://steelflexstructures.com/Logo/Steelflex Logo.png" />
     <meta property="og:url" content="https://steelflexstructures.com/careers" />
     <meta property="og:type" content="website" />
@@ -333,7 +356,7 @@
 <body>
 
     <!-- Header -->
-        <!-- Header Placeholder -->
+    <!-- Header Placeholder -->
     <div id="navbar-placeholder"></div>
 
     <main>
@@ -406,17 +429,17 @@
                         <div class="form-grid">
                             <div class="input-group">
                                 <input type="text" id="name" name="name" required>
-                                <label for="name" class="floating-label">Full Name</label>
+                                <label for="name" class="floating-label">Full Name *</label>
                             </div>
 
                             <div class="input-group">
                                 <input type="email" id="email" name="email" required>
-                                <label for="email" class="floating-label">Email Address</label>
+                                <label for="email" class="floating-label">Email Address *</label>
                             </div>
 
                             <div class="input-group">
                                 <input type="tel" id="mobile" name="mobile" required>
-                                <label for="mobile" class="floating-label">Mobile Number</label>
+                                <label for="mobile" class="floating-label">Mobile Number *</label>
                             </div>
 
                             <div class="input-group">
@@ -428,20 +451,21 @@
                                     <option value="designer-detailer">Designer / Detailer</option>
                                     <option value="other">Other</option>
                                 </select>
-                                <label for="position" class="floating-label">Position Applied For</label>
+                                <label for="position" class="floating-label">Position Applied For *</label>
                             </div>
 
                             <div class="input-group form-full">
                                 <textarea id="message" name="message" rows="3" required></textarea>
-                                <label for="message" class="floating-label">Brief Introduction</label>
+                                <label for="message" class="floating-label">Brief Introduction *</label>
                             </div>
 
                             <div class="input-group form-full">
                                 <p style="margin-bottom: 10px; font-weight: 600; color: var(--primary-color);">Attach CV
-                                    (PDF or DOC)</p>
+                                    *</p>
+                                <p>(in PDF or DOC format only max size 5MB)</p>
                                 <div class="file-upload-wrapper" id="uploadBox">
                                     <span class="upload-icon">📄</span>
-                                    <p id="uploadText">Click or Drag & Drop CV here</p>
+                                    <p id="uploadText">Click or Drag & Drop CV here (Required)</p>
                                     <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" required>
                                     <span class="file-name" id="fileName"></span>
                                 </div>
@@ -458,42 +482,37 @@
     </main>
 
     <!-- Footer -->
-        <!-- Footer Placeholder -->
+    <!-- Footer Placeholder -->
     <div id="footer-placeholder"></div>
 
     <script>
-        // Mobile Menu Toggle
-        
-
         // File Upload Display Logic
         const fileInput = document.getElementById('cv');
         const fileNameDisplay = document.getElementById('fileName');
         const uploadBox = document.getElementById('uploadBox');
         const uploadText = document.getElementById('uploadText');
 
-        fileInput.addEventListener('change', function () {
-            if (this.files && this.files.length > 0) {
-                const name = this.files[0].name;
-                fileNameDisplay.textContent = "Selected: " + name;
-                uploadText.textContent = "File attachment ready";
-                uploadBox.style.borderColor = "var(--primary-color)";
-                uploadBox.style.background = "rgba(38, 71, 150, 0.05)";
-            }
-        });
-
-
+        if (fileInput) {
+            fileInput.addEventListener('change', function () {
+                if (this.files && this.files.length > 0) {
+                    const name = this.files[0].name;
+                    fileNameDisplay.textContent = "Selected: " + name;
+                    uploadText.textContent = "File attachment ready";
+                    uploadBox.style.borderColor = "var(--primary-color)";
+                    uploadBox.style.background = "rgba(38, 71, 150, 0.05)";
+                }
+            });
+        }
 
         // Apply Button Interaction
         function applyForRole(roleValue) {
             const selectBox = document.getElementById('position');
             const formSection = document.querySelector('.application-section');
 
-            // set value
             if (selectBox) {
                 selectBox.value = roleValue;
             }
 
-            // scroll to form
             if (formSection) {
                 formSection.scrollIntoView({
                     behavior: 'smooth'

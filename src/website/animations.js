@@ -38,13 +38,51 @@ const initFormsAndVacancies = () => {
             submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
 
+        const selectedProjects = Array.from(contactForm.querySelectorAll('input[name="project_type"]:checked'))
+                .map(cb => {
+                    if (cb.id === 'other-checkbox') {
+                        const otherVal = document.getElementById('other-project-text').value.trim();
+                        return otherVal ? `Other: ${otherVal}` : 'Other';
+                    }
+                    return cb.nextElementSibling.textContent;
+                })
+                .join(', ');
+
             const formData = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('mobile').value,
-                projectType: document.getElementById('subject').value,
+                projectType: selectedProjects || 'None selected',
                 message: document.getElementById('message').value
             };
+
+            // Validation
+            if (!formData.name || !formData.email || !formData.phone || !formData.message) {
+                alert('Please fill in all mandatory fields.');
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                alert('Please enter a valid email address.');
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+                return;
+            }
+
+            const isValidMobile = (val) => {
+                if (val.startsWith('0')) return /^[0-9]{11}$/.test(val);
+                return /^[0-9]{10}$/.test(val);
+            };
+
+            if (!isValidMobile(formData.phone)) {
+                alert('Please enter a valid mobile number (10 digits, or 11 digits if starting with 0).');
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+                return;
+            }
 
             try {
                 const result = await StorageManager.addItem('contact', {
@@ -55,6 +93,9 @@ const initFormsAndVacancies = () => {
                 if (result) {
                     alert('Message sent successfully! We will get back to you soon.');
                     contactForm.reset();
+                    // Hide other input if it was open
+                    const otherContainer = document.getElementById('other-project-container');
+                    if (otherContainer) otherContainer.style.display = 'none';
                 } else {
                     alert('Failed to send message.');
                 }
@@ -66,6 +107,45 @@ const initFormsAndVacancies = () => {
                 submitBtn.disabled = false;
             }
         });
+
+        // Other Project Toggle Logic
+        const otherCheckbox = document.getElementById('other-checkbox');
+        const otherContainer = document.getElementById('other-project-container');
+        if (otherCheckbox && otherContainer) {
+            otherCheckbox.addEventListener('change', () => {
+                otherContainer.style.display = otherCheckbox.checked ? 'block' : 'none';
+                if (otherCheckbox.checked) {
+                    document.getElementById('other-project-text').focus();
+                }
+            });
+        }
+
+        // Real-time Validation for Contact Page
+        const setupContactValidation = (id, regex, customValidator) => {
+            const field = document.getElementById(id);
+            if (field) {
+                field.addEventListener('blur', () => {
+                    const val = field.value.trim();
+                    if (val) {
+                        const isValid = customValidator ? customValidator(val) : regex.test(val);
+                        if (!isValid) {
+                            const group = field.closest('.modern-input-group');
+                            if (group) group.classList.add('invalid');
+                        }
+                    }
+                });
+                field.addEventListener('input', () => {
+                    const group = field.closest('.modern-input-group');
+                    if (group) group.classList.remove('invalid');
+                });
+            }
+        };
+
+        setupContactValidation('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+        setupContactValidation('mobile', null, (val) => {
+            if (val.startsWith('0')) return /^[0-9]{11}$/.test(val);
+            return /^[0-9]{10}$/.test(val);
+        });
     }
 
     // Careers Form Submission
@@ -74,9 +154,39 @@ const initFormsAndVacancies = () => {
         careerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            // Validate all fields
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
+            const position = document.getElementById('position').value;
+            const message = document.getElementById('message').value.trim();
             const cvInput = document.getElementById('cv');
-            if (cvInput && (!cvInput.files || cvInput.files.length === 0)) {
-                alert('Please upload your CV.');
+
+            if (!name || !email || !mobile || !position || !message) {
+                alert('Please fill in all mandatory fields.');
+                return;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+
+            // Mobile validation
+            const isValidMobile = (val) => {
+                if (val.startsWith('0')) return /^[0-9]{11}$/.test(val);
+                return /^[0-9]{10}$/.test(val);
+            };
+
+            if (!isValidMobile(mobile)) {
+                alert('Please enter a valid mobile number (10 digits, or 11 digits if starting with 0).');
+                return;
+            }
+
+            if (!cvInput || !cvInput.files || cvInput.files.length === 0) {
+                alert('Please attach your CV (PDF or DOC) to proceed.');
                 return;
             }
 
@@ -92,6 +202,15 @@ const initFormsAndVacancies = () => {
                 // CV UPLOAD LOGIC (Base64)
                 if (data.cv instanceof File && data.cv.size > 0) {
                     const file = data.cv;
+                    
+                    // Validate file size (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('CV file size exceeds 5MB limit. Please upload a smaller file.');
+                        submitBtn.innerText = originalText;
+                        submitBtn.disabled = false;
+                        return;
+                    }
+
                     data.cvName = file.name;
                     data.cvData = await new Promise((resolve, reject) => {
                         const reader = new FileReader();
@@ -128,6 +247,31 @@ const initFormsAndVacancies = () => {
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
             }
+        });
+
+        // Real-time Validation (Red color on blur)
+        const setupValidation = (id, regex, customValidator) => {
+            const field = document.getElementById(id);
+            if (field) {
+                field.addEventListener('blur', () => {
+                    const val = field.value.trim();
+                    if (val) {
+                        const isValid = customValidator ? customValidator(val) : regex.test(val);
+                        if (!isValid) {
+                            field.closest('.input-group').classList.add('invalid');
+                        }
+                    }
+                });
+                field.addEventListener('input', () => {
+                    field.closest('.input-group').classList.remove('invalid');
+                });
+            }
+        };
+
+        setupValidation('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+        setupValidation('mobile', null, (val) => {
+            if (val.startsWith('0')) return /^[0-9]{11}$/.test(val);
+            return /^[0-9]{10}$/.test(val);
         });
     }
 
