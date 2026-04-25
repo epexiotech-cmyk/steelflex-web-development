@@ -6,6 +6,9 @@ const fs = require('fs');
 const multer = require('multer');
 const sharp = require('sharp');
 const AdmZip = require('adm-zip');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'steelflex-secure-key';
 
 
 const app = express();
@@ -173,6 +176,37 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date() });
 });
 
+// --- BACKUP TRIGGERS (Must be before SPA fallback) ---
+const { performCloudBackup } = require('./src/services/cronService');
+const { getLatestStatus } = require('./src/services/backupLogService');
+
+// External trigger for VPS cron (localhost only)
+app.get('/admin/backup-now', async (req, res) => {
+    const remoteIp = req.ip || req.connection.remoteAddress;
+    const isLocal = remoteIp === '127.0.0.1' || remoteIp === '::1' || remoteIp === '::ffff:127.0.0.1';
+
+    if (!isLocal) {
+        return res.status(403).json({ error: 'Forbidden', message: 'External triggers only allowed from localhost' });
+    }
+
+    try {
+        console.log('⚡ External backup trigger received');
+        const result = await performCloudBackup();
+        res.json({ success: true, message: 'Backup process completed', result });
+    } catch (error) {
+        res.status(500).json({ error: 'Backup trigger failed', message: error.message });
+    }
+});
+
+app.get('/api/admin/backup/status', async (req, res) => {
+    try {
+        const status = await getLatestStatus();
+        res.json({ success: true, status });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch backup status' });
+    }
+});
+
 // Serve Admin Panel (SPA fallback for admin routes)
 app.get(/^\/admin($|\/)/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -192,14 +226,51 @@ const getDataFilePath = (type) => {
     return path.join(__dirname, 'public/data', fileMap[type] || `${type}.json`);
 };
 
-// Mock Login for Dev Environment
-app.post('/api/auth/login', (req, res) => {
-    res.json({
-        id: 'admin',
-        name: 'Super Admin',
-        role: 'SUPER_ADMIN',
-        accessToken: 'mock-token'
-    });
+// Real Login for Admin
+app.post('/api/auth/login', async (req, res) => {
+    const { userId, password } = req.body;
+    const filePath = getDataFilePath('users');
+    
+    try {
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'Users data not found' });
+        }
+
+        const users = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
+        const user = users.find(u => u.userId === userId);
+
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid User ID' });
+        }
+
+        // Check password (handle both hashed and plain text)
+        let isValid = false;
+        if (user.password.startsWith('$2b$')) {
+            const bcrypt = require('bcrypt');
+            isValid = await bcrypt.compare(password, user.password);
+        } else {
+            isValid = (password === user.password);
+        }
+
+        if (isValid) {
+            const userData = { ...user };
+            delete userData.password;
+            const accessToken = jwt.sign(
+                { id: user.id, userId: user.userId, role: user.role },
+                JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+            res.json({
+                ...userData,
+                accessToken
+            });
+        } else {
+            res.status(401).json({ error: 'Invalid Password' });
+        }
+    } catch (error) {
+        console.error('Login Error:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 // Helper for data fetching
@@ -283,13 +354,95 @@ app.delete(['/api/data/:type/:id', '/api/:type/:id'], async (req, res) => {
     }
 });
 
+
+// --- MAINTENANCE ROUTES ---
+app.post('/api/admin/maintenance/clear', async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+    
+    try {
+        const token = authHeader.split(' ')[1];
+        let decoded;
+        try {
+            decoded = jwt.verify(token, JWT_SECRET);
+        } catch (e) {
+            return res.status(401).json({ error: 'Session invalid or expired. Please logout and login again.' });
+        }
+        
+        if (decoded.role !== 'SUPER_ADMIN') {
+            return res.status(403).json({ error: 'Access denied. Super Admin only.' });
+        }
+
+        const { types } = req.body;
+        if (!types || !Array.isArray(types)) {
+            return res.status(400).json({ error: 'Invalid types provided' });
+        }
+
+        const results = {};
+
+        for (const type of types) {
+            const filePath = getDataFilePath(type);
+            
+            // 1. Handle File Deletions for specific types
+            if (type === 'projects') {
+                const folders = [
+                    path.join(__dirname, "uploads", "optimized"),
+                    path.join(__dirname, "uploads", "thumbs")
+                ];
+                folders.forEach(folder => {
+                    if (fs.existsSync(folder)) {
+                        const files = fs.readdirSync(folder);
+                        for (const file of files) {
+                            if (file !== '.gitkeep') {
+                                try {
+                                    fs.unlinkSync(path.join(folder, file));
+                                } catch (e) {
+                                    console.error(`Failed to delete ${file}:`, e.message);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Clear JSON Data
+            if (fs.existsSync(filePath)) {
+                if (type === 'users') {
+                    // Protect ALL Super Admin users
+                    const users = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
+                    const adminsToKeep = users.filter(u => u.role === 'SUPER_ADMIN');
+                    
+                    // Fallback: If for some reason no Super Admin is found (shouldn't happen), keep at least the current one from the token
+                    if (adminsToKeep.length === 0 && decoded) {
+                        const currentUser = users.find(u => u.id === decoded.id);
+                        if (currentUser) adminsToKeep.push(currentUser);
+                    }
+
+                    fs.writeFileSync(filePath, JSON.stringify(adminsToKeep, null, 2));
+                    results[type] = `Cleared (preserved ${adminsToKeep.length} Super Admin(s))`;
+                } else {
+                    fs.writeFileSync(filePath, JSON.stringify([], null, 2));
+                    results[type] = 'Cleared';
+                }
+            }
+        }
+
+        res.json({ success: true, results });
+    } catch (err) {
+        console.error('Maintenance Clear Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // --- BACKUP ROUTE ---
 const { createBackupZip } = require('./src/utils/backupUtil');
 
 app.get('/api/admin/backup', async (req, res) => {
     try {
         const buffer = await createBackupZip();
-        const fileName = `steelflex-backup-${new Date().toISOString().split('T')[0]}.zip`;
+        const now = new Date();
+        const pad = (num) => String(num).padStart(2, '0');
+        const fileName = `backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}.zip`;
 
         res.set({
             'Content-Type': 'application/zip',
@@ -376,7 +529,7 @@ app.post('/api/admin/backup/restore', upload.single('backup'), async (req, res) 
     await processRestore(req.file.path, res);
 });
 
-const { initCron, performCloudBackup } = require('./src/services/cronService');
+const { initCron } = require('./src/services/cronService');
 
 app.post('/api/admin/backup/cloud', async (req, res) => {
     try {

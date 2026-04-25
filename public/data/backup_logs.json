@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1777141808818",
+    "date": "2026-04-25T18:30:08.818Z",
+    "status": "success",
+    "fileName": "backup-2026-04-26-00-00.zip",
+    "fileSize": 23816620,
+    "message": "Backup completed successfully",
+    "attempts": 1,
+    "error": null
+  },
+  {
+    "id": "1777140832295",
+    "date": "2026-04-25T18:13:52.295Z",
+    "status": "success",
+    "fileName": "backup-2026-04-25-23-43.zip",
+    "fileSize": 23816356,
+    "message": "Backup completed successfully",
+    "attempts": 1,
+    "error": null
+  }
+]

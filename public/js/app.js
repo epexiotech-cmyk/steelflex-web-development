@@ -4,45 +4,56 @@ const state = {
     currentView: 'dashboard'
 };
 
-const API_BASE = '/api';
+const DATA_MAP = {
+    '/users': '/data/users.json',
+    '/projects': '/data/projects.json',
+    '/reviews/admin': '/data/reviews.json',
+    '/contact/admin': '/data/contact_queries.json',
+    '/careers/admin': '/data/careers.json',
+    '/reviews': '/data/reviews.json', // For POST/PUT fallback
+    '/contact': '/data/contact_queries.json',
+    '/careers': '/data/careers.json'
+};
 
 // --- Utils ---
 async function apiCall(endpoint, method = 'GET', body = null, isMultipart = false) {
-    const headers = {};
-    if (state.token) {
-        headers['Authorization'] = `Bearer ${state.token}`;
-    }
+    let url = '/api' + endpoint;
 
-    const options = { method, headers };
+    // Fallback overrides if any specific mapping is needed
+    if (endpoint === '/reviews/admin') url = '/api/reviews';
+    if (endpoint === '/contact/admin') url = '/api/contact';
+    if (endpoint === '/careers/admin') url = '/api/careers/admin'; // Admin careers endpoint
+
+    const options = { method, headers: {} };
+    if (state.token) options.headers['Authorization'] = `Bearer ${state.token}`;
 
     if (body) {
         if (isMultipart) {
             options.body = body;
-            // Content-Type header is set automatically by browser for FormData
         } else {
-            headers['Content-Type'] = 'application/json';
+            options.headers['Content-Type'] = 'application/json';
             options.body = JSON.stringify(body);
         }
     }
 
     try {
-        const response = await fetch(`${API_BASE}${endpoint}`, options);
-        if (response.status === 401) {
+        const response = await fetch(url, options);
+        if (response.status === 401 || response.status === 403) {
             logout();
-            throw new Error('Session expired');
+            throw new Error('Session expired. Please login again.');
         }
-        if (response.status === 403) {
-            throw new Error('Permission denied');
+        if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.message || 'API Error');
         }
-
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.message || 'API Error');
-        return data;
+        return await response.json();
     } catch (error) {
-        showToast(error.message, 'error');
+        console.error('API Error:', error);
+        showToast(error.message || 'Network error', 'error');
         throw error;
     }
 }
+
 
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
@@ -64,16 +75,27 @@ function init() {
 
 async function login(userId, password) {
     try {
-        const data = await apiCall('/auth/login', 'POST', { userId, password });
-        state.user = { id: data.id, name: data.name, role: data.role, email: data.email };
-        state.token = data.accessToken;
-        localStorage.setItem('user', JSON.stringify(state.user));
-        localStorage.setItem('token', state.token);
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, password })
+        });
 
-        showToast('Login successful');
-        renderDashboard();
+        const result = await response.json();
+
+        if (response.ok) {
+            state.user = result;
+            state.token = result.accessToken;
+            localStorage.setItem('user', JSON.stringify(state.user));
+            localStorage.setItem('token', state.token);
+            showToast('Login successful');
+            renderDashboard();
+        } else {
+            showToast(result.error || 'Login failed', 'error');
+        }
     } catch (err) {
-        console.error(err);
+        console.error('Login Error:', err);
+        showToast('Connection error', 'error');
     }
 }
 
@@ -145,6 +167,571 @@ function renderDashboard() {
     loadModule('dashboard'); // Default view
 }
 
+// Sidebar Toggles
+window.toggleSidebar = () => {
+    document.querySelector('.sidebar').classList.toggle('active');
+    document.querySelector('.sidebar-overlay').classList.toggle('active');
+    // Lock body scroll
+    document.body.style.overflow = document.body.style.overflow === 'hidden' ? '' : 'hidden';
+};
+
+window.closeSidebar = () => {
+    document.querySelector('.sidebar').classList.remove('active');
+    document.querySelector('.sidebar-overlay').classList.remove('active');
+    document.body.style.overflow = '';
+};
+
+
+function renderSidebar() {
+    const menu = document.getElementById('nav-menu');
+    menu.innerHTML = '';
+
+    const items = [
+        { id: 'dashboard', icon: 'home', label: 'Dashboard', roles: ['SUPER_ADMIN', 'ADMIN'] },
+        { id: 'users', icon: 'users', label: 'User Management', roles: ['SUPER_ADMIN'] },
+        { id: 'reviews', icon: 'star', label: 'Client Reviews', roles: ['SUPER_ADMIN', 'ADMIN'] },
+        { id: 'queries', icon: 'envelope', label: 'Contact Queries', roles: ['SUPER_ADMIN', 'ADMIN'] },
+        { id: 'projects', icon: 'building', label: 'Projects', roles: ['SUPER_ADMIN', 'ADMIN'] },
+        { id: 'careers', icon: 'briefcase', label: 'Careers & Jobs', roles: ['SUPER_ADMIN', 'ADMIN'] },
+        { id: 'maintenance', icon: 'trash-alt', label: 'Clear Data', roles: ['SUPER_ADMIN'] },
+        { id: 'backup', icon: 'download', label: 'Download Backup', roles: ['SUPER_ADMIN'], action: downloadBackup },
+        { id: 'cloud', icon: 'cloud-upload-alt', label: 'Sync to Cloud', roles: ['SUPER_ADMIN'], action: syncToCloud },
+        { id: 'restore', icon: 'upload', label: 'Restore Backup', roles: ['SUPER_ADMIN'], action: restoreBackup },
+    ];
+
+    items.forEach(item => {
+        if (item.roles.includes(state.user.role)) {
+            const a = document.createElement('a');
+            a.className = 'nav-item';
+            a.href = '#';
+            a.innerHTML = `<i class="fas fa-${item.icon}"></i> ${item.label}`;
+            a.onclick = (e) => {
+                e.preventDefault();
+                if (item.action) {
+                    item.action();
+                } else {
+                    loadModule(item.id);
+                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                    a.classList.add('active');
+                }
+
+                // Auto close on mobile
+                if (window.innerWidth < 1024) {
+                    closeSidebar();
+                }
+            };
+            menu.appendChild(a);
+        }
+    });
+
+    updateSidebarBackupStatus();
+}
+
+async function updateSidebarBackupStatus() {
+    const container = document.getElementById('sidebar-backup-status');
+    if (!container) return;
+
+    try {
+        const response = await fetch('/api/admin/backup/status');
+        const result = await response.json();
+        
+        if (result.success && result.status) {
+            const status = result.status;
+            const isFail = status.status === 'fail';
+            const color = isFail ? '#ef4444' : '#22c55e';
+            const icon = isFail ? 'exclamation-triangle' : 'check-circle';
+            const label = isFail ? 'Backup Failed' : 'Backup Healthy';
+            
+            container.innerHTML = `
+                <div class="sidebar-status-item" title="Click to sync now" onclick="syncToCloud()" style="cursor: pointer;">
+                    <i class="fas fa-${icon}" style="color: ${color};"></i>
+                    <div class="sidebar-status-info">
+                        <strong>${label}</strong>
+                        <small>Last: ${new Date(status.date).toLocaleDateString()}</small>
+                    </div>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="sidebar-status-item">
+                    <i class="fas fa-cloud" style="color: rgba(255,255,255,0.3);"></i>
+                    <div class="sidebar-status-info">
+                        <strong>No Backup</strong>
+                        <small>Never synchronized</small>
+                    </div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Failed to fetch sidebar backup status:', error);
+    }
+}
+
+// --- Modules ---
+async function loadModule(moduleId) {
+    const content = document.getElementById('content-area');
+    const title = document.getElementById('page-title');
+    content.innerHTML = '<p>Loading...</p>';
+
+    switch (moduleId) {
+        case 'maintenance':
+            renderMaintenanceModule();
+            break;
+        case 'dashboard':
+            title.textContent = 'Dashboard';
+
+            try {
+                // Fetch all data arrays via DataManager for calculating live stats
+                const [reviews, queries, careers, projects, users, backupStatus] = await Promise.all([
+                    DataManager.getAll('reviews'),
+                    DataManager.getAll('contact'),
+                    DataManager.getAll('careers'),
+                    DataManager.getAll('projects'),
+                    DataManager.getAll('users'),
+                    fetch('/api/admin/backup/status').then(r => r.json()).catch(() => ({ status: null }))
+                ]);
+
+                // Calculate counts directly from the active arrays
+                const newReviews = reviews.filter(r => (r.status || 'pending').toLowerCase() === 'pending').length;
+                const newQueries = queries.filter(q => q.status === 'Unread').length;
+                const totalProjects = projects.length;
+                const newApps = careers.filter(c => c.status === 'New' || !c.status).length;
+                const totalApps = careers.length;
+
+                let backupWarning = '';
+                let backupCardStatus = 'Unknown';
+                let backupCardColor = 'var(--secondary)';
+                let backupCardIcon = 'cloud';
+                
+                if (backupStatus.status) {
+                    const isFail = backupStatus.status.status === 'fail';
+                    backupCardStatus = isFail ? 'Failed' : 'Success';
+                    backupCardColor = isFail ? 'var(--danger)' : 'var(--success)';
+                    backupCardIcon = isFail ? 'exclamation-triangle' : 'check-circle';
+
+                    if (isFail) {
+                        backupWarning = `
+                            <div class="alert alert-danger" style="margin-bottom: 2rem; background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; padding: 1rem; border-radius: 8px; display: flex; align-items: center; gap: 15px;">
+                                <div style="font-size: 1.5rem;"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div>
+                                    <strong style="font-size: 1.1rem; display: block;">Backup System Alert</strong>
+                                    <span style="font-size: 0.95rem;">The last automated backup failed on ${new Date(backupStatus.status.date).toLocaleString()}. Error: ${backupStatus.status.error}</span>
+                                </div>
+                                <button class="btn-sm btn-primary" style="margin-left: auto; background: #ef4444; border: none; padding: 8px 16px; font-weight: 600;" onclick="syncToCloud()">Try Now</button>
+                            </div>
+                        `;
+                    }
+                }
+
+                content.innerHTML = `
+                    <div style="margin-bottom: 2rem;">
+                        <h2 style="font-size: 1.5rem; font-weight: 600;">Hello, <span style="color: var(--primary);">${state.user.name}</span></h2>
+                        <p style="color: var(--text-gray);">Here is what's happening today.</p>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <!-- Projects Card -->
+                        <div class="summary-card" onclick="loadModule('projects')">
+                           <div class="summary-content">
+                                <h3>All Projects</h3>
+                                <div class="count">${totalProjects}</div>
+                                <div class="sub-text">Total Projects</div>
+                           </div>
+                           <div class="summary-icon" style="color: var(--primary); background: rgba(38, 71, 150, 0.1);"><i class="fas fa-building"></i></div>
+                        </div>
+
+                        <!-- Reviews Card -->
+                        <div class="summary-card" onclick="loadModule('reviews')">
+                           <div class="summary-content">
+                                <h3>Client Reviews</h3>
+                                <div class="count">${newReviews > 0 ? newReviews + ' New' : '0 New'}</div>
+                                <div class="sub-text">
+                                    <span style="display:block; margin-top: 5px; font-size: 0.75rem; color: var(--secondary); font-weight: 600;">TOTAL REVIEWS</span>
+                                    <strong style="font-size: 1rem; color: var(--text-main);">${reviews.length}</strong>
+                                </div>
+                           </div>
+                           <div class="summary-right-panel">
+                               <div class="summary-icon" style="color: var(--warning); background: rgba(245, 158, 11, 0.1);"><i class="fas fa-star"></i></div>
+                               <div class="total-stats">
+                                   <span>Avg Rating</span>
+                                   <strong>${(() => {
+                        const totalRating = reviews.reduce((sum, r) => sum + parseInt(r.rating || 0), 0);
+                        return reviews.length ? (totalRating / reviews.length).toFixed(1) + ' / 5' : 'N/A';
+                    })()}</strong>
+                               </div>
+                           </div>
+                           ${newReviews > 0 ? '<div class="notification-dot">' + newReviews + '</div>' : ''}
+                        </div>
+
+                        <!-- Queries Card -->
+                        <div class="summary-card" onclick="loadModule('queries')">
+                           <div class="summary-content">
+                                <h3>Contact Queries</h3>
+                                <div class="count">${newQueries > 0 ? newQueries + ' New' : '0 New'}</div>
+                                <div class="sub-text">Unread Messages</div>
+                           </div>
+                           <div class="summary-icon" style="color: var(--success); background: rgba(34, 197, 94, 0.1);"><i class="fas fa-envelope"></i></div>
+                           ${newQueries > 0 ? '<div class="notification-dot">' + newQueries + '</div>' : ''}
+                        </div>
+
+                        <!-- Careers Card -->
+                        <div class="summary-card" onclick="loadModule('careers')">
+                           <div class="summary-content">
+                                <h3>Careers</h3>
+                                <div class="count">${newApps} New</div>
+                                <div class="sub-text">Received Applications</div>
+                           </div>
+                           <div class="summary-icon" style="color: var(--btn-color); background: rgba(0, 151, 211, 0.1);"><i class="fas fa-briefcase"></i></div>
+                           ${newApps > 0 ? '<div class="notification-dot">' + newApps + '</div>' : ''}
+                        </div>
+                    </div>
+
+                    <!-- Lower Content Section -->
+                    <div class="content-grid">
+                        <!-- Recent Reviews -->
+                        <div class="content-block">
+                            <h3>Recent Reviews <button class="btn-sm btn-edit" onclick="loadModule('reviews')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
+                            <div class="recent-list">
+                                ${reviews.slice(0, 3).map(r => `
+                                    <div class="recent-item ${r.status === 'Pending' ? 'unread' : ''}" onclick="loadModule('reviews')">
+                                        <div class="avatar">${r.clientName.charAt(0)}</div>
+                                        <div class="info">
+                                            <h4>${r.clientName}</h4>
+                                            <p>${r.reviewText.substring(0, 60)}...</p>
+                                        </div>
+                                    </div>
+                                `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No reviews yet.</p>'}
+                            </div>
+                        </div>
+
+                        <!-- Recent Queries -->
+                        <div class="content-block">
+                            <h3>Recent Queries <button class="btn-sm btn-edit" onclick="loadModule('queries')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
+                            <div class="recent-list">
+                                ${queries.slice(0, 3).map(q => `
+                                    <div class="recent-item ${q.status === 'new' ? 'unread' : ''}" onclick="loadModule('queries')">
+                                        <div class="avatar" style="color: var(--success); background: rgba(34, 197, 94, 0.1);">${q.name.charAt(0)}</div>
+                                        <div class="info">
+                                            <h4>${q.name}</h4>
+                                            <p>${q.message.substring(0, 60)}...</p>
+                                        </div>
+                                    </div>
+                                `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No queries yet.</p>'}
+                            </div>
+                        </div>
+
+                        <!-- Recent Applications -->
+                        <div class="content-block">
+                            <h3>New Applications <button class="btn-sm btn-edit" onclick="loadModule('careers')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
+                            <div class="recent-list">
+                                ${careers.slice(0, 3).map(a => `
+                                    <div class="recent-item ${a.status === 'new' ? 'unread' : ''}" onclick="loadModule('careers')">
+                                        <div class="avatar" style="color: var(--btn-color); background: rgba(0, 151, 211, 0.1);">${a.name.charAt(0)}</div>
+                                        <div class="info">
+                                            <h4>${a.name}</h4>
+                                            <p>Applied for: <strong>${a.appliedRole}</strong></p>
+                                        </div>
+                                    </div>
+                                `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No applications yet.</p>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                content.innerHTML = `<p class="error">Error loading dashboard stats: ${err.message}</p>`;
+            }
+            break;
+
+        case 'users':
+            title.textContent = 'User Management';
+            await loadUsers(content);
+            break;
+
+        case 'reviews':
+            title.textContent = 'Client Reviews';
+            await loadReviews(content);
+            break;
+
+        case 'queries':
+            title.textContent = 'Contact Queries';
+            await loadQueries(content);
+            break;
+
+        case 'projects':
+            title.textContent = 'Project Manager';
+            await loadProjects(content);
+            break;
+
+        case 'careers':
+            title.textContent = 'Careers & Job Management';
+            await loadCareers(content);
+            break;
+    }
+}
+
+// --- Module Implementations ---
+
+// 1. Careers (Merged: Vacancies + Applications)
+let cachedCareers = [];
+async function loadCareers(container) {
+    try {
+        const [applications, vacancies] = await Promise.all([
+            DataManager.getAll('careers'),
+            DataManager.getAll('vacancies')
+        ]);
+
+        cachedCareers = applications; // Update cache
+
+        container.innerHTML = `
+            <!-- VACANCIES SECTION -->
+            <div style="margin-bottom: 3rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                    <h3 style="font-size: 1.25rem;">Active Job Vacancies</h3>
+                    <button class="btn btn-primary" onclick="showVacancyModal()">Create Job Vacancy</button>
+                </div>
+                <div class="card">
+                    <table class="data-table">
+                        <thead><tr><th>Title</th><th>Location</th><th>Experience</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            ${vacancies.map(v => `
+                                <tr>
+                                    <td><strong>${v.title}</strong><br><small style="color:#666">${v.department || ''}</small></td>
+                                    <td>${v.location}</td>
+                                    <td>${v.experience}</td>
+                                    <td>
+                                        <span class="badge ${v.status === 'Open' ? 'badge-success' : 'badge-danger'} is-light">
+                                            ${v.status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-sm btn-secondary" onclick="toggleVacancyStatus('${v.id}')" title="Toggle Status">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                        <button class="btn-sm btn-delete js-delete-btn" title="Delete" data-id="${v.id}" data-type="vacancies"><i class="fas fa-trash"></i></button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                     ${vacancies.length === 0 ? '<div style="text-align:center; padding: 2rem; color: #888;">No vacancies found.</div>' : ''}
+                </div>
+            </div>
+
+            <!-- APPLICATIONS SECTION -->
+            <div>
+                 <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Job Applications</h3>
+                <div class="card">
+                    <table class="data-table">
+                        <thead><tr><th>Status</th><th>Name</th><th>Role</th><th>Email / Phone</th><th>Date</th><th>CV</th><th>Actions</th></tr></thead>
+                        <tbody id="careers-table-body">
+                             ${cachedCareers.map(app => renderCareerRow(app)).join('')}
+                        </tbody>
+                    </table>
+                     ${cachedCareers.length === 0 ? '<div style="text-align:center; padding: 2rem; color: #888;">No applications found.</div>' : ''}
+                </div>
+            </div>
+        `;
+    } catch (e) {
+        container.innerHTML = 'Error loading careers data: ' + e.message;
+    }
+}
+
+window.showVacancyModal = () => {
+    showModal(`
+        <h3>Create Job Vacancy</h3>
+        <form id="create-vacancy-form">
+            <div class="form-group">
+                <label>Job Title</label>
+                <input type="text" name="title" class="form-control" required placeholder="e.g. Structural Engineer">
+            </div>
+            <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label>Department</label>
+                    <input type="text" name="department" class="form-control" placeholder="e.g. Engineering">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" name="location" class="form-control" required placeholder="e.g. Vadodara, Gujarat">
+                </div>
+            </div>
+            <div class="form-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                 <div class="form-group">
+                    <label>Experience</label>
+                    <input type="text" name="experience" class="form-control" placeholder="e.g. 3-5 Years">
+                </div>
+                 <div class="form-group">
+                    <label>Employment Type</label>
+                    <select name="employmentType" class="form-control">
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" class="form-control" rows="4" required placeholder="Brief job description..."></textarea>
+            </div>
+             <div class="form-group">
+                <label>Status</label>
+                <select name="status" class="form-control">
+                    <option value="Open">Open</option>
+                    <option value="Closed">Closed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Vacancy</button>
+        </form>
+    `, async () => {
+        document.getElementById('create-vacancy-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            try {
+                await DataManager.add('vacancies', data);
+                closeModal();
+                showToast('Vacancy created successfully');
+                loadModule('careers'); // Changed from 'vacancies'
+            } catch (err) {
+                alert('Error creating vacancy: ' + err.message);
+            }
+        };
+    });
+};
+
+window.toggleVacancyStatus = async (id) => {
+    try {
+        const v = await DataManager.getById('vacancies', id);
+ await DataManager.update('vacancies', id, { status: v.status === 'Open' ? 'Closed' : 'Open' });
+        loadModule('careers'); // Changed from 'vacancies'
+        showToast('Vacancy status updated');
+    } catch (e) {
+        alert('Error updating status: ' + e.message);
+    }
+};
+
+// deleteVacancy removed, using event delegation
+
+function renderCareerRow(app) {
+    let statusBadge = `<span class="badge badge-info is-light">${app.status || 'New'}</span>`;
+    if (app.status === 'Reviewed') statusBadge = `<span class="badge badge-success is-light">Reviewed</span>`;
+    if (app.status === 'Rejected') statusBadge = `<span class="badge badge-danger is-light">Rejected</span>`;
+    if (app.status === 'Interview') statusBadge = `<span class="badge badge-warning is-light">Interview</span>`;
+
+    return `
+        <tr>
+            <td>${statusBadge}</td>
+            <td><strong>${app.name}</strong></td>
+            <td>${app.appliedRole}</td>
+            <td>
+                <div>${app.email}</div>
+                <div style="font-size: 0.85rem; color: #666;">${app.phone}</div>
+            </td>
+            <td>${new Date(app.submittedAt).toLocaleDateString()}</td>
+            <td>
+                ${app.cvData ? `<button onclick="downloadCV('${app.id}')" class="btn-sm btn-edit" title="Download CV" style="border:none; cursor:pointer;"><i class="fas fa-download"></i> CV</button>` : '-'}
+            </td>
+            <td>
+                <div class="dropdown" style="display:inline-block;">
+                    <button class="btn-sm btn-secondary dropdown-toggle" type="button" onclick="toggleDropdown('${app.id}')">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div id="dropdown-${app.id}" class="dropdown-menu" style="display:none; position:absolute; bg:white; border:1px solid #ccc; z-index:100; padding:5px; background:white; box-shadow:0 2px 5px rgba(0,0,0,0.2); border-radius:4px; right: 0;">
+                        <a href="#" class="dropdown-item" onclick="updateCareerStatus('${app.id}', 'Reviewed'); return false;">Mark Reviewed</a>
+                        <a href="#" class="dropdown-item" onclick="updateCareerStatus('${app.id}', 'Interview'); return false;">Mark Interview</a>
+                        <a href="#" class="dropdown-item" onclick="updateCareerStatus('${app.id}', 'Rejected'); return false;">Mark Rejected</a>
+                        <div class="dropdown-divider" style="border-top:1px solid #eee; margin:5px 0;"></div>
+                        <a href="#" class="dropdown-item text-danger js-delete-btn" data-id="${app.id}" data-type="careers">Delete</a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    `;
+}
+
+window.downloadCV = async (id) => {
+    try {
+        const app = await DataManager.getById('careers', id);
+        if (!app || !app.cvData) {
+            alert('File not available');
+            return;
+        }
+
+        let dataUrl = app.cvData;
+
+        // If the cvData is raw base64 without the data URI prefix, reconstruct it
+        if (!dataUrl.startsWith('data:')) {
+            const ext = app.cvName ? app.cvName.split('.').pop().toLowerCase() : 'pdf';
+            const mimeTypes = {
+                'pdf': 'application/pdf',
+                'doc': 'application/msword',
+                'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'png': 'image/png',
+                'jpg': 'image/jpeg',
+                'jpeg': 'image/jpeg'
+            };
+            const mime = mimeTypes[ext] || 'application/octet-stream';
+            dataUrl = `data:${mime};base64,${dataUrl}`;
+        }
+
+        // Use fetch to convert the data URL to a blob efficiently,
+        // avoiding synchronous loops that can freeze or crash the browser.
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+
+        // Trigger download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = app.cvName || 'Resume.pdf';
+        
+        // Ensure standard DOM execution for the programmatic click
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+
+    } catch (err) {
+        console.error('Error downloading CV:', err);
+        alert('File not available or corrupted.');
+    }
+};
+
+window.toggleDropdown = (id) => {
+    // effective close others
+    document.querySelectorAll('.dropdown-menu').forEach(el => {
+        if (el.id !== `dropdown-${id}`) el.style.display = 'none';
+    });
+
+    const menu = document.getElementById(`dropdown-${id}`);
+    if (menu) {
+        menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+    }
+};
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-menu').forEach(el => el.style.display = 'none');
+    }
+});
+
+
+window.updateCareerStatus = async (id, status) => {
+    try {
+        await DataManager.update('careers', id, { status });
+        const app = cachedCareers.find(a => a.id === id);
+        if (app) app.status = status;
+        loadCareers(document.getElementById('content-area')); // Reload or re-render
+        showToast(`Status updated to ${status}`);
+    } catch (e) {
+        alert('Error updating status: ' + e.message);
+    }
+};
+
 async function syncToCloud() {
     showModal(`
         <div style="text-align: center; padding: 1rem;">
@@ -205,7 +792,7 @@ async function syncToCloud() {
                             File: ${result.fileName}
                         </div>
 
-                        <button class="btn btn-primary" onclick="closeModal()" style="width: 100%;">
+                        <button class="btn btn-primary" onclick="closeModal(); updateSidebarBackupStatus();" style="width: 100%;">
                             Close
                         </button>
                     </div>
@@ -228,7 +815,7 @@ async function syncToCloud() {
                         <p style="color: #991b1b; font-family: monospace; font-size: 0.9rem;">${err.message}</p>
                     </div>
 
-                    <button class="btn btn-secondary" onclick="closeModal()" style="width: 100%;">
+                    <button class="btn btn-secondary" onclick="closeModal(); updateSidebarBackupStatus();" style="width: 100%;">
                         Close
                     </button>
                 </div>
@@ -586,9 +1173,13 @@ async function restoreBackup() {
 async function downloadBackup() {
     showToast('Preparing backup zip...', 'info');
     try {
+        // Since we want to download a file, we navigate directly or create a hidden link
         const a = document.createElement('a');
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        const fileName = `backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}.zip`;
         a.href = '/api/admin/backup';
-        a.download = `steelflex-backup-${new Date().toISOString().split('T')[0]}.zip`;
+        a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -599,241 +1190,10 @@ async function downloadBackup() {
     }
 }
 
-// Sidebar Toggles
-window.toggleSidebar = () => {
-    document.querySelector('.sidebar').classList.toggle('active');
-    document.querySelector('.sidebar-overlay').classList.toggle('active');
-    // Lock body scroll
-    document.body.style.overflow = document.body.style.overflow === 'hidden' ? '' : 'hidden';
-};
-
-window.closeSidebar = () => {
-    document.querySelector('.sidebar').classList.remove('active');
-    document.querySelector('.sidebar-overlay').classList.remove('active');
-    document.body.style.overflow = '';
-};
-
-
-function renderSidebar() {
-    const menu = document.getElementById('nav-menu');
-    menu.innerHTML = '';
-
-    const items = [
-        { id: 'dashboard', icon: 'home', label: 'Dashboard', roles: ['SUPER_ADMIN', 'ADMIN'] },
-        { id: 'users', icon: 'users', label: 'User Management', roles: ['SUPER_ADMIN'] },
-        { id: 'reviews', icon: 'star', label: 'Client Reviews', roles: ['SUPER_ADMIN', 'ADMIN'] },
-        { id: 'queries', icon: 'envelope', label: 'Contact Queries', roles: ['SUPER_ADMIN', 'ADMIN'] },
-        { id: 'projects', icon: 'building', label: 'Projects', roles: ['SUPER_ADMIN', 'ADMIN'] },
-        { id: 'careers', icon: 'briefcase', label: 'Careers', roles: ['SUPER_ADMIN', 'ADMIN'] },
-        { id: 'backup', icon: 'download', label: 'Download Backup', roles: ['SUPER_ADMIN'], action: downloadBackup },
-        { id: 'cloud', icon: 'cloud-upload-alt', label: 'Sync to Cloud', roles: ['SUPER_ADMIN'], action: syncToCloud },
-        { id: 'restore', icon: 'upload', label: 'Restore Backup', roles: ['SUPER_ADMIN'], action: restoreBackup },
-    ];
-
-    items.forEach(item => {
-        if (item.roles.includes(state.user.role)) {
-            const a = document.createElement('a');
-            a.className = 'nav-item';
-            a.href = '#';
-            a.innerHTML = `<i class="fas fa-${item.icon}"></i> ${item.label}`;
-            a.onclick = (e) => {
-                e.preventDefault();
-                if (item.action) {
-                    item.action();
-                } else {
-                    loadModule(item.id);
-                    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                    a.classList.add('active');
-                }
-
-                // Auto close on mobile
-                if (window.innerWidth < 1024) {
-                    closeSidebar();
-                }
-            };
-            menu.appendChild(a);
-        }
-    });
-}
-
-// --- Modules ---
-async function loadModule(moduleId) {
-    const content = document.getElementById('content-area');
-    const title = document.getElementById('page-title');
-    content.innerHTML = '<p>Loading...</p>';
-
-    switch (moduleId) {
-        case 'dashboard':
-            title.textContent = 'Dashboard';
-
-            try {
-                // Fetch stats concurrently
-                const [users, projects, reviews, queries, careers] = await Promise.all([
-                    DataManager.getAll('users'),
-                    DataManager.getAll('projects'),
-                    DataManager.getAll('reviews'),
-                    DataManager.getAll('contact'),
-                    DataManager.getAll('careers')
-                ]);
-
-                // Calculate counts with proper normalization
-                const newReviews = reviews.filter(r => (r.status || 'Pending').toLowerCase() === 'pending').length;
-                const newQueries = queries.filter(q => (q.status || 'New').toLowerCase() !== 'read').length;
-                const totalProjects = projects.length;
-                const totalApps = careers.length;
-                const newApps = careers.filter(c => (c.status || 'New').toLowerCase() === 'new').length;
-
-                content.innerHTML = `
-                    <div style="margin-bottom: 2rem;">
-                        <h2 style="font-size: 1.5rem; font-weight: 600;">Hello, <span style="color: var(--primary);">${state.user.name}</span></h2>
-                        <p style="color: var(--text-gray);">Here is what's happening today.</p>
-                    </div>
-
-                    <div class="dashboard-grid">
-                        <!-- Projects Card -->
-                        <div class="summary-card" onclick="loadModule('projects')">
-                           <div class="summary-content">
-                                <h3>All Projects</h3>
-                                <div class="count">${totalProjects}</div>
-                                <div class="sub-text">Total Projects</div>
-                           </div>
-                           <div class="summary-icon" style="color: var(--primary); background: rgba(38, 71, 150, 0.1);"><i class="fas fa-building"></i></div>
-                        </div>
-
-                        <!-- Reviews Card -->
-                        <div class="summary-card" onclick="loadModule('reviews')">
-                           <div class="summary-content">
-                                <h3>Client Reviews</h3>
-                                <div class="count">${newReviews > 0 ? newReviews + ' New' : '0 New'}</div>
-                                <div class="sub-text">
-                                    <span style="display:block; margin-top: 5px; font-size: 0.75rem; color: var(--secondary); font-weight: 600;">TOTAL REVIEWS</span>
-                                    <strong style="font-size: 1rem; color: var(--text-main);">${reviews.length}</strong>
-                                </div>
-                           </div>
-                           <div class="summary-right-panel">
-                               <div class="summary-icon" style="color: var(--warning); background: rgba(245, 158, 11, 0.1);"><i class="fas fa-star"></i></div>
-                               <div class="total-stats">
-                                   <span>Avg Rating</span>
-                                   <strong>${(() => {
-                        const totalRating = reviews.reduce((sum, r) => sum + parseInt(r.rating || 0), 0);
-                        return reviews.length ? (totalRating / reviews.length).toFixed(1) + ' / 5' : 'N/A';
-                    })()}</strong>
-                               </div>
-                           </div>
-                           ${newReviews > 0 ? '<div class="notification-dot">' + newReviews + '</div>' : ''}
-                        </div>
-
-                        <!-- Queries Card -->
-                        <div class="summary-card" onclick="loadModule('queries')">
-                           <div class="summary-content">
-                                <h3>Contact Queries</h3>
-                                <div class="count">${newQueries > 0 ? newQueries + ' New' : '0 New'}</div>
-                                <div class="sub-text">Unread Messages</div>
-                           </div>
-                           <div class="summary-icon" style="color: var(--success); background: rgba(34, 197, 94, 0.1);"><i class="fas fa-envelope"></i></div>
-                           ${newQueries > 0 ? '<div class="notification-dot">' + newQueries + '</div>' : ''}
-                        </div>
-
-                        <!-- Careers Card -->
-                        <div class="summary-card" onclick="loadModule('careers')">
-                           <div class="summary-content">
-                                <h3>Careers</h3>
-                                <div class="count">${newApps} New</div>
-                                <div class="sub-text">Received Applications</div>
-                           </div>
-                           <div class="summary-icon" style="color: var(--btn-color); background: rgba(0, 151, 211, 0.1);"><i class="fas fa-briefcase"></i></div>
-                           ${newApps > 0 ? '<div class="notification-dot">' + newApps + '</div>' : ''}
-                        </div>
-                    </div>
-
-                    <!-- Lower Content Section -->
-                    <div class="content-grid">
-                        <!-- Recent Reviews -->
-                        <div class="content-block">
-                            <h3>Recent Reviews <button class="btn-sm btn-edit" onclick="loadModule('reviews')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
-                            <div class="recent-list">
-                                ${reviews.slice(0, 3).map(r => `
-                                    <div class="recent-item ${r.status === 'Pending' ? 'unread' : ''}" onclick="loadModule('reviews')">
-                                        <div class="avatar">${r.clientName.charAt(0)}</div>
-                                        <div class="info">
-                                            <h4>${r.clientName}</h4>
-                                            <p>${r.reviewText.substring(0, 60)}...</p>
-                                        </div>
-                                    </div>
-                                `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No reviews yet.</p>'}
-                            </div>
-                        </div>
-
-                        <!-- Recent Queries -->
-                        <div class="content-block">
-                            <h3>Recent Queries <button class="btn-sm btn-edit" onclick="loadModule('queries')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
-                            <div class="recent-list">
-                                ${queries.slice(0, 3).map(q => `
-                                    <div class="recent-item ${q.status === 'new' ? 'unread' : ''}" onclick="loadModule('queries')">
-                                        <div class="avatar" style="color: var(--success); background: rgba(34, 197, 94, 0.1);">${q.name.charAt(0)}</div>
-                                        <div class="info">
-                                            <h4>${q.name}</h4>
-                                            <p>${q.message.substring(0, 60)}...</p>
-                                        </div>
-                                    </div>
-                                `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No queries yet.</p>'}
-                            </div>
-                        </div>
-
-                        <!-- Recent Applications -->
-                        <div class="content-block">
-                            <h3>New Applications <button class="btn-sm btn-edit" onclick="loadModule('careers')" style="margin:0; font-size: 0.7rem;">View All</button></h3>
-                            <div class="recent-list">
-                                ${careers.slice(0, 3).map(a => `
-                                    <div class="recent-item ${a.status === 'new' ? 'unread' : ''}" onclick="loadModule('careers')">
-                                        <div class="avatar" style="color: var(--btn-color); background: rgba(0, 151, 211, 0.1);">${a.name.charAt(0)}</div>
-                                        <div class="info">
-                                            <h4>${a.name}</h4>
-                                            <p>Applied for: <strong>${a.appliedRole || a.position || 'N/A'}</strong></p>
-                                        </div>
-                                    </div>
-                                `).join('') || '<p style="color: var(--text-muted); font-size: 0.9rem;">No applications yet.</p>'}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } catch (err) {
-                content.innerHTML = `<p class="error">Error loading dashboard stats: ${err.message}</p>`;
-            }
-            break;
-
-        case 'users':
-            title.textContent = 'User Management';
-            await loadUsers(content);
-            break;
-
-        case 'reviews':
-            title.textContent = 'Client Reviews';
-            await loadReviews(content);
-            break;
-
-        case 'queries':
-            title.textContent = 'Contact Queries';
-            await loadQueries(content);
-            break;
-
-        case 'projects':
-            title.textContent = 'Project Manager';
-            await loadProjects(content);
-            break;
-
-        case 'careers':
-            title.textContent = 'Job Applications';
-            await loadCareers(content);
-            break;
-    }
-}
-
-// --- Module Implementations ---
-// 1. Users
+// deleteCareer removed, using event delegation
 async function loadUsers(container) {
     try {
-        const users = await apiCall('/users', 'GET');
+        const users = await DataManager.getAll('users');
         container.innerHTML = `
             <button class="btn btn-primary" style="margin-bottom: 1rem;" onclick="showUserModal()">Add New Admin</button>
             <div class="card">
@@ -857,7 +1217,7 @@ async function loadUsers(container) {
             </div>
         `;
     } catch (e) {
-        container.innerHTML = `<p class="error">Error loading users</p>`;
+        container.innerHTML = `<p class="error">Error loading users: ${e.message}</p>`;
     }
 }
 
@@ -996,7 +1356,7 @@ window.showUserModal = () => {
         });
 };
 
-// deleteUser removed, using global delegation
+// deleteUser removed, using event delegation
 
 // 2. Reviews
 async function loadReviews(container) {
@@ -1023,18 +1383,15 @@ async function loadReviews(container) {
 
             return filtered.map(r => {
                 let statusColor = 'var(--warning)'; // Pending
-                if (r.status === 'Approved' || r.status === 'Accepted' || r.status === 'active' || r.status === 'Active') statusColor = 'var(--success)';
-                if (r.status === 'Rejected' || r.status === 'rejected') statusColor = 'var(--danger)';
-
-                let displayStatus = r.status;
-                if (displayStatus === 'Active' || displayStatus === 'active') displayStatus = 'Accepted';
+                if (r.status === 'approved' || r.status === 'Accepted') statusColor = 'var(--success)';
+                if (r.status === 'rejected' || r.status === 'Rejected') statusColor = 'var(--danger)';
 
                 return `
                     <tr>
                         <td>${r.clientName}</td>
                         <td>${r.companyName || '-'}</td>
                         <td>${r.rating}/5</td>
-                        <td><span style="color: ${statusColor}; font-weight: 600; text-transform: capitalize;">${displayStatus}</span></td>
+                        <td><span style="color: ${statusColor}; font-weight: 600; text-transform: capitalize;">${r.status}</span></td>
                         <td>
                             <button class="btn-sm btn-edit" title="View Details" onclick="viewReviewDetails('${r.id}')"><i class="fas fa-eye"></i></button>
                             <button class="btn-sm btn-delete js-delete-btn" title="Delete" data-id="${r.id}" data-type="reviews"><i class="fas fa-trash"></i></button>
@@ -1054,9 +1411,9 @@ async function loadReviews(container) {
             <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 10px;">
                 <label style="font-weight: 600; color: #4b5563;">Filter Status:</label>
                 <select id="reviewStatusFilter" class="form-control" style="width: 200px;" onchange="handleReviewFilterChange(this)">
-                    <option value="all" ${window.currentReviewFilter === 'all' ? 'selected' : ''}>All Reviews</option>
+                    <option value="all" ${window.currentReviewFilter === 'all' ? 'selected' : ''}>All</option>
                     <option value="pending" ${window.currentReviewFilter === 'pending' ? 'selected' : ''}>Pending</option>
-                    <option value="accepted" ${window.currentReviewFilter === 'accepted' ? 'selected' : ''}>Accepted</option>
+                    <option value="approved" ${window.currentReviewFilter === 'approved' ? 'selected' : ''}>Approved</option>
                     <option value="rejected" ${window.currentReviewFilter === 'rejected' ? 'selected' : ''}>Rejected</option>
                 </select>
             </div>
@@ -1086,20 +1443,30 @@ window.viewReviewDetails = (id) => {
             <div class="review-media-grid">
                 <div class="media-item">
                     <label>Reviewer Photo</label>
-                    ${review.reviewerPhoto ? `<img src="${review.reviewerPhoto}" class="review-img-preview">` : '<div class="no-img">No Photo</div>'}
+                    <img src="${review.reviewerPhoto || ''}" 
+                         class="review-img-preview" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                         style="${review.reviewerPhoto ? '' : 'display:none;'}">
+                    <div class="no-img" style="${review.reviewerPhoto ? 'display:none;' : 'display:flex;'}">No Photo</div>
                 </div>
                 <div class="media-item">
                     <label>Company Logo</label>
-                    ${review.companyLogo ? `<img src="${review.companyLogo}" class="review-img-preview">` : '<div class="no-img">No Logo</div>'}
+                    <img src="${review.companyLogo || ''}" 
+                         class="review-img-preview" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                         style="${review.companyLogo ? '' : 'display:none;'}">
+                    <div class="no-img" style="${review.companyLogo ? 'display:none;' : 'display:flex;'}">No Logo</div>
                 </div>
             </div>
 
-            ${review.reviewImages && review.reviewImages.length > 0 ? `
+            ${review.projectImages && review.projectImages.length > 0 ? `
                 <div class="review-carousel-container">
                     <label style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 5px; display: block;">Project Images</label>
                     <div class="carousel-wrapper">
                         <div class="carousel-slides">
-                            ${review.reviewImages.map(img => `<img src="${img}" class="carousel-img" onclick="window.open('${img}', '_blank')">`).join('')}
+                            ${review.projectImages.map(img => {
+        return `<img src="${img}" class="carousel-img" onclick="window.open('${img}', '_blank')">`;
+    }).join('')}
                         </div>
                     </div>
                 </div>
@@ -1118,22 +1485,22 @@ window.viewReviewDetails = (id) => {
             </div>
 
             <div class="modal-actions">
-                ${review.status !== 'Accepted' ? `<button class="btn btn-success" onclick="updateReviewStatus('${review.id}', 'Accepted')">Accept Review</button>` : ''}
-                ${review.status !== 'Rejected' ? `<button class="btn btn-danger" onclick="updateReviewStatus('${review.id}', 'Rejected')">Reject Review</button>` : ''}
+                ${review.status !== 'approved' ? `<button class="btn btn-success" onclick="updateReviewStatus('${review.id}', 'approved')">Accept Review</button>` : ''}
+                ${review.status !== 'rejected' ? `<button class="btn btn-danger" onclick="updateReviewStatus('${review.id}', 'rejected')">Reject Review</button>` : ''}
                 <button class="btn btn-secondary" onclick="closeModal()">Close</button>
             </div>
         </div>
         <style>
             .review-detail-modal { display: flex; flex-direction: column; gap: 1rem; }
             .modal-header-custom { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 0.5rem; }
-            .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+            .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; text-transform: capitalize; }
             .status-badge.pending { background: #fff7ed; color: #c2410c; }
-            .status-badge.accepted { background: #f0fdf4; color: #15803d; }
+            .status-badge.approved { background: #f0fdf4; color: #15803d; }
             .status-badge.rejected { background: #fef2f2; color: #b91c1c; }
             .review-media-grid { display: flex; gap: 1rem; margin-top: 0.5rem; }
             .media-item { flex: 1; text-align: center; background: #f9fafb; padding: 10px; border-radius: 6px; }
             .media-item label { display: block; font-size: 0.75rem; color: #6b7280; margin-bottom: 5px; }
-            .review-img-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #e5e7eb; }
+            .review-img-preview { width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 2px solid #e5e7eb; margin: 0 auto; display: block; }
             .no-img { width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #e5e7eb; border-radius: 50%; color: #9ca3af; margin: 0 auto; font-size: 0.7rem; }
             .review-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem; background: #f3f4f6; padding: 10px; border-radius: 6px; }
             .review-text-block { background: #fff; border: 1px solid #e5e7eb; padding: 10px; border-radius: 6px; }
@@ -1151,10 +1518,11 @@ window.updateReviewStatus = async (id, status) => {
         try {
             await DataManager.update('reviews', id, { status });
             closeModal();
-            showToast(`Review ${status}`);
-            loadModule('reviews');
+            showToast(`Review successfully ${status}`);
+            const v = document.getElementById('reviewStatusFilter') ? document.getElementById('reviewStatusFilter').value : 'all';
+            loadModule('reviews'); // refresh
         } catch (err) {
-            alert('Error updating status');
+            alert('Error updating status: ' + (err.message || 'Unknown error'));
         }
     });
 };
@@ -1184,9 +1552,9 @@ window.showReviewModal = () => {
 
             <div class="form-group"><label>Initial Status</label>
                 <select name="status" class="form-control">
-                    <option value="Pending">Pending</option>
-                    <option value="Accepted">Accepted</option>
-                    <option value="Rejected">Rejected</option>
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
                 </select>
             </div>
             <button type="submit" class="btn btn-primary">Save Review</button>
@@ -1203,7 +1571,37 @@ window.showReviewModal = () => {
                 const logo = formData.get('companyLogo');
                 if (logo && logo.size === 0) formData.delete('companyLogo');
 
-                await apiCall('/reviews', 'POST', formData, true); // Multipart
+                const getBase64 = (file) => new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = error => reject(error);
+                });
+
+                const data = Object.fromEntries(formData.entries());
+                data.projectImages = [];
+                data.createdAt = new Date().toISOString();
+
+                if (data.reviewerPhoto instanceof File && data.reviewerPhoto.size > 0) {
+                    data.reviewerPhoto = await getBase64(data.reviewerPhoto);
+                } else delete data.reviewerPhoto;
+
+                // Make sure company form input links to companyName properly
+                if (data.companyName === undefined && data.company) data.companyName = data.company;
+
+                if (data.companyLogo instanceof File && data.companyLogo.size > 0) {
+                    data.companyLogo = await getBase64(data.companyLogo);
+                } else delete data.companyLogo;
+
+                for (let file of formData.getAll('reviewImages')) {
+                    if (file.size > 0) {
+                        const b64 = await getBase64(file);
+                        data.projectImages.push(b64);
+                    }
+                }
+                delete data.reviewImages; // Clean up old key
+
+                await DataManager.add('reviews', data);
                 closeModal();
                 showToast('Review saved');
                 loadModule('reviews');
@@ -1215,26 +1613,17 @@ window.showReviewModal = () => {
     });
 };
 
-window.deleteReview = async (id) => {
-    if (confirm('Delete review?')) {
-        await apiCall(`/reviews/${id}`, 'DELETE');
-        loadModule('reviews');
-    }
-};
+// deleteReview removed, using event delegation
 
 // 3. Contact Queries
 let cachedQueries = [];
 
 async function loadQueries(container) {
     try {
-        const allQueries = await DataManager.getAll('contact');
-        
-        // Normalization
-        cachedQueries = allQueries.map(q => ({
-            ...q,
-            date: q.createdAt || q.date || new Date().toISOString(),
-            isRead: q.status === 'Read' || q.isRead === true
-        })).sort((a, b) => new Date(b.date) - new Date(a.date));
+        // Use DataManager
+        cachedQueries = await DataManager.getAll('contact');
+        // Sort newest first if not already
+        cachedQueries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         container.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -1258,12 +1647,11 @@ async function loadQueries(container) {
             </div>
         `;
         renderQueryTable(cachedQueries);
-    } catch (e) { container.innerHTML = 'Error loading queries'; }
+    } catch (e) { container.innerHTML = 'Error loading queries: ' + e.message; }
 }
 
 window.filterQueries = (filter, btn) => {
     if (btn) {
-        // Scope to filter bar in queries section if needed, though globally unique works for now
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     }
@@ -1271,9 +1659,9 @@ window.filterQueries = (filter, btn) => {
     if (filter === 'ALL') {
         renderQueryTable(cachedQueries);
     } else if (filter === 'Unread') {
-        renderQueryTable(cachedQueries.filter(q => !q.isRead));
+        renderQueryTable(cachedQueries.filter(q => q.status === 'Unread'));
     } else if (filter === 'Read') {
-        renderQueryTable(cachedQueries.filter(q => q.isRead));
+        renderQueryTable(cachedQueries.filter(q => q.status === 'Read'));
     }
 };
 
@@ -1281,7 +1669,7 @@ function renderQueryTable(queries) {
     const tbody = document.getElementById('queries-table-body');
     const noMsg = document.getElementById('no-queries-msg');
 
-    if (queries.length === 0) {
+    if (!queries || queries.length === 0) {
         tbody.innerHTML = '';
         noMsg.style.display = 'block';
         return;
@@ -1289,15 +1677,15 @@ function renderQueryTable(queries) {
 
     noMsg.style.display = 'none';
     tbody.innerHTML = queries.map(q => `
-        <tr style="${!q.isRead ? 'font-weight: 600; background-color: #f0f9ff;' : ''}">
-            <td>${q.isRead ? '<span style="color:var(--secondary);"><i class="fas fa-check-double"></i> Read</span>' : '<span style="color:var(--primary);"><i class="fas fa-circle" style="font-size: 8px;"></i> New</span>'}</td>
+        <tr style="${q.status === 'Unread' ? 'font-weight: 600; background-color: #f0f9ff;' : ''}">
+            <td>${q.status === 'Read' ? '<span style="color:var(--secondary);"><i class="fas fa-check-double"></i> Read</span>' : '<span style="color:var(--primary);"><i class="fas fa-circle" style="font-size: 8px;"></i> Unread</span>'}</td>
             <td>${q.name}</td>
             <td>${q.email}</td>
-            <td>${new Date(q.date).toLocaleDateString()}</td>
+            <td>${new Date(q.createdAt).toLocaleDateString()}</td>
             <td>${q.message.substring(0, 50)}...</td>
             <td>
                 <button class="btn-sm btn-edit" onclick="viewQuery('${q.id}')"><i class="fas fa-eye"></i></button>
-                <button class="btn-sm btn-delete" onclick="deleteQuery('${q.id}')"><i class="fas fa-trash"></i></button>
+                <button class="btn-sm btn-delete js-delete-btn" data-id="${q.id}" data-type="contact"><i class="fas fa-trash"></i></button>
             </td>
         </tr>
     `).join('');
@@ -1307,13 +1695,11 @@ window.viewQuery = async (id) => {
     const query = cachedQueries.find(q => q.id === id);
     if (!query) return;
 
-    // Mark as read if not already
-    if (!query.isRead) {
+    if (query.status === 'Unread') {
         try {
             await DataManager.update('contact', id, { status: 'Read' });
-            query.isRead = true;
             query.status = 'Read';
-            renderQueryTable(cachedQueries); 
+            renderQueryTable(cachedQueries);
         } catch (e) { console.error('Failed to mark read', e); }
     }
 
@@ -1323,7 +1709,7 @@ window.viewQuery = async (id) => {
             <div><strong>Name:</strong> ${query.name}</div>
             <div><strong>Email:</strong> ${query.email}</div>
             <div><strong>Phone:</strong> ${query.phone || '-'}</div>
-            <div><strong>Date:</strong> ${new Date(query.date).toLocaleString()}</div>
+            <div><strong>Date:</strong> ${new Date(query.createdAt).toLocaleString()}</div>
             <div style="grid-column: span 2;"><strong>Project Type:</strong> ${query.projectType || '-'}</div>
         </div>
         <div class="form-group">
@@ -1333,32 +1719,20 @@ window.viewQuery = async (id) => {
             </div>
         </div>
         <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 1rem;">
-             <button class="btn btn-danger" onclick="deleteQuery('${query.id}', true)">Delete</button>
+             <button class="btn btn-danger js-delete-btn" data-id="${query.id}" data-type="contact">Delete</button>
              <button class="btn btn-secondary" onclick="closeModal()">Close</button>
         </div>
     `);
 };
 
-window.deleteQuery = async (id, fromModal = false) => {
-    window.customConfirm('Are you sure you want to delete this query?', async (confirmed) => {
-        if (!confirmed) return;
-        try {
-            await DataManager.delete('contact', id);
-            if (fromModal) closeModal();
-            showToast('Query deleted');
-            loadModule('queries');
-        } catch (err) {
-            alert('Error deleting query');
-        }
-    });
-};
+// deleteQuery removed, using event delegation
 
 // 4. Projects
 let cachedProjects = []; // Store for filtering
 
 async function loadProjects(container) {
     try {
-        cachedProjects = await apiCall('/projects', 'GET');
+        cachedProjects = await DataManager.getAll('projects');
         container.innerHTML = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                  <div class="filter-bar" style="margin-bottom: 0;">
@@ -1423,7 +1797,7 @@ function renderProjectTable(projects) {
             <td><span style="color: ${p.status === 'Completed' ? 'var(--success)' : 'var(--warning)'}">${p.status}</span></td>
             <td>
                 <button class="btn-sm btn-edit" onclick="openEditProject('${p.id}')"><i class="fas fa-edit"></i></button>
-                <button class="btn-sm btn-delete" onclick="deleteProject('${p.id}')"><i class="fas fa-trash"></i></button>
+                <button class="btn-sm btn-delete js-delete-btn" data-id="${p.id}" data-type="projects"><i class="fas fa-trash"></i></button>
             </td>
         </tr>
     `).join('');
@@ -1559,7 +1933,7 @@ window.showProjectModal = (project = null) => {
                     uploadFormData.append('location', projectData.location);
                     uploadFormData.append('category', projectData.category);
 
-                    // Use fetch directly for /upload since it's not under /api/data
+                    // Use fetch directly for /upload
                     const response = await fetch('/upload', {
                         method: 'POST',
                         body: uploadFormData
@@ -1575,14 +1949,16 @@ window.showProjectModal = (project = null) => {
                     ...projectData,
                     id: project ? project.id : 'proj_' + Date.now(),
                     images: [...existingImages, ...uploadedUrls],
+                    image: (existingImages.length > 0) ? existingImages[0] : (uploadedUrls.length > 0 ? uploadedUrls[0] : null),
                     updatedAt: new Date().toISOString()
                 };
 
-                // 3. Save to JSON DB
-                const url = project ? `/data/projects/${project.id}` : '/data/projects';
-                const method = project ? 'PUT' : 'POST';
-
-                await apiCall(url, method, finalProject, false); // JSON mode
+                // 3. Save via DataManager
+                if (project) {
+                    await DataManager.update('projects', project.id, finalProject);
+                } else {
+                    await DataManager.add('projects', finalProject);
+                }
                 
                 closeModal();
                 showToast(project ? 'Project updated' : 'Project saved');
@@ -1595,12 +1971,7 @@ window.showProjectModal = (project = null) => {
     });
 };
 
-window.deleteProject = async (id) => {
-    if (confirm('Delete project?')) {
-        await apiCall(`/projects/${id}`, 'DELETE');
-        loadModule('projects');
-    }
-};
+// deleteProject removed, using event delegation
 
 // 5. Careers (Vacancies + Applications)
 async function loadCareers(container) {
@@ -1693,7 +2064,7 @@ function renderVacancyTable(vacancies) {
             <td>
                 <span style="color: ${v.status === 'Open' ? 'var(--success)' : 'var(--warning)'}">${v.status}</span>
             </td>
-            <td>${new Date(v.createdAt || v.date || Date.now()).toLocaleDateString()}</td>
+            <td>${new Date(v.createdAt).toLocaleDateString()}</td>
             <td>
                 <button class="btn-sm btn-edit" onclick="openEditVacancy('${v.id}')"><i class="fas fa-edit"></i></button>
                 <button class="btn-sm btn-edit" title="${v.status === 'Open' ? 'Close Vacancy' : 'Re-open Vacancy'}" onclick="toggleVacancyStatus('${v.id}')">
@@ -1743,9 +2114,11 @@ window.showVacancyModal = (vacancy = null) => {
             const data = Object.fromEntries(formData.entries());
 
             try {
-                const url = vacancy ? `/vacancies/${vacancy.id}` : '/vacancies';
-                const method = vacancy ? 'PUT' : 'POST';
-                await apiCall(url, method, data);
+                if (vacancy) {
+                    await DataManager.update('vacancies', vacancy.id, data);
+                } else {
+                    await DataManager.add('vacancies', data);
+                }
 
                 closeModal();
                 showToast(vacancy ? 'Vacancy updated' : 'Vacancy created');
@@ -1766,24 +2139,28 @@ window.openEditVacancy = (id) => {
 
 window.toggleVacancyStatus = async (id) => {
     try {
-        await apiCall(`/vacancies/${id}/toggle-status`, 'PATCH');
-        showToast('Status updated');
-        renderVacancies(document.getElementById('vacancies-container'));
+        const v = await DataManager.getById('vacancies', id);
+        if (v) {
+            await DataManager.update('vacancies', id, { status: v.status === 'Open' ? 'Closed' : 'Open' });
+            showToast('Status updated');
+            renderVacancies(document.getElementById('vacancies-container'));
+        }
     } catch (err) {
-        alert('Error updating status');
+        alert('Error updating status: ' + err.message);
     }
 };
 
 window.deleteVacancy = async (id) => {
-    if (confirm('Delete this vacancy details?')) {
+    window.customConfirm('Are you sure you want to delete this vacancy?', async (confirmed) => {
+        if (!confirmed) return;
         try {
-            await apiCall(`/vacancies/${id}`, 'DELETE');
+            await DataManager.delete('vacancies', id);
             showToast('Vacancy deleted');
             renderVacancies(document.getElementById('vacancies-container'));
         } catch (err) {
-            alert('Error deleting vacancy');
+            alert('Error deleting vacancy: ' + err.message);
         }
-    }
+    });
 };
 
 // --- Applications Sub-module (Existing Logic moved here) ---
@@ -1808,9 +2185,9 @@ async function renderApplications(container) {
                                     <td>${a.position || a.appliedRole || 'N/A'}</td>
                                     <td>${a.email}</td>
                                     <td>
-                                        ${a.cvData ? `<a href="${a.cvData}" download="${a.cvName || 'Resume.pdf'}" class="btn-sm btn-secondary" style="font-size: 0.75rem; padding: 2px 6px; display:inline-block; text-decoration:none;">Download</a>` : '-'}
+                                        ${a.cvData ? `<button onclick="downloadCV('${a.id}')" class="btn-sm btn-secondary" style="font-size: 0.75rem; padding: 2px 6px;">Download</button>` : '-'}
                                     </td>
-                                    <td>${new Date(a.submittedAt || a.createdAt || a.date || Date.now()).toLocaleDateString()}</td>
+                                    <td>${new Date(a.submittedAt || a.date || Date.now()).toLocaleDateString()}</td>
                                     <td>
                                         <div style="display: flex; align-items: center; gap: 8px;">
                                             <span style="width: 8px; height: 8px; background: ${dotColor}; border-radius: 50%; display: inline-block;"></span>
@@ -1859,11 +2236,11 @@ window.viewApplicationDetails = async (id) => {
                     </div>
                     <div>
                         <label style="display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 5px;">Submission Date</label>
-                        <p style="margin: 0;">${new Date(app.submittedAt || app.createdAt || app.date || Date.now()).toLocaleString()}</p>
+                        <p style="margin: 0;">${new Date(app.submittedAt || app.date || Date.now()).toLocaleString()}</p>
                     </div>
                     <div>
                         <label style="display: block; font-size: 0.8rem; color: #888; text-transform: uppercase; margin-bottom: 5px;">CV Attachment</label>
-                        ${app.cvData ? `<a href="${app.cvData}" download="${app.cvName || 'Resume.pdf'}" class="btn btn-secondary btn-sm" style="display:inline-flex; align-items:center; gap:5px; text-decoration:none;"><i class="fas fa-download"></i> Download CV</a>` : '<p style="margin: 0; color: #999;">No CV attached</p>'}
+                        ${app.cvData ? `<button onclick="downloadCV('${app.id}')" class="btn btn-secondary btn-sm"><i class="fas fa-download"></i> Download CV</button>` : '<p style="margin: 0; color: #999;">No CV attached</p>'}
                     </div>
                 </div>
 
@@ -1887,19 +2264,7 @@ window.viewApplicationDetails = async (id) => {
             </div>
         `);
     } catch (err) {
-        console.error('Error viewing application:', err);
         showToast('Error loading application details', 'error');
-    }
-};
-
-window.updateCareerStatus = async (id, status) => {
-    try {
-        await DataManager.update('careers', id, { status });
-        const container = document.getElementById('content-area');
-        if (container) renderApplications(container);
-        showToast(`Status updated to ${status}`);
-    } catch (e) {
-        alert('Error updating status: ' + e.message);
     }
 };
 
@@ -1909,9 +2274,10 @@ window.deleteApplication = async (id) => {
         try {
             await DataManager.delete('careers', id);
             showToast('Application deleted');
+            // Refresh applications list
             renderApplications(document.getElementById('applications-container'));
         } catch (err) {
-            alert('Error deleting application');
+            alert('Error deleting application: ' + err.message);
         }
     });
 };
@@ -1942,24 +2308,23 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// Start
+
 window.customConfirm = (msg, callback) => {
     const div = document.createElement('div');
-    div.id = 'custom-confirm-overlay';
-    div.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000; backdrop-filter: blur(4px);';
+    div.style = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
     div.innerHTML = `
-        <div style="background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); max-width: 450px; width: 90%; text-align: center; animation: slideUp 0.3s ease;">
-            <div style="color: #f59e0b; font-size: 4rem; margin-bottom: 1.5rem;"><i class="fas fa-exclamation-circle"></i></div>
-            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: #111827; font-weight: 700;">Are you sure?</h3>
-            <p style="color: #4b5563; margin-bottom: 2rem; line-height: 1.6; font-size: 1.05rem;">${msg}</p>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <button id="custom-confirm-no" class="btn btn-secondary" style="padding: 10px 25px; font-weight: 600;">Cancel</button>
-                <button id="custom-confirm-yes" class="btn btn-primary" style="padding: 10px 25px; font-weight: 600; background: #ef4444; border-color: #ef4444;">Yes, Proceed</button>
+        <div style="background:white;padding:2rem;border-radius:8px;text-align:center;box-shadow:0 4px 6px rgba(0,0,0,0.1);max-width:400px;width:90%;">
+            <p style="margin-bottom:1.5rem;font-size:1.1rem;color:#333;">${msg}</p>
+            <div style="display:flex;gap:10px;justify-content:center;">
+                <button id="custom-confirm-yes" class="btn btn-danger">Yes, Delete</button>
+                <button id="custom-confirm-no" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
     `;
     document.body.appendChild(div);
-    document.getElementById('custom-confirm-no').onclick = () => { div.remove(); callback(false); };
     document.getElementById('custom-confirm-yes').onclick = () => { div.remove(); callback(true); };
+    document.getElementById('custom-confirm-no').onclick = () => { div.remove(); callback(false); };
 };
 
 window.togglePasswordVisibility = (inputId, btn) => {
@@ -1973,6 +2338,179 @@ window.togglePasswordVisibility = (inputId, btn) => {
         icon.classList.replace('fa-eye-slash', 'fa-eye');
     }
 };
+
+function renderMaintenanceModule() {
+    const content = document.getElementById('content-area');
+    const title = document.getElementById('page-title');
+    title.textContent = 'System Maintenance';
+
+    content.innerHTML = `
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="color: var(--danger); font-size: 3rem; margin-bottom: 1rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 style="color: #111827; margin-bottom: 0.5rem;">Clear Website Data</h2>
+                <p style="color: #4b5563;">Select the types of data you wish to permanently delete from the system.</p>
+            </div>
+
+            <div class="alert alert-danger" style="background: #fef2f2; border: 1px solid #fee2e2; border-radius: 10px; padding: 1.5rem; color: #991b1b; margin-bottom: 2rem;">
+                <div style="display: flex; gap: 15px;">
+                    <i class="fas fa-shield-alt" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <strong style="display: block; margin-bottom: 5px;">High Risk Action</strong>
+                        <p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">
+                            This action is irreversible. All selected data, including associated files like CVs and images, will be permanently removed from the server. It is highly recommended to <strong>Download a Backup</strong> before proceeding.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="clear-data-form" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2.5rem;">
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="users" value="users" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">User Data</strong>
+                        <small style="color: #64748b;">System users and roles</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="reviews" value="reviews" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Client Reviews</strong>
+                        <small style="color: #64748b;">Includes all review images</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="contact" value="contact" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Contact Queries</strong>
+                        <small style="color: #64748b;">Website inquiry messages</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="careers" value="careers" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Job Applications</strong>
+                        <small style="color: #64748b;">Includes all uploaded CVs</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="vacancies" value="vacancies" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Job Vacancies</strong>
+                        <small style="color: #64748b;">Career postings and details</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="projects" value="projects" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Projects</strong>
+                        <small style="color: #64748b;">Includes all project images</small>
+                    </div>
+                </label>
+            </form>
+
+            <div id="maintenance-progress-container" style="display: none; margin-top: 2rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span id="maintenance-current-task" style="font-weight: 600; color: #374151;">Processing...</span>
+                    <span id="maintenance-percent" style="color: #6b7280;">0%</span>
+                </div>
+                <div style="height: 12px; width: 100%; background: #e5e7eb; border-radius: 6px; overflow: hidden; margin-bottom: 1.5rem;">
+                    <div id="maintenance-progress-bar" style="height: 100%; width: 0%; background: var(--primary); transition: width 0.3s ease;"></div>
+                </div>
+                <div id="maintenance-results" style="font-size: 0.85rem; max-height: 200px; overflow-y: auto; border: 1px solid #f1f5f9; padding: 1rem; border-radius: 6px; background: #f9fafb;"></div>
+            </div>
+
+            <div class="maintenance-actions" style="display: flex; gap: 1rem;">
+                <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="loadModule('dashboard')">Cancel</button>
+                <button type="button" class="btn btn-danger" style="flex: 2; font-weight: 700;" onclick="handleClearData()">
+                    <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Clear Selected Data
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+async function handleClearData() {
+    const form = document.getElementById('clear-data-form');
+    const checked = Array.from(form.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+    if (checked.length === 0) {
+        showToast('Please select at least one data type to clear', 'warning');
+        return;
+    }
+
+    const message = `Are you ABSOLUTELY sure you want to clear: ${checked.join(', ')}? This cannot be undone!`;
+    
+    window.customConfirm(message, async (confirmed) => {
+        if (!confirmed) return;
+
+        // Hide form and actions, show progress
+        form.style.display = 'none';
+        document.querySelector('.maintenance-actions').style.display = 'none';
+        const progressContainer = document.getElementById('maintenance-progress-container');
+        progressContainer.style.display = 'block';
+
+        const taskText = document.getElementById('maintenance-current-task');
+        const percentText = document.getElementById('maintenance-percent');
+        const bar = document.getElementById('maintenance-progress-bar');
+        const resultsDiv = document.getElementById('maintenance-results');
+
+        let completed = 0;
+        const total = checked.length;
+
+        for (const type of checked) {
+            taskText.textContent = `Clearing ${type.charAt(0).toUpperCase() + type.slice(1)}...`;
+            try {
+                const response = await fetch('/api/admin/maintenance/clear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.token}`
+                    },
+                    body: JSON.stringify({ types: [type] })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    resultsDiv.innerHTML += `<div style="color: #059669; margin-bottom: 8px;"><i class="fas fa-check-circle"></i> ${type}: ${result.results[type]}</div>`;
+                } else {
+                    resultsDiv.innerHTML += `<div style="color: #dc2626; margin-bottom: 8px;"><i class="fas fa-times-circle"></i> ${type}: ${result.error}</div>`;
+                }
+            } catch (err) {
+                resultsDiv.innerHTML += `<div style="color: #dc2626; margin-bottom: 8px;"><i class="fas fa-exclamation-triangle"></i> ${type}: Network Error</div>`;
+            }
+
+            completed++;
+            const percent = Math.round((completed / total) * 100);
+            percentText.textContent = `${percent}%`;
+            bar.style.width = `${percent}%`;
+            
+            // Small delay for visual effect
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        taskText.textContent = 'Maintenance Complete';
+        showToast('Maintenance task finished');
+        
+        // Add a "Done" button to refresh the view
+        const doneBtn = document.createElement('button');
+        doneBtn.className = 'btn btn-primary';
+        doneBtn.style.width = '100%';
+        doneBtn.style.marginTop = '1.5rem';
+        doneBtn.style.padding = '12px';
+        doneBtn.style.fontWeight = '600';
+        doneBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Finish & Reload';
+        doneBtn.onclick = () => loadModule('maintenance');
+        progressContainer.appendChild(doneBtn);
+    });
+}
 
 // --- Global Event Delegation for Delete Buttons ---
 document.addEventListener('click', async (e) => {
@@ -1995,6 +2533,7 @@ document.addEventListener('click', async (e) => {
             else if (type === 'vacancies' || type === 'careers') loadModule('careers');
             else if (type === 'users') loadModule('users');
             
+            // closeModal just in case we are inside a modal
             closeModal();
         } catch (err) {
             alert('Error deleting: ' + err.message);
@@ -2002,5 +2541,4 @@ document.addEventListener('click', async (e) => {
     });
 });
 
-// Start
 init();

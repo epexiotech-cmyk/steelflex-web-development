@@ -33,6 +33,9 @@ async function uploadFile(filePath, fileName) {
             throw new Error('GOOGLE_DRIVE_FOLDER_ID is not defined in .env');
         }
 
+        const stats = fs.statSync(filePath);
+        const fileSize = stats.size;
+
         const fileMetadata = {
             name: fileName,
             parents: [folderId],
@@ -46,12 +49,24 @@ async function uploadFile(filePath, fileName) {
         const response = await drive.files.create({
             requestBody: fileMetadata,
             media: media,
-            fields: 'id',
+            fields: 'id, name, size',
             supportsAllDrives: true,
         });
 
-        console.log(`✅ Backup uploaded to Google Drive. File ID: ${response.data.id}`);
-        return response.data.id;
+        // Verification Step
+        const fileId = response.data.id;
+        const check = await drive.files.get({
+            fileId: fileId,
+            fields: 'id, size, name',
+            supportsAllDrives: true
+        });
+
+        if (!check.data || parseInt(check.data.size) === 0) {
+            throw new Error('Upload verification failed: File not found or size is 0');
+        }
+
+        console.log(`✅ Backup uploaded and verified. ID: ${fileId}, Size: ${check.data.size} bytes`);
+        return { id: fileId, size: parseInt(check.data.size), name: check.data.name };
     } catch (error) {
         console.error('❌ Google Drive upload failed:', error.message);
         throw error;
@@ -67,19 +82,35 @@ async function cleanupOldBackups(daysToKeep = 30) {
         const timeLimit = new Date();
         timeLimit.setDate(timeLimit.getDate() - daysToKeep);
         
-        const q = `'${folderId}' in parents and mimeType = 'application/zip' and createdTime < '${timeLimit.toISOString()}'`;
-        
+        // Fetch all zip files in the folder sorted by creation time
         const response = await drive.files.list({
-            q: q,
+            q: `'${folderId}' in parents and mimeType = 'application/zip' and trashed = false`,
             fields: 'files(id, name, createdTime)',
+            orderBy: 'createdTime desc',
             supportsAllDrives: true,
             includeItemsFromAllDrives: true,
         });
 
-        const files = response.data.files;
-        if (files.length > 0) {
-            console.log(`Cleaning up ${files.length} old backups from Google Drive...`);
-            for (const file of files) {
+        const files = response.data.files || [];
+        if (files.length <= 1) return; // Keep the only file (the newest)
+
+        // Pattern for backup-YYYY-MM-DD-HH-mm.zip
+        const backupPattern = /^backup-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}\.zip$/;
+        
+        // Filter files to delete:
+        // 1. Matches the naming pattern
+        // 2. Older than the time limit
+        // 3. IS NOT the newest file (files[0] is newest due to orderBy)
+        const filesToDelete = files.filter((file, index) => {
+            if (index === 0) return false; // Always keep the newest
+            const isOld = new Date(file.createdTime) < timeLimit;
+            const matchesPattern = backupPattern.test(file.name);
+            return isOld && matchesPattern;
+        });
+
+        if (filesToDelete.length > 0) {
+            console.log(`Cleaning up ${filesToDelete.length} old backups from Google Drive...`);
+            for (const file of filesToDelete) {
                 await drive.files.delete({ 
                     fileId: file.id,
                     supportsAllDrives: true 

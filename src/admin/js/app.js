@@ -75,19 +75,27 @@ function init() {
 
 async function login(userId, password) {
     try {
-        // Mock authentication for static mode
-        if (userId && password) {
-            state.user = { id: 1, name: 'Admin', role: 'SUPER_ADMIN', email: 'admin@steelflex.com' };
-            state.token = 'static-token';
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, password })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            state.user = result;
+            state.token = result.accessToken;
             localStorage.setItem('user', JSON.stringify(state.user));
             localStorage.setItem('token', state.token);
             showToast('Login successful');
             renderDashboard();
         } else {
-            showToast('Invalid credentials', 'error');
+            showToast(result.error || 'Login failed', 'error');
         }
     } catch (err) {
-        console.error(err);
+        console.error('Login Error:', err);
+        showToast('Connection error', 'error');
     }
 }
 
@@ -185,6 +193,7 @@ function renderSidebar() {
         { id: 'queries', icon: 'envelope', label: 'Contact Queries', roles: ['SUPER_ADMIN', 'ADMIN'] },
         { id: 'projects', icon: 'building', label: 'Projects', roles: ['SUPER_ADMIN', 'ADMIN'] },
         { id: 'careers', icon: 'briefcase', label: 'Careers & Jobs', roles: ['SUPER_ADMIN', 'ADMIN'] },
+        { id: 'maintenance', icon: 'trash-alt', label: 'Clear Data', roles: ['SUPER_ADMIN'] },
         { id: 'backup', icon: 'download', label: 'Download Backup', roles: ['SUPER_ADMIN'], action: downloadBackup },
         { id: 'cloud', icon: 'cloud-upload-alt', label: 'Sync to Cloud', roles: ['SUPER_ADMIN'], action: syncToCloud },
         { id: 'restore', icon: 'upload', label: 'Restore Backup', roles: ['SUPER_ADMIN'], action: restoreBackup },
@@ -214,6 +223,48 @@ function renderSidebar() {
             menu.appendChild(a);
         }
     });
+
+    updateSidebarBackupStatus();
+}
+
+async function updateSidebarBackupStatus() {
+    const container = document.getElementById('sidebar-backup-status');
+    if (!container) return;
+
+    try {
+        const response = await fetch('/api/admin/backup/status');
+        const result = await response.json();
+        
+        if (result.success && result.status) {
+            const status = result.status;
+            const isFail = status.status === 'fail';
+            const color = isFail ? '#ef4444' : '#22c55e';
+            const icon = isFail ? 'exclamation-triangle' : 'check-circle';
+            const label = isFail ? 'Backup Failed' : 'Backup Healthy';
+            
+            container.innerHTML = `
+                <div class="sidebar-status-item" title="Click to sync now" onclick="syncToCloud()" style="cursor: pointer;">
+                    <i class="fas fa-${icon}" style="color: ${color};"></i>
+                    <div class="sidebar-status-info">
+                        <strong>${label}</strong>
+                        <small>Last: ${new Date(status.date).toLocaleDateString()}</small>
+                    </div>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="sidebar-status-item">
+                    <i class="fas fa-cloud" style="color: rgba(255,255,255,0.3);"></i>
+                    <div class="sidebar-status-info">
+                        <strong>No Backup</strong>
+                        <small>Never synchronized</small>
+                    </div>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Failed to fetch sidebar backup status:', error);
+    }
 }
 
 // --- Modules ---
@@ -223,17 +274,21 @@ async function loadModule(moduleId) {
     content.innerHTML = '<p>Loading...</p>';
 
     switch (moduleId) {
+        case 'maintenance':
+            renderMaintenanceModule();
+            break;
         case 'dashboard':
             title.textContent = 'Dashboard';
 
             try {
                 // Fetch all data arrays via DataManager for calculating live stats
-                const [reviews, queries, careers, projects, users] = await Promise.all([
+                const [reviews, queries, careers, projects, users, backupStatus] = await Promise.all([
                     DataManager.getAll('reviews'),
                     DataManager.getAll('contact'),
                     DataManager.getAll('careers'),
                     DataManager.getAll('projects'),
-                    DataManager.getAll('users')
+                    DataManager.getAll('users'),
+                    fetch('/api/admin/backup/status').then(r => r.json()).catch(() => ({ status: null }))
                 ]);
 
                 // Calculate counts directly from the active arrays
@@ -242,6 +297,31 @@ async function loadModule(moduleId) {
                 const totalProjects = projects.length;
                 const newApps = careers.filter(c => c.status === 'New' || !c.status).length;
                 const totalApps = careers.length;
+
+                let backupWarning = '';
+                let backupCardStatus = 'Unknown';
+                let backupCardColor = 'var(--secondary)';
+                let backupCardIcon = 'cloud';
+                
+                if (backupStatus.status) {
+                    const isFail = backupStatus.status.status === 'fail';
+                    backupCardStatus = isFail ? 'Failed' : 'Success';
+                    backupCardColor = isFail ? 'var(--danger)' : 'var(--success)';
+                    backupCardIcon = isFail ? 'exclamation-triangle' : 'check-circle';
+
+                    if (isFail) {
+                        backupWarning = `
+                            <div class="alert alert-danger" style="margin-bottom: 2rem; background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; padding: 1rem; border-radius: 8px; display: flex; align-items: center; gap: 15px;">
+                                <div style="font-size: 1.5rem;"><i class="fas fa-exclamation-triangle"></i></div>
+                                <div>
+                                    <strong style="font-size: 1.1rem; display: block;">Backup System Alert</strong>
+                                    <span style="font-size: 0.95rem;">The last automated backup failed on ${new Date(backupStatus.status.date).toLocaleString()}. Error: ${backupStatus.status.error}</span>
+                                </div>
+                                <button class="btn-sm btn-primary" style="margin-left: auto; background: #ef4444; border: none; padding: 8px 16px; font-weight: 600;" onclick="syncToCloud()">Try Now</button>
+                            </div>
+                        `;
+                    }
+                }
 
                 content.innerHTML = `
                     <div style="margin-bottom: 2rem;">
@@ -712,7 +792,7 @@ async function syncToCloud() {
                             File: ${result.fileName}
                         </div>
 
-                        <button class="btn btn-primary" onclick="closeModal()" style="width: 100%;">
+                        <button class="btn btn-primary" onclick="closeModal(); updateSidebarBackupStatus();" style="width: 100%;">
                             Close
                         </button>
                     </div>
@@ -735,7 +815,7 @@ async function syncToCloud() {
                         <p style="color: #991b1b; font-family: monospace; font-size: 0.9rem;">${err.message}</p>
                     </div>
 
-                    <button class="btn btn-secondary" onclick="closeModal()" style="width: 100%;">
+                    <button class="btn btn-secondary" onclick="closeModal(); updateSidebarBackupStatus();" style="width: 100%;">
                         Close
                     </button>
                 </div>
@@ -1095,8 +1175,11 @@ async function downloadBackup() {
     try {
         // Since we want to download a file, we navigate directly or create a hidden link
         const a = document.createElement('a');
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        const fileName = `backup-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}-${pad(now.getHours())}-${pad(now.getMinutes())}.zip`;
         a.href = '/api/admin/backup';
-        a.download = `steelflex-backup-${new Date().toISOString().split('T')[0]}.zip`;
+        a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -2255,6 +2338,179 @@ window.togglePasswordVisibility = (inputId, btn) => {
         icon.classList.replace('fa-eye-slash', 'fa-eye');
     }
 };
+
+function renderMaintenanceModule() {
+    const content = document.getElementById('content-area');
+    const title = document.getElementById('page-title');
+    title.textContent = 'System Maintenance';
+
+    content.innerHTML = `
+        <div class="card" style="max-width: 800px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="color: var(--danger); font-size: 3rem; margin-bottom: 1rem;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2 style="color: #111827; margin-bottom: 0.5rem;">Clear Website Data</h2>
+                <p style="color: #4b5563;">Select the types of data you wish to permanently delete from the system.</p>
+            </div>
+
+            <div class="alert alert-danger" style="background: #fef2f2; border: 1px solid #fee2e2; border-radius: 10px; padding: 1.5rem; color: #991b1b; margin-bottom: 2rem;">
+                <div style="display: flex; gap: 15px;">
+                    <i class="fas fa-shield-alt" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <strong style="display: block; margin-bottom: 5px;">High Risk Action</strong>
+                        <p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">
+                            This action is irreversible. All selected data, including associated files like CVs and images, will be permanently removed from the server. It is highly recommended to <strong>Download a Backup</strong> before proceeding.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="clear-data-form" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2.5rem;">
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="users" value="users" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">User Data</strong>
+                        <small style="color: #64748b;">System users and roles</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="reviews" value="reviews" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Client Reviews</strong>
+                        <small style="color: #64748b;">Includes all review images</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="contact" value="contact" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Contact Queries</strong>
+                        <small style="color: #64748b;">Website inquiry messages</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="careers" value="careers" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Job Applications</strong>
+                        <small style="color: #64748b;">Includes all uploaded CVs</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="vacancies" value="vacancies" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Job Vacancies</strong>
+                        <small style="color: #64748b;">Career postings and details</small>
+                    </div>
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 12px; padding: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+                    <input type="checkbox" name="projects" value="projects" style="width: 18px; height: 18px;">
+                    <div>
+                        <strong style="display: block;">Projects</strong>
+                        <small style="color: #64748b;">Includes all project images</small>
+                    </div>
+                </label>
+            </form>
+
+            <div id="maintenance-progress-container" style="display: none; margin-top: 2rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span id="maintenance-current-task" style="font-weight: 600; color: #374151;">Processing...</span>
+                    <span id="maintenance-percent" style="color: #6b7280;">0%</span>
+                </div>
+                <div style="height: 12px; width: 100%; background: #e5e7eb; border-radius: 6px; overflow: hidden; margin-bottom: 1.5rem;">
+                    <div id="maintenance-progress-bar" style="height: 100%; width: 0%; background: var(--primary); transition: width 0.3s ease;"></div>
+                </div>
+                <div id="maintenance-results" style="font-size: 0.85rem; max-height: 200px; overflow-y: auto; border: 1px solid #f1f5f9; padding: 1rem; border-radius: 6px; background: #f9fafb;"></div>
+            </div>
+
+            <div class="maintenance-actions" style="display: flex; gap: 1rem;">
+                <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="loadModule('dashboard')">Cancel</button>
+                <button type="button" class="btn btn-danger" style="flex: 2; font-weight: 700;" onclick="handleClearData()">
+                    <i class="fas fa-trash-alt" style="margin-right: 8px;"></i> Clear Selected Data
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+async function handleClearData() {
+    const form = document.getElementById('clear-data-form');
+    const checked = Array.from(form.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
+
+    if (checked.length === 0) {
+        showToast('Please select at least one data type to clear', 'warning');
+        return;
+    }
+
+    const message = `Are you ABSOLUTELY sure you want to clear: ${checked.join(', ')}? This cannot be undone!`;
+    
+    window.customConfirm(message, async (confirmed) => {
+        if (!confirmed) return;
+
+        // Hide form and actions, show progress
+        form.style.display = 'none';
+        document.querySelector('.maintenance-actions').style.display = 'none';
+        const progressContainer = document.getElementById('maintenance-progress-container');
+        progressContainer.style.display = 'block';
+
+        const taskText = document.getElementById('maintenance-current-task');
+        const percentText = document.getElementById('maintenance-percent');
+        const bar = document.getElementById('maintenance-progress-bar');
+        const resultsDiv = document.getElementById('maintenance-results');
+
+        let completed = 0;
+        const total = checked.length;
+
+        for (const type of checked) {
+            taskText.textContent = `Clearing ${type.charAt(0).toUpperCase() + type.slice(1)}...`;
+            try {
+                const response = await fetch('/api/admin/maintenance/clear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${state.token}`
+                    },
+                    body: JSON.stringify({ types: [type] })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    resultsDiv.innerHTML += `<div style="color: #059669; margin-bottom: 8px;"><i class="fas fa-check-circle"></i> ${type}: ${result.results[type]}</div>`;
+                } else {
+                    resultsDiv.innerHTML += `<div style="color: #dc2626; margin-bottom: 8px;"><i class="fas fa-times-circle"></i> ${type}: ${result.error}</div>`;
+                }
+            } catch (err) {
+                resultsDiv.innerHTML += `<div style="color: #dc2626; margin-bottom: 8px;"><i class="fas fa-exclamation-triangle"></i> ${type}: Network Error</div>`;
+            }
+
+            completed++;
+            const percent = Math.round((completed / total) * 100);
+            percentText.textContent = `${percent}%`;
+            bar.style.width = `${percent}%`;
+            
+            // Small delay for visual effect
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        taskText.textContent = 'Maintenance Complete';
+        showToast('Maintenance task finished');
+        
+        // Add a "Done" button to refresh the view
+        const doneBtn = document.createElement('button');
+        doneBtn.className = 'btn btn-primary';
+        doneBtn.style.width = '100%';
+        doneBtn.style.marginTop = '1.5rem';
+        doneBtn.style.padding = '12px';
+        doneBtn.style.fontWeight = '600';
+        doneBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Finish & Reload';
+        doneBtn.onclick = () => loadModule('maintenance');
+        progressContainer.appendChild(doneBtn);
+    });
+}
 
 // --- Global Event Delegation for Delete Buttons ---
 document.addEventListener('click', async (e) => {

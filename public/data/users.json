@@ -2,9 +2,9 @@
   {
     "id": "superadmin_1",
     "name": "Super Admin",
-    "email": "admin@hostinger.com",
-    "userId": "admin",
-    "password": "$2b$10$Fazp1ev786THY750vnwVMu7pzXOQhy1lqHE38KctoKxBjky51KxSW",
+    "email": "office@epexio.in",
+    "userId": "epexio",
+    "password": "$2b$10$KhmLMppZSa4mX7xs8nvM7.GJN5FT.l7ivVwtzle.YgvojTrYkejUa",
     "role": "SUPER_ADMIN"
   }
 ]
