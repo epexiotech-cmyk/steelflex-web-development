@@ -4933,8 +4933,8 @@ img {
 
 .epc-footer-note {
     text-align: center;
-    padding: 20px 20px 40px;
-    /* Adjusted padding */
+    padding: 10px 20px 50px;
+    /* Adjusted padding to move text up */
     font-size: 14px;
     color: var(--secondary-color);
     opacity: 0.4;
