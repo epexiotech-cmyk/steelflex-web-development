@@ -208,10 +208,7 @@ app.get('/api/admin/backup/status', async (req, res) => {
     }
 });
 
-// Serve Admin Panel (SPA fallback for admin routes)
-app.get(/^\/admin($|\/)/, (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/admin', 'index.html'));
-});
+
 
 
 
@@ -548,18 +545,38 @@ app.post('/api/admin/backup/cloud', async (req, res) => {
     }
 });
 
-// Clean routing for website pages (MUST be last)
+// 3. Admin panel
+app.get(/^\/admin($|\/)/, (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist/admin', 'index.html'));
+});
+
+// 4. Root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+// 5. Clean page routing (LAST)
 app.get('/:page', (req, res) => {
     const page = req.params.page;
+
+    // Ignore API routes
+    if (page.startsWith('api')) {
+        return res.status(404).end();
+    }
+
+    // Handle admin panel
     if (page === 'admin') {
         return res.sendFile(path.join(__dirname, 'dist/admin', 'index.html'));
     }
-    const filePath = path.join(__dirname, 'dist', page + '.html');
+
+    const filePath = path.join(__dirname, 'dist', `${page}.html`);
+
     if (fs.existsSync(filePath)) {
-        res.sendFile(filePath);
-    } else {
-        res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+        return res.sendFile(filePath);
     }
+
+    // fallback to homepage
+    return res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start Server

@@ -67,8 +67,17 @@ export default defineConfig({
                     return;
                 }
                 
-                next();
+        next();
             });
+        }
+    },
+    preview: {
+        port: 4173,
+        host: true,
+        proxy: {
+            '/api': 'http://127.0.0.1:3000',
+            '/upload': 'http://127.0.0.1:3000',
+            '/uploads': 'http://127.0.0.1:3000'
         }
     },
     build: {
