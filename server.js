@@ -41,13 +41,13 @@ app.use((req, res, next) => {
 
 // --- CRITICAL DEBUG ROUTE ---
 app.get('/ping-debug', (req, res) => {
-    res.send('PONG - SERVER IS RUNNING LATEST CODE (V1.2)');
+    res.send('PONG - SERVER IS RUNNING LATEST CODE (V1.3)');
 });
 
 // --- API ROUTES ---
 
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date(), version: '1.2.0' });
+    res.json({ status: 'ok', timestamp: new Date(), version: '1.3.0' });
 });
 
 const getDataFilePath = (type) => {
@@ -251,8 +251,8 @@ app.get('/:page', (req, res, next) => {
     next();
 });
 
-// THE FIX: Changed '*' to '/*' to support Express 5.x / path-to-regexp 6.x
-app.get('/*', (req, res) => {
+// FINAL COMPATIBILITY FIX: Use regex catch-all (.*) for Express 5.x
+app.get('(.*)', (req, res) => {
     const cp = path.join(DIST_PATH, 'index.html');
     if (fs.existsSync(cp)) res.sendFile(cp);
     else res.status(404).send('Not Found');
