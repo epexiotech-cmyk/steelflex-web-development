@@ -45,14 +45,24 @@ app.use((req, res, next) => {
     next();
 });
 
-// Static files with clean URL support
+// Static files (standard)
 const DIST_PATH = path.resolve(__dirname, 'dist');
 console.log(`[Server] Serving static files from: ${DIST_PATH}`);
 
-app.use(express.static(DIST_PATH, { 
-    extensions: ['html'],
-    index: 'index.html'
-}));
+app.use(express.static(DIST_PATH, { index: 'index.html' }));
+
+// Explicit Clean URL Routes (Bulletproof)
+const cleanPages = [
+    'about-us', 'products-structures', 'capabilities', 
+    'machineries', 'projects', 'careers', 'contact-us', 'review'
+];
+
+cleanPages.forEach(page => {
+    app.get(`/${page}/?`, (req, res) => {
+        const filePath = path.join(DIST_PATH, `${page}.html`);
+        res.sendFile(filePath);
+    });
+});
 
 // Assets explicit route
 app.use('/assets', express.static(path.join(DIST_PATH, 'assets')));
