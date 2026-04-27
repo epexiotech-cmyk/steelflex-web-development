@@ -17,13 +17,7 @@ const DIST_PATH = path.resolve(__dirname, 'dist');
 // --- UTILS ---
 function slugify(text) {
     if (!text) return "";
-    return text
-        .toString()
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/[^\w\-]+/g, "")
-        .replace(/\-\-+/g, "-")
-        .trim();
+    return text.toString().toLowerCase().replace(/\s+/g, "-").replace(/[^\w\-]+/g, "").replace(/\-\-+/g, "-").trim();
 }
 
 function generateSeoName(data, ext) {
@@ -31,7 +25,6 @@ function generateSeoName(data, ext) {
     const category = slugify(data.category || "steel-structure");
     const location = slugify(data.location || "india");
     const uniqueId = Date.now() + "-" + Math.floor(Math.random() * 1000);
-
     return `${project}-${category}-${location}-${uniqueId}${ext}`;
 }
 
@@ -46,22 +39,20 @@ app.use((req, res, next) => {
     next();
 });
 
+// --- CRITICAL DEBUG ROUTE ---
+app.get('/ping-debug', (req, res) => {
+    res.send('PONG - SERVER IS RUNNING LATEST CODE');
+});
+
 // --- API ROUTES (Defined BEFORE Static) ---
 
 // 1. Health & Auth
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date() });
+    res.json({ status: 'ok', timestamp: new Date(), version: '1.1.0' });
 });
 
 const getDataFilePath = (type) => {
-    const fileMap = {
-        'reviews': 'reviews.json',
-        'contact': 'contact_queries.json',
-        'projects': 'projects.json',
-        'careers': 'careers.json',
-        'vacancies': 'vacancies.json',
-        'users': 'users.json'
-    };
+    const fileMap = { 'reviews': 'reviews.json', 'contact': 'contact_queries.json', 'projects': 'projects.json', 'careers': 'careers.json', 'vacancies': 'vacancies.json', 'users': 'users.json' };
     return path.join(__dirname, 'public/data', fileMap[type] || `${type}.json`);
 };
 
@@ -73,27 +64,17 @@ app.post('/api/auth/login', async (req, res) => {
         const users = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
         const user = users.find(u => u.userId === userId);
         if (!user) return res.status(401).json({ error: 'Invalid User ID' });
-
         let isValid = false;
         if (user.password.startsWith('$2b$')) {
             const bcrypt = require('bcrypt');
             isValid = await bcrypt.compare(password, user.password);
-        } else {
-            isValid = (password === user.password);
-        }
-
+        } else { isValid = (password === user.password); }
         if (isValid) {
-            const userData = { ...user };
-            delete userData.password;
+            const userData = { ...user }; delete userData.password;
             const accessToken = jwt.sign({ id: user.id, userId: user.userId, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
             res.json({ ...userData, accessToken });
-        } else {
-            res.status(401).json({ error: 'Invalid Password' });
-        }
-    } catch (error) {
-        console.error('Login Error:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+        } else { res.status(401).json({ error: 'Invalid Password' }); }
+    } catch (error) { res.status(500).json({ error: 'Internal Error' }); }
 });
 
 // 2. Data Access Helpers
@@ -103,9 +84,7 @@ async function handleDataGet(type, res) {
     try {
         const data = await fs.promises.readFile(filePath, 'utf8');
         res.json(JSON.parse(data || '[]'));
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
+    } catch (e) { res.status(500).json({ error: e.message }); }
 }
 
 // 3. Data Routes
@@ -169,30 +148,22 @@ app.post('/api/admin/maintenance/clear', async (req, res) => {
     try {
         const token = authHeader.split(' ')[1];
         let decoded = jwt.verify(token, JWT_SECRET);
-        if (decoded.role !== 'SUPER_ADMIN') return res.status(403).json({ error: 'Access denied. Super Admin only.' });
-
+        if (decoded.role !== 'SUPER_ADMIN') return res.status(403).json({ error: 'Access denied' });
         const { types } = req.body;
         const results = {};
         for (const type of types) {
             const filePath = getDataFilePath(type);
             if (type === 'projects') {
                 const folders = [path.join(__dirname, "uploads", "optimized"), path.join(__dirname, "uploads", "thumbs")];
-                folders.forEach(folder => {
-                    if (fs.existsSync(folder)) {
-                        fs.readdirSync(folder).forEach(file => { if (file !== '.gitkeep') try { fs.unlinkSync(path.join(folder, file)); } catch (e) {} });
-                    }
-                });
+                folders.forEach(folder => { if (fs.existsSync(folder)) fs.readdirSync(folder).forEach(file => { if (file !== '.gitkeep') try { fs.unlinkSync(path.join(folder, file)); } catch (e) {} }); });
             }
             if (fs.existsSync(filePath)) {
                 if (type === 'users') {
                     const users = JSON.parse(fs.readFileSync(filePath, 'utf8') || '[]');
                     const adminsToKeep = users.filter(u => u.role === 'SUPER_ADMIN');
                     fs.writeFileSync(filePath, JSON.stringify(adminsToKeep, null, 2));
-                    results[type] = `Cleared (preserved ${adminsToKeep.length})`;
-                } else {
-                    fs.writeFileSync(filePath, JSON.stringify([], null, 2));
-                    results[type] = 'Cleared';
-                }
+                    results[type] = `Cleared (${adminsToKeep.length})`;
+                } else { fs.writeFileSync(filePath, JSON.stringify([], null, 2)); results[type] = 'Cleared'; }
             }
         }
         res.json({ success: true, results });
@@ -217,8 +188,7 @@ app.get('/api/admin/backup', async (req, res) => {
 // 5. Restoration Logic
 async function processRestore(zipPath, res) {
     try {
-        const zip = new AdmZip(zipPath);
-        zip.extractAllTo(__dirname, true);
+        const zip = new AdmZip(zipPath); zip.extractAllTo(__dirname, true);
         if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
         res.json({ success: true, message: 'Restored' });
     } catch (error) { res.status(500).json({ error: error.message }); }
@@ -265,7 +235,6 @@ app.post("/upload", upload.single("image"), async (req, res) => {
         const pOpt = path.join(optimizedDir, projectSlug);
         const pThm = path.join(thumbsDir, projectSlug);
         [pOpt, pThm].forEach(dir => { if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }); });
-
         if (isImage) {
             await sharp(inputPath).resize({ width: 1920, height: 1080, fit: "inside", withoutEnlargement: true }).webp({ quality: 80 }).toFile(path.join(pOpt, outputFileName));
             await sharp(inputPath).resize({ width: 400 }).webp({ quality: 70 }).toFile(path.join(pThm, outputFileName));
@@ -276,17 +245,27 @@ app.post("/upload", upload.single("image"), async (req, res) => {
 });
 
 // --- ADMIN & STATIC SERVING ---
+
+// Assets MUST be served by Node if Nginx is misconfigured
 app.use('/assets', express.static(path.join(DIST_PATH, 'assets')));
-app.get(/^\/admin($|\/)/, (req, res) => res.sendFile(path.join(DIST_PATH, 'admin', 'index.html')));
+
+// Admin explicit route
+app.get(/^\/admin($|\/)/, (req, res) => {
+    res.sendFile(path.join(DIST_PATH, 'admin', 'index.html'));
+});
+
+// Root static serving
 app.use(express.static(DIST_PATH, { index: 'index.html' }));
 
+// Clean URLs Handler
 app.get('/:page', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/admin') || req.path.includes('.')) return next();
+    if (req.path.startsWith('/api') || req.path.startsWith('/admin') || req.path.startsWith('/ping') || req.path.includes('.')) return next();
     const possiblePaths = [path.join(DIST_PATH, req.params.page, 'index.html'), path.join(DIST_PATH, `${req.params.page}.html`)];
     for (const p of possiblePaths) { if (fs.existsSync(p)) return res.sendFile(p); }
     next();
 });
 
+// Final Catch-all
 app.get('*', (req, res) => {
     const cp = path.join(DIST_PATH, 'index.html');
     if (fs.existsSync(cp)) res.sendFile(cp);
