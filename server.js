@@ -567,9 +567,36 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(DIST_PATH, 'index.html'));
 });
 
-// 5. Catch-all for SPA/Clean URL Fallback
+// 5. Clean URLs Handler (Must be before catch-all)
+app.get('/:page', (req, res, next) => {
+    // Skip if it's an API, Admin, or has an extension
+    if (req.path.startsWith('/api') || req.path.startsWith('/admin') || req.path.includes('.')) {
+        return next();
+    }
+
+    const page = req.params.page;
+    const possiblePaths = [
+        path.join(DIST_PATH, page, 'index.html'), // Folder-based index (postbuild structure)
+        path.join(DIST_PATH, `${page}.html`),    // File-based (direct build)
+    ];
+
+    for (const p of possiblePaths) {
+        if (fs.existsSync(p)) {
+            return res.sendFile(p);
+        }
+    }
+
+    next();
+});
+
+// 6. Catch-all for SPA/Clean URL Fallback
 app.get('*', (req, res) => {
-    res.sendFile(path.join(DIST_PATH, 'index.html'));
+    const catchAllPath = path.join(DIST_PATH, 'index.html');
+    if (fs.existsSync(catchAllPath)) {
+        res.sendFile(catchAllPath);
+    } else {
+        res.status(404).send('Not Found');
+    }
 });
 
 // Start Server

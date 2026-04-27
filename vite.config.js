@@ -88,6 +88,7 @@ export default defineConfig({
                 machineries: resolve(__dirname, 'src/website/machineries.html'),
                 careers: resolve(__dirname, 'src/website/careers.html'),
                 review: resolve(__dirname, 'src/website/review.html'),
+                '404': resolve(__dirname, 'src/website/404.html'),
                 admin: resolve(__dirname, 'src/admin/index.html')
             }
         }
