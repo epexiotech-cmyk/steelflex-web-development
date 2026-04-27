@@ -23,7 +23,7 @@
     <meta name="twitter:image" content="https://www.steelflexstructures.com/og-image.jpg">
 
     
-    
+    
 
     
     
@@ -168,14 +168,14 @@
     </style>
     <link rel="icon" href="/favicon.ico">
   <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-  <script type="module" crossorigin src="/assets/animations-sCqmOG-4.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/animations-z1voNgUT.css">
+  <script type="module" crossorigin src="/assets/main-DxNc1Ukt.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-CG-zwR_D.css">
 </head>
 
 <body class="about-page">
 
     <!-- Header Placeholder -->
-    <div id="navbar-placeholder"></div>
+    <div id="navbar"></div>
 
 
     <!-- Background Shapes -->
@@ -191,7 +191,7 @@
                     by experience,
                     precision, and trust.</p>
                 <div style="margin-top: 40px;">
-                    <a href="/capabilities" class="btn">Explore Capabilities</a>
+                    <a href="/src/website/capabilities.html" class="btn">Explore Capabilities</a>
                     <!-- <button class="btn btn-secondary">Our Projects</button> -->
                 </div>
             </div>
@@ -238,231 +238,8 @@
                 </div>
             </div>
 
-            <script>
-                // Custom Depth Carousel Logic
-                (function () {
-                    const container = document.getElementById('heroCarousel');
-                    const images = Array.from(container.querySelectorAll('.collage-img'));
 
-                    // State Definitions based on CSS classes
-                    // Order: Back -> Main -> Small -> Out -> Out -> Out
-                    // We rotate these states to the right to simulate forward flow?
-                    // Let's trace:
-                    // Current: [Main, Small1, Small2, Out, Out, Out] relative to indices provided in HTML
-                    // HTML Order: 0:Main, 1:Small1, 2:Small2, 3:Out, 4:Out, 5:Out
 
-                    // Desired Flow:
-                    // Small2 (Back) -> moves to Main
-                    // Main -> moves to Small1
-                    // Small1 -> moves to Out
-                    // Out -> moves to Small2 (Back)
-
-                    // So, if we list the classes in "flow order": 
-                    // [img-small-2, img-main, img-small-1, img-out, img-out, img-out]
-
-                    // At Step 0:
-                    // Image 2 has img-small-2
-                    // Image 0 has img-main
-                    // Image 1 has img-small-1
-                    // Images 3,4,5 have img-out
-
-                    // At Step 1:
-                    // Image 2 should have img-main
-                    // Image 0 should have img-small-1
-                    // Image 1 should have img-out
-
-                    // It seems the assignment of classes shifts to the "next image in logical queue".
-                    // But effectively, we can just maintain an array of state classes and shift it.
-
-                    // Initial Map corresponding to DOM order [0, 1, 2, 3, 4, 5]:
-                    let stateClasses = [
-                        'img-main',     // DOM 0
-                        'img-small-1',  // DOM 1
-                        'img-small-2',  // DOM 2
-                        'img-out',      // DOM 3
-                        'img-out',      // DOM 4
-                        'img-out'       // DOM 5
-                    ];
-
-                    let interval;
-                    const DURATION = 4500;
-
-                    function rotateCarousel() {
-                        // We want 
-                        // DOM 0 (Main) -> becomes Small-1
-                        // DOM 1 (Small-1) -> becomes Out
-                        // DOM 2 (Small-2/Back) -> becomes Main
-                        // DOM 3 (Out) -> becomes Small-2/Back ?? (If it was next in line)
-
-                        // We need to define the "Predecessor" chain.
-                        // Main comes from Back.
-                        // Back comes from Out.
-                        // Small comes from Main.
-                        // Out comes from Small.
-
-                        // Let's shift the array of classes.
-                        // If we shift the assignment:
-                        // 'img-main' goes to the element that WAS 'img-small-2'.
-                        // 'img-small-1' goes to the element that WAS 'img-main'.
-                        // 'img-out' goes to the element that WAS 'img-small-1'.
-                        // 'img-small-2' goes to the element that WAS 'img-out'.
-
-                        // This means the class `img-main` moves to a specific target.
-                        // But simpler: just cycle the array of classes relative to the DOM elements.
-                        // If we Unshift (add to front) and Pop (remove from end)?
-                        // Let's test:
-                        // Current: [Main, Small1, Small2, Out, Out, Out]
-                        // Pop -> Out. Unshift -> [Out, Main, Small1, Small2, Out, Out]
-                        // DOM 0 gets Out. (Main -> Out). Wait, Main should go to Small1.
-
-                        // Let's try Shift (remove first) and Push (add to end)?
-                        // Remove Main. Shifted: [Small1, Small2, Out, Out, Out]. Push Main -> [Small1, Small2, Out, Out, Out, Main].
-                        // DOM 0 gets Small1. (Main -> Small1). YES.
-                        // DOM 1 gets Small2. (Small1 -> Small2). NO. Small1 should go to Out.
-
-                        // Okay, the array shouldn't be mapped 1:1 to DOM index if the sequence isn't linear in DOM.
-                        // But we can just enforce the sequence via the array.
-                        // Sequence of lifecycle: Back -> Main -> Front -> Out -> Out -> Out...
-                        // Cycle: img-small-2 -> img-main -> img-small-1 -> img-out -> img-out -> img-out
-
-                        // We want the element that HAS `img-small-2` to GET `img-main`.
-                        // The element that HAS `img-main` to GET `img-small-1`.
-
-                        // So the state transforms:
-                        // img-small-2 => img-main
-                        // img-main => img-small-1
-                        // img-small-1 => img-out
-                        // img-out (last) => img-small-2
-
-                        // Update the array `stateClasses`.
-                        // We need to find the index of each class type and swap them? No.
-                        // We have 6 elements. Each currently holds a state.
-                        // Let's compute next state for each element.
-
-                        // Transformation Map:
-                        // 'img-main' -> 'img-small-1'
-                        // 'img-small-1' -> 'img-out'
-                        // 'img-small-2' -> 'img-main'
-                        // 'img-out' -> 'img-out' (stay out) until... queue?
-
-                        // This implies a queue.
-                        // Images in pool: [0, 1, 2, 3, 4, 5]
-                        // Slots: [Back, Main, Front, Out1, Out2, Out3]
-                        // Slot 0 (Back): Holds Image X
-                        // Slot 1 (Main): Holds Image Y
-                        // Slot 2 (Front): Holds Image Z
-                        // ...
-
-                        // Rotation:
-                        // Slot 1 (Main) content moves to Slot 2 (Front).
-                        // Slot 2 (Front) content moves to Slot 3 (Out).
-                        // Slot 0 (Back) content moves to Slot 1 (Main).
-                        // Slot 5 (Last Out) content moves to Slot 0 (Back).
-
-                        // So we rotate the CONTENT of the slots.
-                        // `slots` array holds the Images (DOM Elements).
-                        // `[ImgAtBack, ImgAtMain, ImgAtFront, ImgOut1, ImgOut2, ImgOut3]`
-
-                        // Initial Slots based on HTML:
-                        // ImgAtBack = DOM 2
-                        // ImgAtMain = DOM 0
-                        // ImgAtFront = DOM 1
-                        // ImgOut... = DOM 3, 4, 5
-
-                        let slots = [
-                            images[2], // Back
-                            images[0], // Main
-                            images[1], // Front (Small-1)
-                            images[3], // Out
-                            images[4], // Out
-                            images[5]  // Out
-                        ];
-
-                        // Rotate slots array: Shift right?
-                        // New Back = Old Last Out (Slot 5)
-                        // New Main = Old Back (Slot 0)
-                        // New Front = Old Main (Slot 1)
-                        // ...
-
-                        // So: [5, 0, 1, 2, 3, 4]
-                        // Pop last element, Unshift to front.
-                        const last = slots.pop();
-                        slots.unshift(last);
-
-                        // Now Apply Classes based on new Slot Roles
-                        // Slot 0: 'img-small-2' (Back)
-                        // Slot 1: 'img-main'
-                        // Slot 2: 'img-small-1' (Front)
-                        // Slot 3+: 'img-out'
-
-                        slots.forEach((img, index) => {
-                            // Reset classes
-                            img.className = 'collage-img';
-
-                            if (index === 0) img.classList.add('img-small-2');
-                            else if (index === 1) img.classList.add('img-main');
-                            else if (index === 2) img.classList.add('img-small-1');
-                            else img.classList.add('img-out');
-                        });
-                    }
-
-                    function startRotation() {
-                        interval = setInterval(rotateCarousel, DURATION);
-                    }
-
-                    function stopRotation() {
-                        clearInterval(interval);
-                    }
-
-                    // Start
-                    startRotation();
-
-                    // Hover Events
-                    container.addEventListener('mouseenter', stopRotation);
-                    container.addEventListener('mouseleave', startRotation);
-
-                    // Initial Setup (to sync our logic var with reality)
-                    // We constructed `slots` manually above.
-                    // But `rotateCarousel` relies on the `slots` variable being persistent.
-                    // So we must hoist `slots` to outer scope.
-
-                    // Let's redefine `slots` in the outer scope.
-                    // RE-INIT SLOTS Correctly:
-                    // DOM: 0=Main, 1=Front, 2=Back.
-                    // Slots desired: [Back, Main, Front, Out, Out, Out]
-                    // So: [images[2], images[0], images[1], images[3], images[4], images[5]]
-
-                    // We need to store this persistent array.
-                    container.slots = [
-                        images[2],
-                        images[0],
-                        images[1],
-                        images[3],
-                        images[4],
-                        images[5]
-                    ];
-
-                    // Overwrite local function to use container.slots
-                    container.rotateFn = function () {
-                        const s = container.slots;
-                        const last = s.pop();
-                        s.unshift(last);
-
-                        s.forEach((img, index) => {
-                            img.className = 'collage-img'; // reset base
-                            if (index === 0) img.classList.add('img-small-2');
-                            else if (index === 1) img.classList.add('img-main');
-                            else if (index === 2) img.classList.add('img-small-1');
-                            else img.classList.add('img-out');
-                        });
-                    };
-
-                    interval = setInterval(container.rotateFn, DURATION);
-
-                    container.addEventListener('mouseenter', () => clearInterval(interval));
-                    container.addEventListener('mouseleave', () => interval = setInterval(container.rotateFn, DURATION));
-                })();
-            </script>
         </div>
     </section>
 
@@ -601,65 +378,7 @@
             </div>
         </div>
 
-        <script>
-            (function () {
-                const centerTitle = document.getElementById('arcCenterTitle');
-                const centerDesc = document.getElementById('arcCenterDesc');
-                const centerImg = document.getElementById('arcCenterImg');
-                const arcItems = document.querySelectorAll('.arc-item');
 
-                // Store defaults
-                const defaultTitle = centerTitle.innerText;
-                const defaultDesc = centerDesc.innerText;
-                const defaultImgSrc = centerImg.src;
-
-                function updateCenter(title, desc, imgSrc) {
-                    // Mobile check: No interaction on small screens
-                    if (window.innerWidth < 900) return;
-
-                    // Fade Out Elements
-                    centerTitle.style.opacity = '0';
-                    centerDesc.style.opacity = '0';
-                    centerImg.style.opacity = '0.5'; // Don't full hide image, just dim
-
-                    centerTitle.style.transform = 'translateY(5px)';
-                    centerDesc.style.transform = 'translateY(5px)';
-
-                    setTimeout(() => {
-                        // Update Content
-                        centerTitle.innerText = title;
-                        centerDesc.innerText = desc;
-                        if (imgSrc) centerImg.src = imgSrc;
-
-                        // Fade In
-                        centerTitle.style.opacity = '1';
-                        centerDesc.style.opacity = '1';
-                        centerImg.style.opacity = '1';
-
-                        centerTitle.style.transform = 'translateY(0)';
-                        centerDesc.style.transform = 'translateY(0)';
-                    }, 250); // Wait for transition
-                }
-
-                // Hover Events
-                arcItems.forEach(item => {
-                    item.addEventListener('mouseenter', () => {
-                        const newTitle = item.getAttribute('data-center-title');
-                        const newDesc = item.getAttribute('data-center-desc');
-                        const newImg = item.getAttribute('data-center-img');
-                        if (newTitle && newDesc) {
-                            updateCenter(newTitle, newDesc, newImg);
-                        }
-                    });
-
-                    item.addEventListener('mouseleave', () => {
-                        // Revert to default
-                        updateCenter(defaultTitle, defaultDesc, defaultImgSrc);
-                    });
-                });
-
-            })();
-        </script>
     </section>
 
     <!-- SECTION 4: WHO WE ARE (TECH REDESIGN) -->
@@ -1002,8 +721,9 @@
     </section>
 
     <!-- Footer Placeholder -->
-    <div id="footer-placeholder"></div>
-
+    <div id="footer"></div>
+
+
 </body>
 
 </html>

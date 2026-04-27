@@ -28,6 +28,7 @@
     "express": "^5.2.1",
     "fs-extra": "^11.3.3",
     "googleapis": "^171.4.0",
+    "gsap": "^3.15.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.1",
     "multer": "^2.1.1",

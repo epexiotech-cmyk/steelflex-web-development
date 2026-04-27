@@ -10,7 +10,9 @@ export default defineConfig({
     resolve: {
         alias: {
             '/src': resolve(__dirname, 'src'),
-            '/components': resolve(__dirname, 'src/website/components')
+            '/components': resolve(__dirname, 'src/website/components'),
+            '/assets/main.js': resolve(__dirname, 'src/website/main.js'),
+            '/assets/admin.js': resolve(__dirname, 'src/admin/js/main.js')
         }
     },
     server: {

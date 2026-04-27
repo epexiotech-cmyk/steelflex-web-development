@@ -352,28 +352,18 @@
                 font-size: 2.8rem;
             }
         }
-    </style>
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    </style>
     <link rel="icon" href="/favicon.ico">
   <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-  <script type="module" crossorigin src="/assets/animations-sCqmOG-4.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/animations-z1voNgUT.css">
+  <script type="module" crossorigin src="/assets/main-DxNc1Ukt.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-CG-zwR_D.css">
 </head>
 
 <body>
 
     <!-- Header -->
     <!-- Header Placeholder -->
-    <div id="navbar-placeholder"></div>
+    <div id="navbar"></div>
 
     <main>
         <!-- Hero Section -->
@@ -499,44 +489,11 @@
 
     <!-- Footer -->
     <!-- Footer Placeholder -->
-    <div id="footer-placeholder"></div>
+    <div id="footer"></div>
 
-    <script>
-        // File Upload Display Logic
-        const fileInput = document.getElementById('cv');
-        const fileNameDisplay = document.getElementById('fileName');
-        const uploadBox = document.getElementById('uploadBox');
-        const uploadText = document.getElementById('uploadText');
 
-        if (fileInput) {
-            fileInput.addEventListener('change', function () {
-                if (this.files && this.files.length > 0) {
-                    const name = this.files[0].name;
-                    fileNameDisplay.textContent = "Selected: " + name;
-                    uploadText.textContent = "File attachment ready";
-                    uploadBox.style.borderColor = "var(--primary-color)";
-                    uploadBox.style.background = "rgba(38, 71, 150, 0.05)";
-                }
-            });
-        }
-
-        // Apply Button Interaction
-        function applyForRole(roleValue) {
-            const selectBox = document.getElementById('position');
-            const formSection = document.querySelector('.application-section');
-
-            if (selectBox) {
-                selectBox.value = roleValue;
-            }
-
-            if (formSection) {
-                formSection.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-        }
-    </script>
 </body>
-
+
+
 
 </html>

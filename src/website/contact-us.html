@@ -26,21 +26,11 @@
     
     <link rel="stylesheet" href="/src/website/styles.css">
     <link rel="stylesheet" href="/src/website/components/components.css">
-    <script type="module" src="/src/website/main.js" defer></script>
+    <script type="module" src="/assets/main.js"></script>
     <link rel="preconnect" href="https://www.google.com">
     <link rel="preconnect" href="https://maps.google.com">
     <link rel="preconnect" href="https://maps.gstatic.com">
-    <script>
-        // Force immediate map load
-        window.addEventListener('DOMContentLoaded', () => {
-            const map = document.getElementById('contact-map');
-            if (map) {
-                const src = map.src;
-                map.src = '';
-                map.src = src;
-            }
-        });
-    </script>
+
     <style>
         /* Premium Split Layout - Light Theme */
         .contact-hero-wrapper {
@@ -282,7 +272,7 @@
 <body>
 
     <!-- Header -->
-    <div id="navbar-placeholder"></div>
+    <div id="navbar"></div>
 
     <main>
         <!-- Split Layout Wrapper -->
@@ -466,7 +456,7 @@
     </main>
 
     <!-- MODERN FOOTER -->
-    <div id="footer-placeholder"></div>
+    <div id="footer"></div>
 
 
 </body>

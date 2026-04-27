@@ -4,28 +4,104 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Load Navbar
-    const navbarPlaceholder = document.getElementById('navbar-placeholder');
-    if (navbarPlaceholder) {
-        fetch('/src/website/components/navbar.html')
-            .then(response => response.text())
-            .then(data => {
-                navbarPlaceholder.innerHTML = data;
-                initNavbar();
-            })
-            .catch(err => console.error('Error loading navbar:', err));
+    console.log("COMPONENTS LOADED");
+    
+    const navbar = document.getElementById("navbar");
+    const footer = document.getElementById("footer");
+
+    if (navbar) {
+        try {
+            navbar.innerHTML = `
+<header class="main-header">
+    <div class="container nav-container">
+        <div class="logo">
+            <a href="/">
+                <img loading="lazy" src="/assets/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img">
+            </a>
+        </div>
+        <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="/about-us">About Us</a></li>
+                <li><a href="/products-structures">Products & Structures</a></li>
+                <li><a href="/capabilities">Capabilities</a></li>
+                <li><a href="/machineries">Machineries</a></li>
+                <li><a href="/projects">Projects</a></li>
+                <li><a href="/careers">Careers</a></li>
+                <li><a href="/contact-us">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>`;
+            initNavbar();
+        } catch (e) {
+            console.log("Navbar error:", e);
+        }
     }
 
-    // 2. Load Footer
-    const footerPlaceholder = document.getElementById('footer-placeholder');
-    if (footerPlaceholder) {
-        fetch('/src/website/components/footer.html')
-            .then(response => response.text())
-            .then(data => {
-                footerPlaceholder.innerHTML = data;
-                initFooter();
-            })
-            .catch(err => console.error('Error loading footer:', err));
+    if (footer) {
+        try {
+            footer.innerHTML = `
+<footer class="site-footer-redesign">
+    <div class="footer-cta-bridge">
+        <div class="container reveal-on-scroll">
+            <h2 class="footer-cta-title">Let’s build reliable engineering solutions together.</h2>
+        </div>
+    </div>
+    <div class="footer-main">
+        <div class="container">
+            <div class="footer-grid-modern">
+                <div class="footer-col">
+                    <span class="footer-brand-title">
+                        <a href="/">
+                            <img loading="lazy" src="/assets/Logo/Steelflex Logo.png" alt="SteelFlex" style="height: 50px;">
+                        </a>
+                    </span>
+                    <p class="footer-brand-statement">Trusted partner in heavy industrial engineering and turnkey steel construction solutions. <br /><strong>A Group Company of ISKO & SAMIRIKA</strong></p>
+                </div>
+                <div class="footer-col">
+                    <h4 class="footer-col-title">Quick Links</h4>
+                    <ul class="footer-links-list">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/about-us">About Us</a></li>
+                        <li><a href="/products-structures">Products</a></li>
+                        <li><a href="/capabilities">Capabilities</a></li>
+                        <li><a href="/machineries">Machineries</a></li>
+                        <li><a href="/projects">Projects</a></li>
+                        <li><a href="/careers">Careers</a></li>
+                        <li><a href="/contact-us">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4 class="footer-col-title">Contact</h4>
+                    <div class="footer-contact-item">
+                        <span>📞 Phone</span>
+                        <a href="tel:+919426443442" style="color: inherit; text-decoration: none;">+91 94264 43442</a><br />
+                        <a href="tel:+918238999916" style="color: inherit; text-decoration: none;">+91 82389 99916</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <span>📧 Email</span>
+                        <a href="mailto:md@steelflexstructures.com" style="color: inherit; text-decoration: none;">md@steelflexstructures.com</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <span>📍 Location</span>
+                        <a href="https://maps.app.goo.gl/bfLVMmJv6tCNb2xcA" target="_blank" style="color: inherit; text-decoration: none;">Por, Vadodara, Gujarat</a>
+                    </div>
+                    <a href="/review" class="btn-footer-review">Add Review</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-legal">
+        <div class="container">
+            <p class="copyright-text">&copy; 2026 <strong>SteelFlex Structures India Private Limited.</strong> All rights reserved. | Designed by <a href="https://www.epexio.in" target="_blank" style="color: #2F528F; text-decoration: none;">Epexio Techno Solutions</a></p>
+        </div>
+    </div>
+</footer>`;
+            initFooter();
+        } catch (e) {
+            console.log("Footer error:", e);
+        }
     }
 });
 
@@ -45,7 +121,10 @@ function initNavbar() {
     
     navLinks.forEach(link => {
         const href = link.getAttribute('href');
-        if (currentPath === href || (currentPath === '/' && href === '/')) {
+        // Check for exact match or clean URL match
+        if (currentPath === href || 
+            (currentPath === '/' && href === '/') || 
+            (currentPath.startsWith(href) && href !== '/')) {
             link.classList.add('active');
         } else {
             link.classList.remove('active');
@@ -70,8 +149,6 @@ function initNavbar() {
 }
 
 function initFooter() {
-    // Any footer-specific initialization can go here
-    // For example, setting the active link in the footer too
     const currentPath = window.location.pathname;
     const footerLinks = document.querySelectorAll('.footer-links-list a');
     
@@ -82,12 +159,6 @@ function initFooter() {
         }
     });
 
-    // Initialize reveal-on-scroll for footer elements if not already handled by a global script
-    if (window.initScrollReveal) {
-        window.initScrollReveal();
-    }
-
-    // Refresh ScrollTrigger as the footer adds height to the page
     if (window.ScrollTrigger) {
         ScrollTrigger.refresh();
     }

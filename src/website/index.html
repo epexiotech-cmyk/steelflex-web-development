@@ -49,7 +49,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/src/website/styles.css">
     <link rel="stylesheet" href="/src/website/components/components.css">
-    <script type="module" src="/src/website/main.js" defer></script>
+    <script type="module" src="/assets/main.js"></script>
 
     <!-- JSON-LD Organization Schema -->
     <script type="application/ld+json">
@@ -86,7 +86,7 @@
 
     <div id="mainContent">
         <!-- Header Placeholder -->
-        <div id="navbar-placeholder"></div>
+        <div id="navbar"></div>
 
         <main class="index-page-wrapper">
             <!-- 1. Hero Section (Exact Design) -->
@@ -521,208 +521,8 @@
             </div>
         </div>
 
-        <script>
-            // PEB Mobile: inject per-step images on small screens
-            function initPebMobile() {
-                if (window.innerWidth > 768) return;
-
-                document.querySelectorAll('.peb-step').forEach(function (step) {
-                    var imgSrc = step.getAttribute('data-img');
-                    if (!imgSrc) return;
-
-                    // Skip if already injected
-                    if (step.querySelector('.peb-mobile-img')) return;
-
-                    // Create and inject the step image at the very top
-                    var img = document.createElement('img');
-                    img.src = imgSrc;
-                    img.alt = step.querySelector('h2') ? step.querySelector('h2').textContent.trim() : 'PEB';
-                    img.className = 'peb-mobile-img';
-                    img.loading = 'lazy';
-                    step.insertBefore(img, step.firstChild);
-
-                    // Wrap remaining text children in .peb-step-content
-                    var contentDiv = document.createElement('div');
-                    contentDiv.className = 'peb-step-content';
-                    Array.from(step.childNodes).forEach(function (child) {
-                        if (child !== img) contentDiv.appendChild(child);
-                    });
-                    step.appendChild(contentDiv);
-                });
-            }
-
-            document.addEventListener('DOMContentLoaded', initPebMobile);
-        </script>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                if (window.loadProjects) {
-                    window.loadProjects('Completed', 'home-completed-projects', 3);
-                }
-            });
-
-            // Reviews Carousel Initialization
-            document.addEventListener('DOMContentLoaded', async () => {
-                const track = document.getElementById('reviews-track');
-                const dotsContainer = document.getElementById('reviews-dots');
-                if (track && window.StorageManager) {
-                    try {
-                        const allReviews = await StorageManager.getData('reviews');
-                        const reviews = allReviews.filter(r => ['approved', 'active', 'accepted'].includes((r.status || '').toLowerCase()));
-
-                        if (reviews.length === 0) {
-                            document.getElementById('reviews').style.display = 'none';
-                            return;
-                        }
-
-                        track.innerHTML = '';
-                        dotsContainer.innerHTML = '';
-
-                        // Convert track to grid for stacked flow effect
-                        track.style.display = 'grid';
-                        track.style.placeItems = 'center';
-
-                        const themes = [
-                            { main: '#ED3A53', dark: '#C4243A', light: 'rgba(237, 58, 83, 0.3)' }, // Red
-                            { main: '#23BFA3', dark: '#19947D', light: 'rgba(35, 191, 163, 0.3)' }, // Teal
-                            { main: '#B2319A', dark: '#8C2378', light: 'rgba(178, 49, 154, 0.3)' }  // Purple
-                        ];
-
-                        reviews.forEach((review, index) => {
-                            let ratingValue = parseInt(review.rating) || 5;
-                            let starsHtml = '';
-                            for (let i = 0; i < 5; i++) {
-                                starsHtml += i < ratingValue ? '★' : '<span style="color:#eee">★</span>';
-                            }
-
-                            const theme = themes[index % themes.length];
-                            const dateStr = review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'N/A';
-                            const companyLogo = review.companyLogo || 'https://via.placeholder.com/80?text=No+Logo';
-                            const reviewerPhoto = review.reviewerPhoto ? review.reviewerPhoto : 'https://via.placeholder.com/80?text=No+Photo';
-
-                            const slideWrapper = document.createElement('div');
-                            slideWrapper.style.cssText = 'grid-area: 1 / 1; width: 100%; max-width: 480px; box-sizing: border-box; padding: 0 15px; cursor: pointer;';
-                            slideWrapper.onclick = () => window.goToReviewSlide(index);
-
-                            // Clean up text
-                            let reviewText = review.reviewText || '';
-                            if (reviewText.length > 200) reviewText = reviewText.substring(0, 197) + '...';
-
-                            slideWrapper.innerHTML = `
-                            <div class="review-creative-card" style="--theme-main: ${theme.main}; --theme-dark: ${theme.dark}; --theme-light: ${theme.light}; margin-bottom: 20px;">
-                                <div class="creative-tr-ribbon"></div>
-                                <div class="creative-tr-fold"></div>
-                                <div class="creative-bl-ribbon"></div>
-                                <div class="creative-bl-fold"></div>
-
-                                <div class="creative-white-box">
-                                    <div class="creative-quote-icon">“</div>
-                                    <div class="creative-quote-bg">”</div>
-                                    
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; position: relative; z-index: 8;">
-                                        <div style="font-size: 0.85rem; color: #888; font-weight: 500;">
-                                            Date: <span style="color: #444;">${dateStr}</span>
-                                        </div>
-                                        <div style="display: flex; align-items: center; gap: 8px;">
-                                            <span style="font-size: 0.75rem; color: #aaa;">Company Logo</span>
-                                            <img loading="lazy" src="${companyLogo}" title="Company Logo" alt="Company Logo" style="height: 40px; width: 40px; border-radius: 50%; object-fit: contain; border: 1px solid #ddd; background: #fff; padding: 2px;">
-                                        </div>
-                                    </div>
-
-                                    <p class="creative-text">${reviewText}</p>
-                                    <div class="creative-stars" style="text-align: center; margin-top: 15px;">${starsHtml}</div>
-                                </div>
-                                
-                                <div class="creative-client-container">
-                                    <img loading="lazy" src="${reviewerPhoto}" class="creative-client-photo" alt="Client">
-                                    <div class="creative-client-info">
-                                        <h4 class="creative-client-name">${review.clientName}</h4>
-                                        <p class="creative-client-desig">${review.companyName}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                            track.appendChild(slideWrapper);
-
-                            const dot = document.createElement('button');
-                            dot.style.cssText = `width: 10px; height: 10px; border-radius: 50%; border: none; background: ${index === 0 ? '#2F528F' : '#ccc'}; cursor: pointer; transition: all 0.3s; padding: 0; outline: none;`;
-                            dot.onclick = () => window.goToReviewSlide(index);
-                            dotsContainer.appendChild(dot);
-                        });
-
-                        let currentIndex = 0;
-                        const totalSlides = reviews.length;
-
-                        window.goToReviewSlide = function (index) {
-                            currentIndex = index;
-                            const slides = Array.from(track.children);
-                            const isMobile = window.innerWidth <= 768;
-                            const xOffset = isMobile ? 100 : 70; // percentage to shift sideways
-
-                            slides.forEach((slide, i) => {
-                                let diff = i - currentIndex;
-                                if (diff < -totalSlides / 2) diff += totalSlides;
-                                if (diff > totalSlides / 2) diff -= totalSlides;
-                                if (totalSlides % 2 === 0 && diff === totalSlides / 2) diff = -totalSlides / 2;
-
-                                slide.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.5, 1)';
-
-                                if (diff === 0) {
-                                    slide.style.transform = 'translateX(0) scale(1)';
-                                    slide.style.opacity = '1';
-                                    slide.style.zIndex = '5';
-                                    slide.style.pointerEvents = 'auto';
-                                    slide.style.filter = 'blur(0px)';
-                                } else if (diff === -1 || (diff < 0 && totalSlides === 2)) {
-                                    slide.style.transform = `translateX(-${xOffset}%) scale(0.7)`;
-                                    slide.style.opacity = isMobile ? '0' : '0.6';
-                                    slide.style.zIndex = '4';
-                                    slide.style.pointerEvents = 'auto';
-                                    slide.style.filter = isMobile ? 'blur(0px)' : 'blur(1.5px)';
-                                } else if (diff === 1 || (diff > 0 && totalSlides === 2)) {
-                                    slide.style.transform = `translateX(${xOffset}%) scale(0.7)`;
-                                    slide.style.opacity = isMobile ? '0' : '0.6';
-                                    slide.style.zIndex = '4';
-                                    slide.style.pointerEvents = 'auto';
-                                    slide.style.filter = isMobile ? 'blur(0px)' : 'blur(1.5px)';
-                                } else {
-                                    slide.style.transform = `translateX(${diff > 0 ? (xOffset + 30) : -(xOffset + 30)}%) scale(0.5)`;
-                                    slide.style.opacity = '0';
-                                    slide.style.zIndex = '1';
-                                    slide.style.pointerEvents = 'none';
-                                    slide.style.filter = 'blur(4px)';
-                                }
-                            });
-
-                            Array.from(dotsContainer.children).forEach((dot, i) => {
-                                dot.style.background = i === currentIndex ? '#2F528F' : '#ccc';
-                                dot.style.transform = i === currentIndex ? 'scale(1.2)' : 'scale(1)';
-                            });
-                        };
-
-                        // Initial Setup
-                        window.goToReviewSlide(0);
-                        window.addEventListener('resize', () => window.goToReviewSlide(currentIndex));
-
-                        if (totalSlides > 1) {
-                            let autoPlay = setInterval(() => { window.goToReviewSlide((currentIndex + 1) % totalSlides); }, 6000);
-
-                            // Pause on hover
-                            track.addEventListener('mouseenter', () => clearInterval(autoPlay));
-                            track.addEventListener('mouseleave', () => {
-                                autoPlay = setInterval(() => { window.goToReviewSlide((currentIndex + 1) % totalSlides); }, 6000);
-                            });
-                        }
-
-                    } catch (err) {
-                        console.error('Error loading reviews:', err);
-                        track.innerHTML = '<div style="width: 100%; flex-shrink: 0; padding: 20px; color: red;">Failed to load reviews.</div>';
-                    }
-                }
-            });
-        </script>
         <!-- Footer Placeholder -->
-        <div id="footer-placeholder"></div>
+        <div id="footer"></div>
     </div>
 </body>
 

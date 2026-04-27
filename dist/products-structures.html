@@ -190,18 +190,7 @@
             from { transform: translate(-50%, -50%) rotate(0deg); }
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
-    </style>
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
+    </style>
     <!-- JSON-LD Product/Service Schema -->
     <script type="application/ld+json">
     {
@@ -224,15 +213,15 @@
     </script>
     <link rel="icon" href="/favicon.ico">
   <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
-  <script type="module" crossorigin src="/assets/animations-sCqmOG-4.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/animations-z1voNgUT.css">
+  <script type="module" crossorigin src="/assets/main-DxNc1Ukt.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-CG-zwR_D.css">
 </head>
 
 <body>
 
     <!-- Header (Consistent) -->
     <!-- Header Placeholder -->
-    <div id="navbar-placeholder"></div>
+    <div id="navbar"></div>
 
     <!-- SECTION 1: CORE PRODUCTS -->
     <section class="hero-section" style="padding: 140px 0 40px; text-align: center; background: #fff;">
@@ -708,33 +697,12 @@
 
     <!-- MODERN FOOTER (3 PARTS) -->
     <!-- Footer Placeholder -->
-    <div id="footer-placeholder"></div>
+    <div id="footer"></div>
 
 
 </body>
 
-<script>
-    function switchView(viewId) {
-        // Update buttons
-        const buttons = document.querySelectorAll('.toggle-btn');
-        buttons.forEach(btn => {
-            if (btn.getAttribute('onclick').includes(viewId)) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
 
-        // Update views
-        const views = document.querySelectorAll('.view-section');
-        views.forEach(view => {
-            if (view.id === viewId + '-view') {
-                view.classList.add('active');
-            } else {
-                view.classList.remove('active');
-            }
-        });
-    }
-</script>
+
 
 </html>

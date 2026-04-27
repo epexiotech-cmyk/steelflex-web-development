@@ -148,7 +148,7 @@
         }
     </style>
     <link rel="stylesheet" href="/src/website/components/components.css">
-    <script type="module" src="/src/website/main.js" defer></script>
+    <script type="module" src="/assets/main.js"></script>
     <link rel="icon" href="/favicon.ico">
 </head>
 
@@ -156,7 +156,7 @@
 
     <!-- Header -->
         <!-- Header Placeholder -->
-    <div id="navbar-placeholder"></div>
+    <div id="navbar"></div>
 
     <!-- Page Hero -->
     <section class="hero-section" style="padding: 120px 0 60px; text-align: center; background: #fff;">
@@ -467,69 +467,11 @@
         }
     </style>
 
-    <script>
-        let currentImages = [];
-        let currentSlide = 0;
-        let cachedProjects = {}; // Store fetched projects for modal
 
-        function openModal(id) {
-            const project = cachedProjects[id]; // cachedProjects will be an object id -> project
-
-            if (!project) return;
-
-            document.getElementById('project-modal').style.display = 'flex';
-            document.getElementById('modal-title').textContent = project.title;
-            document.getElementById('modal-location').textContent = project.location || '-';
-            document.getElementById('modal-area').textContent = project.area || '-';
-            document.getElementById('modal-weight').textContent = project.weight || '-';
-            document.getElementById('modal-desc').textContent = project.description || 'No description available.';
-
-            // Setup images
-            currentImages = project.images && project.images.length > 0 ? project.images : [];
-            // If no images, maybe show placeholder?
-            if (currentImages.length === 0 && project.image) currentImages.push(project.image);
-
-            currentSlide = 0;
-            updateSlide();
-        }
-
-        function closeModal(e) {
-            if (e) e.preventDefault();
-            document.getElementById('project-modal').style.display = 'none';
-        }
-
-        function moveSlide(dir) {
-            currentSlide += dir;
-            if (currentSlide >= currentImages.length) currentSlide = 0;
-            if (currentSlide < 0) currentSlide = currentImages.length - 1;
-            updateSlide();
-        }
-
-        function updateSlide() {
-            document.getElementById('modal-img').src = currentImages[currentSlide];
-        }
-
-        function switchTab(tabName) {
-            // Buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.tab === tabName) btn.classList.add('active');
-            });
-
-            // Content
-            if (tabName === 'ongoing') {
-                document.getElementById('ongoing-projects').style.display = 'grid';
-                document.getElementById('completed-projects').style.display = 'none';
-            } else {
-                document.getElementById('ongoing-projects').style.display = 'none';
-                document.getElementById('completed-projects').style.display = 'grid';
-            }
-        }
-    </script>
 
     <!-- MODERN FOOTER (3 PARTS) -->
         <!-- Footer Placeholder -->
-    <div id="footer-placeholder"></div>
+    <div id="footer"></div>
 
     
 </body>

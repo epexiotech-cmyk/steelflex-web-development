@@ -41,7 +41,8 @@ app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 // Static files
-app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
+app.use(express.static(path.join(__dirname, 'dist')));
+app.use('/assets', express.static(path.join(__dirname, 'dist/assets')));
 
 const uploadDir = path.join(__dirname, "uploads");
 const tempDir = path.join(uploadDir, "temp");
@@ -209,8 +210,10 @@ app.get('/api/admin/backup/status', async (req, res) => {
 
 // Serve Admin Panel (SPA fallback for admin routes)
 app.get(/^\/admin($|\/)/, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'dist/admin', 'index.html'));
 });
+
+
 
 // --- API COMPATIBILITY & DATA ROUTES ---
 
@@ -542,6 +545,20 @@ app.post('/api/admin/backup/cloud', async (req, res) => {
     } catch (error) {
         console.error('Cloud backup trigger failed:', error);
         res.status(500).json({ error: 'Failed to sync with Google Drive', message: error.message });
+    }
+});
+
+// Clean routing for website pages (MUST be last)
+app.get('/:page', (req, res) => {
+    const page = req.params.page;
+    if (page === 'admin') {
+        return res.sendFile(path.join(__dirname, 'dist/admin', 'index.html'));
+    }
+    const filePath = path.join(__dirname, 'dist', page + '.html');
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        res.sendFile(path.join(__dirname, 'dist', 'index.html'));
     }
 });
 
