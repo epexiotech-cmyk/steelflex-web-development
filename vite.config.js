@@ -5,7 +5,7 @@ import fs from 'fs';
 export default defineConfig({
     appType: 'mpa',
     base: '/',
-    root: 'src/website',
+    root: '.',
     publicDir: resolve(__dirname, 'public'),
     resolve: {
         alias: {
@@ -22,21 +22,47 @@ export default defineConfig({
             ]
         },
         proxy: {
-            // Proxy API requests to the backend
+            // Proxy API and Upload requests to the backend
             '/api': 'http://127.0.0.1:3000',
-            // Proxy Admin Panel to the backend (Express serves it from public/)
-            '/admin': 'http://127.0.0.1:3000'
+            '/upload': 'http://127.0.0.1:3000',
+            '/uploads': 'http://127.0.0.1:3000'
         },
         configureServer(server) {
             server.middlewares.use((req, res, next) => {
-                const url = req.url.split('?')[0];
+                const url = req.url || '';
+                const [path, query] = url.split('?');
+                const queryString = query ? `?${query}` : '';
+
+                // Handle root /
+                if (path === '/') {
+                    res.writeHead(302, { Location: '/src/website/index.html' });
+                    res.end();
+                    return;
+                }
                 
-                // Handle clean URLs for website pages
-                if (!url.includes('.') && url !== '/' && !url.startsWith('/api') && !url.startsWith('/admin') && !url.startsWith('/@') && !url.startsWith('/src')) {
-                    const htmlPath = resolve(__dirname, 'src/website', `${url.slice(1)}.html`);
-                    if (fs.existsSync(htmlPath)) {
-                        req.url = `${url}.html`;
-                    }
+                // Handle admin
+                if (path === '/admin' || path === '/admin/') {
+                    res.writeHead(302, { Location: '/src/admin/index.html' });
+                    res.end();
+                    return;
+                }
+
+                // Explicit clean URLs for website pages
+                const cleanPaths = [
+                    '/about-us', 
+                    '/products-structures', 
+                    '/capabilities', 
+                    '/machineries', 
+                    '/projects', 
+                    '/careers', 
+                    '/contact-us', 
+                    '/review'
+                ];
+
+                if (cleanPaths.includes(path)) {
+                    res.writeHead(302, { Location: `/src/website${path}.html${queryString}` });
+                    res.end();
+                    return;
                 }
                 
                 next();
@@ -49,15 +75,14 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: resolve(__dirname, 'src/website/index.html'),
-                'about-us': resolve(__dirname, 'src/website/about-us.html'),
-                'products-structures': resolve(__dirname, 'src/website/products-structures.html'),
+                about: resolve(__dirname, 'src/website/about-us.html'),
+                contact: resolve(__dirname, 'src/website/contact-us.html'),
+                products: resolve(__dirname, 'src/website/products-structures.html'),
                 projects: resolve(__dirname, 'src/website/projects.html'),
                 capabilities: resolve(__dirname, 'src/website/capabilities.html'),
                 machineries: resolve(__dirname, 'src/website/machineries.html'),
                 careers: resolve(__dirname, 'src/website/careers.html'),
-                'contact-us': resolve(__dirname, 'src/website/contact-us.html'),
                 review: resolve(__dirname, 'src/website/review.html'),
-                404: resolve(__dirname, 'src/website/404.html'),
                 admin: resolve(__dirname, 'src/admin/index.html')
             }
         }

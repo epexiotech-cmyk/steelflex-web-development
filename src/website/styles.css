@@ -2621,7 +2621,7 @@ section {
         justify-content: center;
         text-align: center;
         color: #FFFFFF;
-        background: url('./assets/hero-bg.webp') no-repeat center center/cover;
+        background: url('/assets/hero-bg.webp') no-repeat center center/cover;
     }
 
     .hero-overlay {
@@ -3882,7 +3882,7 @@ section {
     left: -10%;
     width: 120%;
     height: 120%;
-    background-image: url('/src/website/assets/hero-bg.webp');
+    background-image: url('/assets/hero-bg.webp');
     background-size: cover;
     background-position: center center;
     transform: skewX(20deg);

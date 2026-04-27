@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Load Navbar
     const navbarPlaceholder = document.getElementById('navbar-placeholder');
     if (navbarPlaceholder) {
-        fetch('components/navbar.html')
+        fetch('/src/website/components/navbar.html')
             .then(response => response.text())
             .then(data => {
                 navbarPlaceholder.innerHTML = data;
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Load Footer
     const footerPlaceholder = document.getElementById('footer-placeholder');
     if (footerPlaceholder) {
-        fetch('components/footer.html')
+        fetch('/src/website/components/footer.html')
             .then(response => response.text())
             .then(data => {
                 footerPlaceholder.innerHTML = data;

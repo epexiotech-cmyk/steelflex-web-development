@@ -4,6 +4,8 @@ node_modules/
 .env
 data/*.json
 !data/.keep
+dist/
+public/data/
 public/uploads/
 
 token.json

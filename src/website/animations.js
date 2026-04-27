@@ -38,7 +38,7 @@ const initFormsAndVacancies = () => {
             submitBtn.textContent = 'Sending...';
             submitBtn.disabled = true;
 
-        const selectedProjects = Array.from(contactForm.querySelectorAll('input[name="project_type"]:checked'))
+            const selectedProjects = Array.from(contactForm.querySelectorAll('input[name="project_type"]:checked'))
                 .map(cb => {
                     if (cb.id === 'other-checkbox') {
                         const otherVal = document.getElementById('other-project-text').value.trim();
@@ -202,7 +202,7 @@ const initFormsAndVacancies = () => {
                 // CV UPLOAD LOGIC (Base64)
                 if (data.cv instanceof File && data.cv.size > 0) {
                     const file = data.cv;
-                    
+
                     // Validate file size (5MB)
                     if (file.size > 5 * 1024 * 1024) {
                         alert('CV file size exceeds 5MB limit. Please upload a smaller file.');
@@ -273,6 +273,139 @@ const initFormsAndVacancies = () => {
             if (val.startsWith('0')) return /^[0-9]{11}$/.test(val);
             return /^[0-9]{10}$/.test(val);
         });
+    }
+
+    // Client Review Form Submission
+    const reviewForm = document.getElementById('review-form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = reviewForm.querySelector('.submit-btn');
+            const originalBtnText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+
+            try {
+                const formData = new FormData(reviewForm);
+                const data = Object.fromEntries(formData.entries());
+
+                // 1. Process Reviewer Photo
+                const photoFile = reviewForm.querySelector('#reviewer_photo').files[0];
+                if (photoFile) {
+                    data.reviewer_photo_data = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(photoFile);
+                    });
+                }
+
+                // 2. Process Company Logo
+                const logoFile = reviewForm.querySelector('#company_logo').files[0];
+                if (logoFile) {
+                    data.company_logo_data = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.readAsDataURL(logoFile);
+                    });
+                }
+
+                // 3. Process Project Images (Multiple)
+                const projectFiles = reviewForm.querySelector('#project_images').files;
+                if (projectFiles.length > 0) {
+                    data.project_images_data = await Promise.all(Array.from(projectFiles).map(file => {
+                        return new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onload = (e) => resolve(e.target.result);
+                            reader.readAsDataURL(file);
+                        });
+                    }));
+                }
+
+                // Set default status and normalized keys for Admin Panel
+                const finalData = {
+                    clientName: data.client_name,
+                    companyName: data.company,
+                    reviewText: data.review_text,
+                    rating: parseInt(data.rating),
+                    reviewerPhoto: data.reviewer_photo_data || null,
+                    companyLogo: data.company_logo_data || null,
+                    projectImages: data.project_images_data || [],
+                    status: 'Pending',
+                    createdAt: new Date().toISOString()
+                };
+
+                const result = await StorageManager.addItem('reviews', finalData);
+                if (result) {
+                    alert('Review submitted successfully! It will be visible once verified by our team.');
+                    reviewForm.reset();
+                } else {
+                    alert('Failed to submit review.');
+                }
+            } catch (err) {
+                console.error('Review submission error:', err);
+                alert('Error submitting review. Please try again.');
+            } finally {
+                submitBtn.textContent = originalBtnText;
+                submitBtn.disabled = false;
+            }
+        });
+    }
+
+    // Dynamic Testimonials Loading for Review Page
+    const testimonialsGrid = document.getElementById('testimonials-grid');
+    if (testimonialsGrid) {
+        StorageManager.getData('reviews')
+            .then(reviews => {
+                const approved = reviews.filter(r => r.status === 'Approved' || r.status === 'approved');
+                testimonialsGrid.innerHTML = '';
+
+                if (approved.length === 0) {
+                    testimonialsGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #666;">No reviews available yet. Be the first to share your experience!</p>';
+                    return;
+                }
+
+                approved.forEach(review => {
+                    const card = document.createElement('div');
+                    card.className = 'testimonial-card';
+                    card.style = 'background: #f8fafc; padding: 30px; border-radius: 12px; border: 1px solid #e2e8f0; position: relative; transition: transform 0.3s ease;';
+
+                    let stars = '';
+                    for (let i = 0; i < 5; i++) {
+                        stars += `<i class="fas fa-star" style="color: ${i < (review.rating || 5) ? '#f59e0b' : '#e5e7eb'}; margin-right: 2px;"></i>`;
+                    }
+
+                    // Fallback for older data or different keys
+                    const clientName = review.clientName || review.client_name || 'Valued Client';
+                    const companyName = review.companyName || review.company || '-';
+                    const reviewText = review.reviewText || review.review_text || '';
+                    const photo = review.reviewerPhoto || review.reviewer_photo_data || '/src/website/assets/default-avatar.png';
+                    const logo = review.companyLogo || review.company_logo_data;
+
+                    card.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                            <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: #ddd; flex-shrink: 0;">
+                                <img src="${photo}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div>
+                                <h4 style="margin: 0; font-size: 1.1rem; color: #1e293b;">${clientName}</h4>
+                                <p style="margin: 0; font-size: 0.85rem; color: #64748b;">${companyName}</p>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 15px;">${stars}</div>
+                        <p style="font-style: italic; line-height: 1.6; color: #334155; margin-bottom: 20px;">"${reviewText}"</p>
+                        ${logo ? `<img src="${logo}" style="height: 30px; filter: grayscale(1); opacity: 0.6; display: block;">` : ''}
+                    `;
+
+                    card.onmouseover = () => card.style.transform = 'translateY(-5px)';
+                    card.onmouseout = () => card.style.transform = 'translateY(0)';
+
+                    testimonialsGrid.appendChild(card);
+                });
+            })
+            .catch(err => {
+                console.error('Error loading testimonials:', err);
+                testimonialsGrid.innerHTML = '<p style="color: red;">Error loading reviews.</p>';
+            });
     }
 
 
@@ -355,8 +488,8 @@ const initProjects = () => {
 
 const initPebAppleScroll = () => {
     const section = document.querySelector('.peb-apple');
-    const panel   = document.querySelector('.peb-sticky');
-    const steps   = document.querySelectorAll('.peb-text-panel .peb-step');
+    const panel = document.querySelector('.peb-sticky');
+    const steps = document.querySelectorAll('.peb-text-panel .peb-step');
     const bgImages = document.querySelectorAll('.peb-bg-img');
 
     if (!section || !panel || !steps.length || !bgImages.length) return;
@@ -384,10 +517,10 @@ const initPebAppleScroll = () => {
     showStep(0);
 
     const onScroll = () => {
-        const rect          = section.getBoundingClientRect(); // always viewport-relative
-        const sectionTop    = rect.top;
+        const rect = section.getBoundingClientRect(); // always viewport-relative
+        const sectionTop = rect.top;
         const sectionBottom = rect.bottom;
-        const vh            = window.innerHeight;
+        const vh = window.innerHeight;
 
         if (sectionTop > 0) {
             // Section hasn't entered viewport yet — panel sits at top of section
@@ -403,9 +536,9 @@ const initPebAppleScroll = () => {
 
             // Calculate progress through the section (0 → 1)
             const scrolled = -sectionTop;                       // px into section
-            const travel   = section.offsetHeight - vh;         // total scrollable distance
+            const travel = section.offsetHeight - vh;         // total scrollable distance
             const progress = Math.min(Math.max(scrolled / travel, 0), 1);
-            const index    = Math.min(Math.floor(progress * steps.length), steps.length - 1);
+            const index = Math.min(Math.floor(progress * steps.length), steps.length - 1);
             showStep(index);
         }
     };
@@ -416,8 +549,8 @@ const initPebAppleScroll = () => {
 
 const initEpcPushScroll = () => {
     const section = document.querySelector('.epc-sticky-section');
-    const track   = document.querySelector('.epc-horizontal-track');
-    const items   = document.querySelectorAll('.epc-item');
+    const track = document.querySelector('.epc-horizontal-track');
+    const items = document.querySelectorAll('.epc-item');
 
     if (!section || !track || !items.length) return;
 
@@ -448,10 +581,10 @@ const initEpcPushScroll = () => {
     const capsules = document.querySelectorAll('.epc-capsule');
 
     // Physics Tuning Constants
-    const SPRING = 0.08;      
-    const FRICTION = 0.75;    
-    const JOLT_BOOST = 1.2;   
-    const TUG_RESISTANCE = 0.4; 
+    const SPRING = 0.08;
+    const FRICTION = 0.75;
+    const JOLT_BOOST = 1.2;
+    const TUG_RESISTANCE = 0.4;
 
     // Auto-Scroll Settings
     const AUTO_SCROLL_DELAY = 5000; // 5 seconds per card
@@ -478,7 +611,7 @@ const initEpcPushScroll = () => {
 
         const rect = section.getBoundingClientRect();
         const vh = window.innerHeight;
-        
+
         // Check if section is visible
         const isVisible = rect.bottom > 0 && rect.top < vh;
         if (!isVisible && !isAnimating) return;
@@ -496,14 +629,14 @@ const initEpcPushScroll = () => {
         }
 
         const activeIndex = Math.round(mappedProgress * (items.length - 1));
-        
+
         // Calculate settlement state for the active card
         const activeItem = items[activeIndex];
         const activeItemRect = activeItem.getBoundingClientRect();
         const centerX = window.innerWidth / 2;
         const itemCenterX = activeItemRect.left + activeItemRect.width / 2;
         const distFromCenter = Math.abs(itemCenterX - centerX) / (window.innerWidth / 2);
-        
+
         // Only pause if mouse is over AND card is settled (centered + low velocity)
         isHoverPaused = isMouseOverActiveCard && (distFromCenter < 0.1) && (Math.abs(velocity) < 1);
 
@@ -517,7 +650,7 @@ const initEpcPushScroll = () => {
 
         // Sync Indicators & Fill Animation
         // (activeIndex already calculated above)
-        
+
         // Reset timer if card changed manually
         if (activeIndex !== lastActiveIndex) {
             lastActiveIndex = activeIndex;
@@ -538,11 +671,11 @@ const initEpcPushScroll = () => {
         // 2. User hasn't interacted for 3s
         // 3. 5s has passed for current card
         // 4. We are NOT currently mid-auto-scroll (isProgrammaticScroll)
-        if (rect.top <= 50 && rect.bottom >= vh - 50 && 
-            timeSinceInteraction > 3000 && 
-            timeSinceLastAuto >= AUTO_SCROLL_DELAY && 
+        if (rect.top <= 50 && rect.bottom >= vh - 50 &&
+            timeSinceInteraction > 3000 &&
+            timeSinceLastAuto >= AUTO_SCROLL_DELAY &&
             !isProgrammaticScroll && !isHoverPaused) {
-            
+
             let nextIndex = (activeIndex + 1) % items.length;
             const targetMapped = nextIndex / (items.length - 1);
             const targetProgress = targetMapped * (1 - 2 * buffer) + buffer;
@@ -554,7 +687,7 @@ const initEpcPushScroll = () => {
                 top: targetScrollY,
                 behavior: 'smooth'
             });
-            
+
             autoScrollStartTime = now; // Reset timer for next card
             setTimeout(() => { isProgrammaticScroll = false; }, 2000);
         }
@@ -569,22 +702,22 @@ const initEpcPushScroll = () => {
 
         const totalWidth = track.scrollWidth;
         const visibleWidth = window.innerWidth;
-        
+
         // Calculate item centers relative to the track
         const itemCenters = Array.from(items).map(item => item.offsetLeft + item.offsetWidth / 2);
-        
+
         // Interpolate ideal center based on mapped progress
         const floatIndex = mappedProgress * (items.length - 1);
         const i1 = Math.floor(floatIndex);
         const i2 = Math.ceil(floatIndex);
         const f = floatIndex - i1;
         const idealCenter = itemCenters[i1] + (itemCenters[i2] - itemCenters[i1]) * f;
-        
+
         // rawTarget is the translation needed to put idealCenter at viewport center
         let rawTarget = idealCenter - (visibleWidth / 2);
-        
+
         const maxTranslate = totalWidth - visibleWidth;
-        
+
         if (progress < buffer) {
             targetX = rawTarget * TUG_RESISTANCE;
         } else if (progress > (1 - buffer)) {
@@ -617,7 +750,7 @@ const initEpcPushScroll = () => {
 
             if (absDist < 2) {
                 const scale = 1 - (absDist * 0.12);
-                const rotate = normDist * 12; 
+                const rotate = normDist * 12;
                 const brightness = 1 - (absDist * 0.2);
                 const blur = absDist * 4;
                 const opacity = Math.max(0.2, 1 - absDist);
@@ -710,7 +843,7 @@ const initHeaderScroll = () => {
         } else {
             header.classList.remove('scrolled');
             if (logo && !document.body.classList.contains('home-page')) {
-                 // logo.style.opacity = '1'; // Keep visible on other pages
+                // logo.style.opacity = '1'; // Keep visible on other pages
             }
         }
     }, { passive: true });
@@ -735,21 +868,21 @@ const initFlowAnimations = () => {
     const updateFlow = () => {
         const rect = flowSection.getBoundingClientRect();
         const vh = window.innerHeight;
-        
+
         const startOffset = vh * 0.8;
         const endOffset = vh * 0.2;
-        
+
         const totalHeight = flowSection.offsetHeight;
         const currentPos = -rect.top + startOffset;
         let progress = currentPos / (totalHeight + startOffset - endOffset);
-        
+
         progress = Math.min(Math.max(progress, 0), 1);
         flowLine.style.height = `${progress * 100}%`;
 
         flowItems.forEach((item, index) => {
             const itemRect = item.getBoundingClientRect();
             const node = flowNodes[index];
-            
+
             if (itemRect.top < vh * 0.7) {
                 item.classList.add('in-view');
                 if (node) node.classList.add('active');
@@ -806,7 +939,7 @@ const initHorizontalWorkflow = () => {
     };
     updateSectionHeight();
     window.addEventListener("resize", updateSectionHeight);
-    
+
     // Recalculate after images load to prevent overlap
     window.addEventListener("load", () => {
         updateSectionHeight();
@@ -840,7 +973,7 @@ const initHorizontalWorkflow = () => {
             if (window.innerWidth <= 768) return;
             isProgrammaticScroll = true;
             lastUserScroll = Date.now();
-            
+
             const targetY = pinning.start + (i * window.innerWidth);
             window.scrollTo({
                 top: targetY,
@@ -860,7 +993,7 @@ const initHorizontalWorkflow = () => {
 
         const rect = section.getBoundingClientRect();
         const vh = window.innerHeight;
-        
+
         // Only run when visible
         const isVisible = rect.bottom > 0 && rect.top < vh;
         if (!isVisible) {
@@ -870,11 +1003,11 @@ const initHorizontalWorkflow = () => {
 
         const travel = section.offsetHeight - vh;
         const progress = Math.min(Math.max(-rect.top / travel, 0), 1);
-        
+
         // Map scroll progress to float index
         const floatIndex = progress * (stations.length - 1);
         const activeIndex = Math.round(floatIndex);
-        
+
         // Sync Indicators
         if (activeIndex !== lastActiveIndex) {
             lastActiveIndex = activeIndex;
@@ -890,11 +1023,11 @@ const initHorizontalWorkflow = () => {
         const timeSinceInteraction = now - lastUserScroll;
         const timeSinceLastAuto = now - autoScrollStartTime;
 
-        if (rect.top <= 50 && rect.bottom >= vh - 50 && 
-            timeSinceInteraction > 3000 && 
-            timeSinceLastAuto >= AUTO_SCROLL_DELAY && 
+        if (rect.top <= 50 && rect.bottom >= vh - 50 &&
+            timeSinceInteraction > 3000 &&
+            timeSinceLastAuto >= AUTO_SCROLL_DELAY &&
             !isProgrammaticScroll) {
-            
+
             let nextIndex = (activeIndex + 1) % stations.length;
             const targetProgress = nextIndex / (stations.length - 1);
             const targetScrollY = window.scrollY + rect.top + (targetProgress * travel);
@@ -904,7 +1037,7 @@ const initHorizontalWorkflow = () => {
                 top: targetScrollY,
                 behavior: 'smooth'
             });
-            
+
             autoScrollStartTime = now;
             setTimeout(() => { isProgrammaticScroll = false; }, 1500);
         }
@@ -1037,7 +1170,7 @@ const initCapacityPhysics = () => {
             // 4. Map to CSS Variables (Using inset for smooth shape transitions)
             const pctX = 50 + (node.x / rect.width * 100);
             const pctY = 50 + (node.y / rect.height * 100);
-            const halfSize = 18; 
+            const halfSize = 18;
             node.card.style.setProperty('--mask-top', `${pctY - halfSize}%`);
             node.card.style.setProperty('--mask-right', `${100 - (pctX + halfSize)}%`);
             node.card.style.setProperty('--mask-bottom', `${100 - (pctY + halfSize)}%`);
@@ -1108,7 +1241,7 @@ window.cachedProjects = window.cachedProjects || {};
 window.currentImages = window.currentImages || [];
 window.currentSlide = window.currentSlide || 0;
 
-window.openModal = function(id) {
+window.openModal = function (id) {
     const project = window.cachedProjects[id];
     if (!project) return;
     document.getElementById('project-modal').style.display = 'flex';
@@ -1123,19 +1256,19 @@ window.openModal = function(id) {
     window.updateSlide();
 };
 
-window.closeModal = function(e) {
+window.closeModal = function (e) {
     if (e) e.preventDefault();
     document.getElementById('project-modal').style.display = 'none';
 };
 
-window.moveSlide = function(dir) {
+window.moveSlide = function (dir) {
     window.currentSlide += dir;
     if (window.currentSlide >= window.currentImages.length) window.currentSlide = 0;
     if (window.currentSlide < 0) window.currentSlide = window.currentImages.length - 1;
     window.updateSlide();
 };
 
-window.updateSlide = function() {
+window.updateSlide = function () {
     const modalImg = document.getElementById('modal-img');
     if (modalImg) modalImg.src = window.currentImages[window.currentSlide];
 };

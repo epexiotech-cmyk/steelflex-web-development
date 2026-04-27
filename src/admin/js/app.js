@@ -621,16 +621,17 @@ function renderCareerRow(app) {
         <tr>
             <td>${statusBadge}</td>
             <td><strong>${app.name}</strong></td>
-            <td>${app.appliedRole}</td>
+            <td>${app.appliedRole || app.position || 'N/A'}</td>
             <td>
                 <div>${app.email}</div>
-                <div style="font-size: 0.85rem; color: #666;">${app.phone}</div>
+                <div style="font-size: 0.85rem; color: #666;">${app.mobile || app.phone || 'N/A'}</div>
             </td>
-            <td>${new Date(app.submittedAt).toLocaleDateString()}</td>
+            <td>${new Date(app.submittedAt || app.date || Date.now()).toLocaleDateString()}</td>
             <td>
                 ${app.cvData ? `<button onclick="downloadCV('${app.id}')" class="btn-sm btn-edit" title="Download CV" style="border:none; cursor:pointer;"><i class="fas fa-download"></i> CV</button>` : '-'}
             </td>
-            <td>
+            <td style="display: flex; gap: 5px; align-items: center;">
+                <button class="btn-sm btn-edit" onclick="viewApplicationDetails('${app.id}')" title="View Details" style="margin: 0;"><i class="fas fa-eye"></i></button>
                 <div class="dropdown" style="display:inline-block;">
                     <button class="btn-sm btn-secondary dropdown-toggle" type="button" onclick="toggleDropdown('${app.id}')">
                         <i class="fas fa-ellipsis-v"></i>
@@ -1973,23 +1974,6 @@ window.showProjectModal = (project = null) => {
 
 // deleteProject removed, using event delegation
 
-// 5. Careers (Vacancies + Applications)
-async function loadCareers(container) {
-    container.innerHTML = `
-        <div id="vacancies-section">
-            <h3 style="margin-bottom: 1rem; color: var(--text-main);">Job Vacancies</h3>
-            <div id="vacancies-container"></div>
-        </div>
-        <div id="applications-section" style="margin-top: 3rem;">
-            <h3 style="margin-bottom: 1rem; color: var(--text-main);">Job Applications</h3>
-            <div id="applications-container"></div>
-        </div>
-    `;
-
-    // Load both sections
-    await renderVacancies(document.getElementById('vacancies-container'));
-    await renderApplications(document.getElementById('applications-container'));
-}
 
 // Remove switchCareerTab as it's no longer needed
 
@@ -2542,3 +2526,12 @@ document.addEventListener('click', async (e) => {
 });
 
 init();
+
+// Expose functions to window for inline onclick handlers
+window.loadModule = loadModule;
+window.syncToCloud = syncToCloud;
+window.restoreBackup = restoreBackup;
+window.downloadBackup = downloadBackup;
+window.handleClearData = handleClearData;
+window.showModal = showModal;
+window.updateSidebarBackupStatus = updateSidebarBackupStatus;
