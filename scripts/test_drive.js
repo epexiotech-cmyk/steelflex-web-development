@@ -21,9 +21,9 @@ async function testConnection() {
         console.error('❌ CONNECTION FAILED!');
         console.error('Error Details:', err.message);
         console.log('\nPossible fixes:');
-        console.log('1. Make sure "service-account.json" is in the root folder.');
-        console.log('2. Make sure you SHARED the Google Drive folder with the email in the JSON file.');
-        console.log('3. Check if GOOGLE_DRIVE_FOLDER_ID is correct in .env');
+        console.log('1. Make sure "oauth-credentials.json" and "token.json" are in the root folder.');
+        console.log('2. Make sure GOOGLE_DRIVE_FOLDER_ID is correct in .env');
+        console.log('3. Ensure your token hasn\'t expired (re-generate locally if needed).');
     }
 }
 
