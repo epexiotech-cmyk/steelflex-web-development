@@ -329,24 +329,11 @@ export function initProductsPage() {
 // --- PROJECTS PAGE (projects.html) ---
 
 export function initProjectsPage() {
-    window.switchTab = function (tabName) {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.tab === tabName) btn.classList.add('active');
-        });
-
-        const ongoing = document.getElementById('ongoing-projects');
-        const completed = document.getElementById('completed-projects');
-        if (ongoing && completed) {
-            if (tabName === 'ongoing') {
-                ongoing.style.display = 'grid';
-                completed.style.display = 'none';
-            } else {
-                ongoing.style.display = 'none';
-                completed.style.display = 'grid';
-            }
-        }
-    };
+    // We use the switchTab and loadProjects defined in animations.js
+    // Just trigger the initial load for Ongoing projects
+    if (window.loadProjects) {
+        window.loadProjects('Ongoing', 'ongoing-projects');
+    }
 }
 
 // --- INITIALIZATION DISPATCHER ---
