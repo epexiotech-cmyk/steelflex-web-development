@@ -35,17 +35,29 @@ function deleteRecursiveSync(dirPath) {
     }
 }
 
-// 1. Move website files to root
+// 1. Move website files to root and create clean URL folders
 if (fs.existsSync(websiteDir)) {
-    console.log('Flattening website dist...');
+    console.log('Flattening website dist and building static clean URLs...');
     const files = fs.readdirSync(websiteDir);
     for (const file of files) {
         const oldPath = path.join(websiteDir, file);
-        const newPath = path.join(distDir, file);
+        
         if (fs.lstatSync(oldPath).isDirectory()) {
+            const newPath = path.join(distDir, file);
             copyRecursiveSync(oldPath, newPath);
         } else {
-            fs.renameSync(oldPath, newPath);
+            // Create folder for clean URL if it's an HTML page (except index)
+            if (file.endsWith('.html') && file !== 'index.html' && file !== '404.html') {
+                const folderName = file.replace('.html', '');
+                const folderPath = path.join(distDir, folderName);
+                if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
+                
+                const newPath = path.join(folderPath, 'index.html');
+                fs.renameSync(oldPath, newPath);
+            } else {
+                const newPath = path.join(distDir, file);
+                fs.renameSync(oldPath, newPath);
+            }
         }
     }
 }
