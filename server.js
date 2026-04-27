@@ -41,8 +41,8 @@ app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
 // Static files
-app.use(express.static(path.join(__dirname, 'dist')));
-app.use('/assets', express.static(path.join(__dirname, 'dist/assets')));
+app.use(express.static(path.join(process.cwd(), 'dist')));
+app.use('/assets', express.static(path.join(process.cwd(), 'dist/assets')));
 
 const uploadDir = path.join(__dirname, "uploads");
 const tempDir = path.join(uploadDir, "temp");
@@ -547,12 +547,12 @@ app.post('/api/admin/backup/cloud', async (req, res) => {
 
 // 3. Admin panel
 app.get(/^\/admin($|\/)/, (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/admin', 'index.html'));
+    res.sendFile(path.join(process.cwd(), 'dist/admin', 'index.html'));
 });
 
 // 4. Root route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
 });
 
 // 5. Clean page routing (LAST)
@@ -566,17 +566,21 @@ app.get('/:page', (req, res, next) => {
 
     // Handle admin panel
     if (page === 'admin') {
-        return res.sendFile(path.join(__dirname, 'dist/admin', 'index.html'));
+        return res.sendFile(path.join(process.cwd(), 'dist/admin', 'index.html'));
     }
 
     // Try to serve the .html file
-    const filePath = path.join(__dirname, 'dist', `${page}.html`);
-    if (fs.existsSync(filePath)) {
+    const filePath = path.join(process.cwd(), 'dist', `${page}.html`);
+    const exists = fs.existsSync(filePath);
+    
+    console.log(`[Router] Page: ${page} | Path: ${filePath} | Exists: ${exists}`);
+
+    if (exists) {
         return res.sendFile(filePath);
     }
 
-    // Fallback to index.html for SPA-like behavior or unknown routes
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    // Fallback to index.html
+    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
 });
 
 // Start Server
