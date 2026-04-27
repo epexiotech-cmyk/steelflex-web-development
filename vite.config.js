@@ -3,7 +3,6 @@ import { resolve } from 'path';
 import fs from 'fs';
 
 export default defineConfig({
-    appType: 'mpa',
     base: '/',
     root: '.',
     publicDir: resolve(__dirname, 'public'),
@@ -32,42 +31,37 @@ export default defineConfig({
         configureServer(server) {
             server.middlewares.use((req, res, next) => {
                 const url = req.url || '';
+                
+                // Skip if it's already a direct file request or API
+                if (url.startsWith('/src') || url.startsWith('/assets') || url.startsWith('/api') || url.startsWith('/@') || url.includes('.')) {
+                    return next();
+                }
+
+                const cleanPathsMap = {
+                    '/': '/src/website/index.html',
+                    '/about-us': '/src/website/about-us.html',
+                    '/products-structures': '/src/website/products-structures.html',
+                    '/capabilities': '/src/website/capabilities.html',
+                    '/machineries': '/src/website/machineries.html',
+                    '/projects': '/src/website/projects.html',
+                    '/careers': '/src/website/careers.html',
+                    '/contact-us': '/src/website/contact-us.html',
+                    '/review': '/src/website/review.html',
+                    '/admin': '/src/admin/index.html',
+                    '/admin/': '/src/admin/index.html',
+                    '/admin/index.html': '/src/admin/index.html'
+                };
+
                 const [path, query] = url.split('?');
                 const queryString = query ? `?${query}` : '';
 
-                // Handle root /
-                if (path === '/') {
-                    res.writeHead(302, { Location: '/src/website/index.html' });
+                if (cleanPathsMap[path]) {
+                    res.writeHead(302, { Location: cleanPathsMap[path] + queryString });
                     res.end();
                     return;
                 }
                 
-                // Handle admin
-                if (path === '/admin' || path === '/admin/') {
-                    res.writeHead(302, { Location: '/src/admin/index.html' });
-                    res.end();
-                    return;
-                }
-
-                // Explicit clean URLs for website pages
-                const cleanPaths = [
-                    '/about-us', 
-                    '/products-structures', 
-                    '/capabilities', 
-                    '/machineries', 
-                    '/projects', 
-                    '/careers', 
-                    '/contact-us', 
-                    '/review'
-                ];
-
-                if (cleanPaths.includes(path)) {
-                    res.writeHead(302, { Location: `/src/website${path}.html${queryString}` });
-                    res.end();
-                    return;
-                }
-                
-        next();
+                next();
             });
         }
     },
