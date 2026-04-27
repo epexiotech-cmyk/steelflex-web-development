@@ -556,12 +556,12 @@ app.get('/', (req, res) => {
 });
 
 // 5. Clean page routing (LAST)
-app.get('/:page', (req, res) => {
+app.get('/:page', (req, res, next) => {
     const page = req.params.page;
 
-    // Ignore API routes
-    if (page.startsWith('api')) {
-        return res.status(404).end();
+    // Skip if it's an API, Upload, or Assets request
+    if (page === 'api' || page === 'uploads' || page === 'assets' || page.includes('.')) {
+        return next();
     }
 
     // Handle admin panel
@@ -569,14 +569,14 @@ app.get('/:page', (req, res) => {
         return res.sendFile(path.join(__dirname, 'dist/admin', 'index.html'));
     }
 
+    // Try to serve the .html file
     const filePath = path.join(__dirname, 'dist', `${page}.html`);
-
     if (fs.existsSync(filePath)) {
         return res.sendFile(filePath);
     }
 
-    // fallback to homepage
-    return res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+    // Fallback to index.html for SPA-like behavior or unknown routes
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Start Server
