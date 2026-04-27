@@ -2,8 +2,8 @@ const { google } = require('googleapis');
 const fs = require('fs');
 const path = require('path');
 
-const CREDENTIALS_PATH = path.join(__dirname, '..', '..', 'oauth-credentials.json');
-const TOKEN_PATH = path.join(__dirname, '..', '..', 'token.json');
+const CREDENTIALS_PATH = process.env.GOOGLE_CREDENTIALS_PATH || path.join(__dirname, '..', '..', 'oauth-credentials.json');
+const TOKEN_PATH = process.env.GOOGLE_TOKEN_PATH || path.join(__dirname, '..', '..', 'token.json');
 
 async function getAuthClient() {
     if (!fs.existsSync(CREDENTIALS_PATH)) {
