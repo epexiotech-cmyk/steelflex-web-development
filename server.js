@@ -33,7 +33,7 @@ app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
-// Debug Middleware - Logs every request
+// Debug Middleware
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
@@ -41,14 +41,13 @@ app.use((req, res, next) => {
 
 // --- CRITICAL DEBUG ROUTE ---
 app.get('/ping-debug', (req, res) => {
-    res.send('PONG - SERVER IS RUNNING LATEST CODE');
+    res.send('PONG - SERVER IS RUNNING LATEST CODE (V1.2)');
 });
 
-// --- API ROUTES (Defined BEFORE Static) ---
+// --- API ROUTES ---
 
-// 1. Health & Auth
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date(), version: '1.1.0' });
+    res.json({ status: 'ok', timestamp: new Date(), version: '1.2.0' });
 });
 
 const getDataFilePath = (type) => {
@@ -77,7 +76,6 @@ app.post('/api/auth/login', async (req, res) => {
     } catch (error) { res.status(500).json({ error: 'Internal Error' }); }
 });
 
-// 2. Data Access Helpers
 async function handleDataGet(type, res) {
     const filePath = getDataFilePath(type);
     if (!fs.existsSync(filePath)) return res.json([]);
@@ -87,7 +85,6 @@ async function handleDataGet(type, res) {
     } catch (e) { res.status(500).json({ error: e.message }); }
 }
 
-// 3. Data Routes
 app.get('/api/users', (req, res) => handleDataGet('users', res));
 app.get('/api/projects', (req, res) => handleDataGet('projects', res));
 app.get('/api/reviews', (req, res) => handleDataGet('reviews', res));
@@ -136,7 +133,6 @@ app.delete(['/api/data/:type/:id', '/api/:type/:id'], async (req, res) => {
     } catch (e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
-// 4. Maintenance & Advanced Admin Routes
 const { performCloudBackup } = require('./src/services/cronService');
 const { getLatestStatus } = require('./src/services/backupLogService');
 const { createBackupZip } = require('./src/utils/backupUtil');
@@ -185,7 +181,6 @@ app.get('/api/admin/backup', async (req, res) => {
     } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// 5. Restoration Logic
 async function processRestore(zipPath, res) {
     try {
         const zip = new AdmZip(zipPath); zip.extractAllTo(__dirname, true);
@@ -213,7 +208,7 @@ app.post('/api/admin/backup/cloud', async (req, res) => {
     } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// --- UPLOADS & FILE HANDLING ---
+// --- UPLOADS ---
 const uploadDir = path.resolve(__dirname, "uploads");
 const tempDir = path.join(uploadDir, "temp");
 const optimizedDir = path.join(uploadDir, "optimized");
@@ -244,20 +239,11 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// --- ADMIN & STATIC SERVING ---
-
-// Assets MUST be served by Node if Nginx is misconfigured
+// --- SERVING ---
 app.use('/assets', express.static(path.join(DIST_PATH, 'assets')));
-
-// Admin explicit route
-app.get(/^\/admin($|\/)/, (req, res) => {
-    res.sendFile(path.join(DIST_PATH, 'admin', 'index.html'));
-});
-
-// Root static serving
+app.get(/^\/admin($|\/)/, (req, res) => res.sendFile(path.join(DIST_PATH, 'admin', 'index.html')));
 app.use(express.static(DIST_PATH, { index: 'index.html' }));
 
-// Clean URLs Handler
 app.get('/:page', (req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/admin') || req.path.startsWith('/ping') || req.path.includes('.')) return next();
     const possiblePaths = [path.join(DIST_PATH, req.params.page, 'index.html'), path.join(DIST_PATH, `${req.params.page}.html`)];
@@ -265,14 +251,13 @@ app.get('/:page', (req, res, next) => {
     next();
 });
 
-// Final Catch-all
-app.get('*', (req, res) => {
+// THE FIX: Changed '*' to '/*' to support Express 5.x / path-to-regexp 6.x
+app.get('/*', (req, res) => {
     const cp = path.join(DIST_PATH, 'index.html');
     if (fs.existsSync(cp)) res.sendFile(cp);
     else res.status(404).send('Not Found');
 });
 
-// --- START ---
 const { initCron } = require('./src/services/cronService');
 async function startServer() {
     try {
