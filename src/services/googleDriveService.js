@@ -7,16 +7,20 @@ const TOKEN_PATH = path.join(__dirname, '..', '..', 'token.json');
 
 async function getAuthClient() {
     if (!fs.existsSync(CREDENTIALS_PATH)) {
-        throw new Error('oauth-credentials.json not found');
+        throw new Error('oauth-credentials.json not found in root directory');
     }
     if (!fs.existsSync(TOKEN_PATH)) {
-        throw new Error('token.json not found. Run "node scripts/auth_google.js" first.');
+        throw new Error('token.json not found. Please upload the token generated from your local machine.');
     }
 
     const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH));
     const token = JSON.parse(fs.readFileSync(TOKEN_PATH));
-    const { client_secret, client_id, redirect_uris } = credentials.installed;
     
+    // Support both 'installed' and 'web' credential types
+    const key = credentials.installed || credentials.web;
+    if (!key) throw new Error('Invalid oauth-credentials.json format');
+
+    const { client_secret, client_id, redirect_uris } = key;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
     oAuth2Client.setCredentials(token);
     
