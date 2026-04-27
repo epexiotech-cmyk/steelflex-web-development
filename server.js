@@ -41,13 +41,13 @@ app.use((req, res, next) => {
 
 // --- CRITICAL DEBUG ROUTE ---
 app.get('/ping-debug', (req, res) => {
-    res.send('PONG - SERVER IS RUNNING LATEST CODE (V1.3)');
+    res.send('PONG - SERVER IS RUNNING LATEST CODE (V1.4)');
 });
 
 // --- API ROUTES ---
 
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: new Date(), version: '1.3.0' });
+    res.json({ status: 'ok', timestamp: new Date(), version: '1.4.0' });
 });
 
 const getDataFilePath = (type) => {
@@ -241,7 +241,10 @@ app.post("/upload", upload.single("image"), async (req, res) => {
 
 // --- SERVING ---
 app.use('/assets', express.static(path.join(DIST_PATH, 'assets')));
-app.get(/^\/admin($|\/)/, (req, res) => res.sendFile(path.join(DIST_PATH, 'admin', 'index.html')));
+
+// Admin route without regex to avoid parser errors
+app.get('/admin', (req, res) => res.sendFile(path.join(DIST_PATH, 'admin', 'index.html')));
+
 app.use(express.static(DIST_PATH, { index: 'index.html' }));
 
 app.get('/:page', (req, res, next) => {
@@ -251,8 +254,8 @@ app.get('/:page', (req, res, next) => {
     next();
 });
 
-// FINAL COMPATIBILITY FIX: Use regex catch-all (.*) for Express 5.x
-app.get('(.*)', (req, res) => {
+// BULLETPROOF CATCH-ALL: Use app.use() without a path to avoid the path-to-regexp parser
+app.use((req, res) => {
     const cp = path.join(DIST_PATH, 'index.html');
     if (fs.existsSync(cp)) res.sendFile(cp);
     else res.status(404).send('Not Found');
