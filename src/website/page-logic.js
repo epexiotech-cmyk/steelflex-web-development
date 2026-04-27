@@ -66,10 +66,6 @@ export function initHomePage() {
                 reviews.forEach((review, index) => {
                     let ratingValue = parseInt(review.rating) || 5;
                     let starsHtml = '';
-                    for (let i = 0; i <  starValue ? 5 : ratingValue; i++) {
-                         // Fix the loop logic
-                    }
-                    starsHtml = '';
                     for (let i = 0; i < 5; i++) {
                         starsHtml += i < ratingValue ? '★' : '<span style="color:#eee">★</span>';
                     }
