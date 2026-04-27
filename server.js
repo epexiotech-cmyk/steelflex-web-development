@@ -40,8 +40,13 @@ app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
-// Static files
-app.use(express.static(path.join(process.cwd(), 'dist')));
+// Static files with clean URL support
+app.use(express.static(path.join(process.cwd(), 'dist'), { 
+    extensions: ['html'],
+    index: 'index.html'
+}));
+
+// Assets explicit route (just in case)
 app.use('/assets', express.static(path.join(process.cwd(), 'dist/assets')));
 
 const uploadDir = path.join(__dirname, "uploads");
@@ -555,31 +560,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
 });
 
-// 5. Clean page routing (LAST)
-app.get('/:page', (req, res, next) => {
-    const page = req.params.page;
-
-    // Skip if it's an API, Upload, or Assets request
-    if (page === 'api' || page === 'uploads' || page === 'assets' || page.includes('.')) {
-        return next();
-    }
-
-    // Handle admin panel
-    if (page === 'admin') {
-        return res.sendFile(path.join(process.cwd(), 'dist/admin', 'index.html'));
-    }
-
-    // Try to serve the .html file
-    const filePath = path.join(process.cwd(), 'dist', `${page}.html`);
-    const exists = fs.existsSync(filePath);
-    
-    console.log(`[Router] Page: ${page} | Path: ${filePath} | Exists: ${exists}`);
-
-    if (exists) {
-        return res.sendFile(filePath);
-    }
-
-    // Fallback to index.html
+// 5. Catch-all for SPA/Clean URL Fallback
+app.get('*', (req, res) => {
+    // If we reach here, it means express.static didn't find the file
+    // and it's not an API or Admin route.
     res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
 });
 
