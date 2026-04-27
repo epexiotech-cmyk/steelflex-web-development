@@ -1942,7 +1942,7 @@ window.showProjectModal = (project = null) => {
                     
                     if (!response.ok) throw new Error('Failed to upload image');
                     const uploadResult = await response.json();
-                    uploadedUrls.push(uploadResult.optimizedUrl);
+                    uploadedUrls.push(uploadResult.url);
                 }
 
                 // 2. Finalize project object
