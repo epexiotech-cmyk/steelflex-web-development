@@ -2,15 +2,15 @@ const { google } = require('googleapis');
 const fs = require('fs');
 const path = require('path');
 
-const CREDENTIALS_PATH = process.env.GOOGLE_CREDENTIALS_PATH || path.join(__dirname, '..', '..', 'oauth-credentials.json');
-const TOKEN_PATH = process.env.GOOGLE_TOKEN_PATH || path.join(__dirname, '..', '..', 'token.json');
+const CREDENTIALS_PATH = process.env.GOOGLE_CREDENTIALS || process.env.GOOGLE_CREDENTIALS_PATH || path.join(__dirname, '..', '..', 'oauth-credentials.json');
+const TOKEN_PATH = process.env.GOOGLE_TOKEN || process.env.GOOGLE_TOKEN_PATH || path.join(__dirname, '..', '..', 'token.json');
 
 async function getAuthClient() {
     if (!fs.existsSync(CREDENTIALS_PATH)) {
-        throw new Error('oauth-credentials.json not found in root directory');
+        throw new Error(`File not found: ${CREDENTIALS_PATH}`);
     }
     if (!fs.existsSync(TOKEN_PATH)) {
-        throw new Error('token.json not found. Please upload the token generated from your local machine.');
+        throw new Error(`File not found: ${TOKEN_PATH}`);
     }
 
     const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH));
