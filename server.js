@@ -35,21 +35,29 @@ function generateSeoName(data, ext) {
     return `${project}-${category}-${location}-${uniqueId}${ext}`;
 }
 
-// Middleware
 app.use(cors());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
+// Debug Middleware - Logs every request
+app.use((req, res, next) => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+});
+
 // Static files with clean URL support
-app.use(express.static(path.join(process.cwd(), 'dist'), { 
+const DIST_PATH = path.resolve(__dirname, 'dist');
+console.log(`[Server] Serving static files from: ${DIST_PATH}`);
+
+app.use(express.static(DIST_PATH, { 
     extensions: ['html'],
     index: 'index.html'
 }));
 
-// Assets explicit route (just in case)
-app.use('/assets', express.static(path.join(process.cwd(), 'dist/assets')));
+// Assets explicit route
+app.use('/assets', express.static(path.join(DIST_PATH, 'assets')));
 
-const uploadDir = path.join(__dirname, "uploads");
+const uploadDir = path.resolve(__dirname, "uploads");
 const tempDir = path.join(uploadDir, "temp");
 const optimizedDir = path.join(uploadDir, "optimized");
 const thumbsDir = path.join(uploadDir, "thumbs");
@@ -552,19 +560,17 @@ app.post('/api/admin/backup/cloud', async (req, res) => {
 
 // 3. Admin panel
 app.get(/^\/admin($|\/)/, (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'dist/admin', 'index.html'));
+    res.sendFile(path.join(DIST_PATH, 'admin', 'index.html'));
 });
 
 // 4. Root route
 app.get('/', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+    res.sendFile(path.join(DIST_PATH, 'index.html'));
 });
 
 // 5. Catch-all for SPA/Clean URL Fallback
 app.get('*', (req, res) => {
-    // If we reach here, it means express.static didn't find the file
-    // and it's not an API or Admin route.
-    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
+    res.sendFile(path.join(DIST_PATH, 'index.html'));
 });
 
 // Start Server
