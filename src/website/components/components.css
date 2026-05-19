@@ -36,6 +36,7 @@
 .main-nav ul {
     display: flex;
     gap: 40px;
+    align-items: center;
 }
 
 .main-nav a {
@@ -46,6 +47,35 @@
 .main-nav a:hover,
 .main-nav a.active {
     color: var(--primary-color);
+}
+
+.nav-brochure-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1.5px solid var(--primary-color);
+    color: var(--primary-color) !important;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-brochure-btn svg {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-brochure-btn:hover {
+    background-color: var(--primary-color);
+    color: #fff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(38, 71, 150, 0.15);
+}
+
+.nav-brochure-btn:hover svg {
+    transform: translateY(1px);
 }
 
 .mobile-menu-btn {
