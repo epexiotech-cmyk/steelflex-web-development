@@ -188,6 +188,47 @@
     font-weight: 600;
 }
 
+.footer-brochure-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 20px;
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color) !important;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    width: fit-content;
+}
+
+.footer-brochure-btn svg {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.footer-brochure-btn:hover {
+    background-color: var(--primary-color);
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(38, 71, 150, 0.2);
+}
+
+.footer-brochure-btn:hover svg {
+    transform: translateY(1px);
+}
+
+/* Ensure mobile alignment matches other elements */
+@media (max-width: 600px) {
+    .footer-brochure-btn {
+        margin: 12px auto 0 auto;
+    }
+}
+
 .footer-legal {
     background-color: #FFFFFF;
     padding: 25px 0;
