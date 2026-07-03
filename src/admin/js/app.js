@@ -15,6 +15,30 @@ const DATA_MAP = {
     '/careers': '/data/careers.json'
 };
 
+const PROJECT_CATEGORIES = [
+    "Industrial Sheds & Manufacturing Units",
+    "Warehouses & Logistics Parks",
+    "Commercial Complexes & Showrooms",
+    "Institutional Buildings & Schools",
+    "Agricultural Buildings & Storage Yards",
+    "Automobile Workshop & Service Center",
+    "Poultry Sheds & Dairy Farms",
+    "Exhibition Halls & Recreational Facilities"
+];
+
+window.toggleCategory = function() {
+    const select = document.getElementById('category_select');
+    const customGroup = document.getElementById('custom_category_group');
+    const customInput = document.getElementById('custom_category');
+    if (select.value === 'Other') {
+        customGroup.style.display = 'block';
+        customInput.setAttribute('required', 'required');
+    } else {
+        customGroup.style.display = 'none';
+        customInput.removeAttribute('required');
+    }
+};
+
 // --- Utils ---
 async function apiCall(endpoint, method = 'GET', body = null, isMultipart = false) {
     let url = '/api' + endpoint;
@@ -1879,14 +1903,30 @@ window.showProjectModal = (project = null) => {
         input.value = ''; // Reset
     };
 
+    const catValue = project ? (project.category || '') : '';
+    const isPredefined = PROJECT_CATEGORIES.includes(catValue);
+    const isOther = catValue && !isPredefined;
+    const categoryOptions = PROJECT_CATEGORIES.map(c => 
+        `<option value="${c}" ${project && c === catValue ? 'selected' : ''}>${c}</option>`
+    ).join('') + `<option value="Other" ${isOther ? 'selected' : ''}>Other</option>`;
+
     showModal(`
         <h3>${project ? 'Edit Project' : 'Add Project'}</h3>
         <form id="project-form">
             <div class="form-group"><label>Title</label><input type="text" name="title" class="form-control" value="${project ? project.title : ''}" required></div>
-            <div class="form-group"><label>Category</label><input type="text" name="category" class="form-control" placeholder="e.g. Industrial Warehouse" value="${project ? project.category || '' : ''}" required></div>
+            <div class="form-group"><label>Category</label>
+                <select id="category_select" class="form-control" onchange="toggleCategory()" required>
+                    <option value="" disabled ${!project ? 'selected' : ''}>Select Dropdown</option>
+                    ${categoryOptions}
+                </select>
+            </div>
+            <div class="form-group" id="custom_category_group" style="display: ${isOther ? 'block' : 'none'};">
+                <label>Custom Category</label>
+                <input type="text" id="custom_category" class="form-control" value="${isOther ? catValue : ''}" ${isOther ? 'required' : ''}>
+            </div>
             <div class="form-group"><label>Location</label><input type="text" name="location" class="form-control" value="${project ? project.location : ''}" required></div>
             <div class="form-group"><label>Area (SqFt)</label><input type="text" name="area" class="form-control" value="${project ? project.area || '' : ''}"></div>
-            <div class="form-group"><label>Weight</label><input type="text" name="weight" class="form-control" value="${project ? project.weight || '' : ''}"></div>
+            <div class="form-group"><label>Weight (MT)</label><input type="text" name="weight" class="form-control" value="${project ? project.weight || '' : ''}"></div>
             <div class="form-group"><label>Status</label>
                 <select name="status" class="form-control">
                     <option value="Ongoing" ${project && project.status === 'Ongoing' ? 'selected' : ''}>Ongoing</option>
@@ -1894,7 +1934,7 @@ window.showProjectModal = (project = null) => {
                 </select>
             </div>
             <div class="form-group"><label>YouTube Video URL</label><input type="url" name="youtubeUrl" class="form-control" placeholder="https://youtube.com/..." value="${project ? project.youtubeUrl || '' : ''}"></div>
-            <div class="form-group"><label>Description</label><textarea name="description" class="form-control">${project ? project.description || '' : ''}</textarea></div>
+            <div class="form-group"><label>Description <span id="desc-counter" style="font-size: 0.85em; color: #666; font-weight: normal;">(${project && project.description ? project.description.length : 0}/2500)</span></label><textarea name="description" class="form-control" maxlength="2500" oninput="document.getElementById('desc-counter').innerText = '(' + this.value.length + '/2500)'">${project ? project.description || '' : ''}</textarea></div>
             
             <div class="form-group">
                 <label>Images (<span id="image-count">0 / ${MAX_IMAGES}</span>)</label>
@@ -1921,6 +1961,19 @@ window.showProjectModal = (project = null) => {
 
             const rawFormData = new FormData(e.target);
             const projectData = Object.fromEntries(rawFormData.entries());
+            
+            // Handle Category logic
+            const catSelect = document.getElementById('category_select');
+            const catCustom = document.getElementById('custom_category');
+            let finalCategory = catSelect.value;
+            if (finalCategory === "Other") {
+                finalCategory = catCustom.value.trim();
+                if (!finalCategory) {
+                    alert("Custom Category cannot be empty spaces.");
+                    return;
+                }
+            }
+            projectData.category = finalCategory;
             
             showToast('Uploading and optimizing images...', 'info');
 
