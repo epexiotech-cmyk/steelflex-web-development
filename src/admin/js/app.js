@@ -1045,7 +1045,7 @@ async function restoreBackup() {
                 } finally {
                     hideLoader();
                 }
-            });
+            }, 'Yes, Restore', 'btn-primary');
         }
 
         function handleRestoreResponse(result) {
@@ -1166,7 +1166,7 @@ async function restoreBackup() {
                     message: "Restoring your selected backup. Please wait..."
                 });
                 xhr.send(formData);
-            });
+            }, 'Yes, Restore', 'btn-primary');
         };
     });
 }
