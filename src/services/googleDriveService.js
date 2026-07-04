@@ -5,7 +5,13 @@ const path = require('path');
 const CREDENTIALS_PATH = process.env.GOOGLE_CREDENTIALS || process.env.GOOGLE_CREDENTIALS_PATH || path.join(__dirname, '..', '..', 'oauth-credentials.json');
 const TOKEN_PATH = process.env.GOOGLE_TOKEN || process.env.GOOGLE_TOKEN_PATH || path.join(__dirname, '..', '..', 'token.json');
 
+let cachedAuthClient = null;
+
 async function getAuthClient() {
+    if (cachedAuthClient) {
+        return cachedAuthClient;
+    }
+
     if (!fs.existsSync(CREDENTIALS_PATH)) {
         throw new Error(`File not found: ${CREDENTIALS_PATH}`);
     }
@@ -21,10 +27,37 @@ async function getAuthClient() {
     if (!key) throw new Error('Invalid oauth-credentials.json format');
 
     const { client_secret, client_id, redirect_uris } = key;
+    console.log('\n--- GOOGLE AUTH DIAGNOSTICS ---');
+    console.log('Credentials Path:', CREDENTIALS_PATH);
+    console.log('Token Path:', TOKEN_PATH);
+    console.log('Client ID:', client_id);
+    console.log('Has Refresh Token:', !!token.refresh_token);
+    console.log('Expiry Date:', token.expiry_date ? new Date(token.expiry_date).toISOString() : 'N/A');
+    console.log('-------------------------------\n');
+
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
     oAuth2Client.setCredentials(token);
     
-    return oAuth2Client;
+    oAuth2Client.on('tokens', (tokens) => {
+        try {
+            const currentToken = JSON.parse(fs.readFileSync(TOKEN_PATH, 'utf8'));
+            currentToken.access_token = tokens.access_token;
+            currentToken.expiry_date = tokens.expiry_date;
+            if (tokens.refresh_token) {
+                currentToken.refresh_token = tokens.refresh_token;
+            }
+            
+            const tempTokenPath = `${TOKEN_PATH}.tmp.${Date.now()}`;
+            fs.writeFileSync(tempTokenPath, JSON.stringify(currentToken, null, 2), 'utf8');
+            fs.renameSync(tempTokenPath, TOKEN_PATH);
+            console.log('✅ token.json securely updated with refreshed token.');
+        } catch (err) {
+            console.error('❌ Failed to update token.json:', err);
+        }
+    });
+
+    cachedAuthClient = oAuth2Client;
+    return cachedAuthClient;
 }
 
 async function uploadFile(filePath, fileName) {
@@ -50,6 +83,21 @@ async function uploadFile(filePath, fileName) {
             body: fs.createReadStream(filePath),
         };
 
+        try {
+            console.log('\n--- PRE-UPLOAD TOKEN CHECK ---');
+            const tokenInfo = await auth.getAccessToken();
+            console.log('Success: true');
+            console.log('Has Token:', !!tokenInfo.token);
+            console.log('------------------------------\n');
+        } catch (tokenErr) {
+            console.log('\n--- PRE-UPLOAD TOKEN CHECK FAILED ---');
+            console.log('Success: false');
+            console.log('Google Error Code:', tokenErr.code);
+            console.log('HTTP Status:', tokenErr.response?.status);
+            console.log('Response Body:', JSON.stringify(tokenErr.response?.data, null, 2));
+            console.log('-------------------------------------\n');
+        }
+
         const response = await drive.files.create({
             requestBody: fileMetadata,
             media: media,
@@ -72,7 +120,10 @@ async function uploadFile(filePath, fileName) {
         console.log(`✅ Backup uploaded and verified. ID: ${fileId}, Size: ${check.data.size} bytes`);
         return { id: fileId, size: parseInt(check.data.size), name: check.data.name };
     } catch (error) {
-        console.error('❌ Google Drive upload failed:', error.message);
+        console.error('\n❌ Google Drive upload failed:');
+        console.error('Code:', error.code);
+        console.error('Status:', error.response?.status);
+        console.error('Data:', JSON.stringify(error.response?.data, null, 2));
         throw error;
     }
 }
@@ -123,7 +174,10 @@ async function cleanupOldBackups(daysToKeep = 30) {
             }
         }
     } catch (error) {
-        console.error('❌ Google Drive cleanup failed:', error.message);
+        console.error('\n❌ Google Drive cleanup failed:');
+        console.error('Code:', error.code);
+        console.error('Status:', error.response?.status);
+        console.error('Data:', JSON.stringify(error.response?.data, null, 2));
     }
 }
 
@@ -152,7 +206,10 @@ async function listBackups(limit = 20, date = null) {
 
         return response.data.files;
     } catch (error) {
-        console.error('❌ Google Drive list failed:', error.message);
+        console.error('\n❌ Google Drive list failed:');
+        console.error('Code:', error.code);
+        console.error('Status:', error.response?.status);
+        console.error('Data:', JSON.stringify(error.response?.data, null, 2));
         throw error;
     }
 }
@@ -181,7 +238,10 @@ async function downloadFile(fileId, destPath) {
                 .pipe(dest);
         });
     } catch (error) {
-        console.error('❌ Google Drive download failed:', error.message);
+        console.error('\n❌ Google Drive download failed:');
+        console.error('Code:', error.code);
+        console.error('Status:', error.response?.status);
+        console.error('Data:', JSON.stringify(error.response?.data, null, 2));
         throw error;
     }
 }
