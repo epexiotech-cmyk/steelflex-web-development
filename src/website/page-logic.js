@@ -96,8 +96,8 @@ export function initHomePage() {
                                         Date: <span style="color: #444;">${dateStr}</span>
                                     </div>
                                     <div style="display: flex; align-items: center; gap: 8px;">
-                                        <span style="font-size: 0.75rem; color: #aaa;">Company Logo</span>
-                                        <img loading="lazy" src="${companyLogo}" title="Company Logo" alt="Company Logo" style="height: 40px; width: 40px; border-radius: 50%; object-fit: contain; border: 1px solid #ddd; background: #fff; padding: 2px;">
+                                        <span style="font-size: 0.85rem; color: #888; font-weight: 500;">${review.companyName}</span>
+                                        <img loading="lazy" src="${companyLogo}" title="${review.companyName}" alt="${review.companyName}" style="height: 40px; width: 40px; border-radius: 50%; object-fit: contain; border: 1px solid #ddd; background: #fff; padding: 2px;">
                                     </div>
                                 </div>
                                 <p class="creative-text">${reviewText}</p>
@@ -107,7 +107,6 @@ export function initHomePage() {
                                 <img loading="lazy" src="${reviewerPhoto}" class="creative-client-photo" alt="Client">
                                 <div class="creative-client-info">
                                     <h4 class="creative-client-name">${review.clientName}</h4>
-                                    <p class="creative-client-desig">${review.companyName}</p>
                                 </div>
                             </div>
                         </div>

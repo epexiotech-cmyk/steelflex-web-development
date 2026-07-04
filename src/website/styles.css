@@ -3223,7 +3223,7 @@ section {
 
 .project-card:hover .card-overlay {
     transform: translateY(0);
-    background: rgba(0, 0, 0, 0.85);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 60%, transparent 100%);
 }
 
 .project-title {

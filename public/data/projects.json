@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "title": "ISKO",
+    "location": "KARJAN",
+    "area": "60000",
+    "weight": "272",
+    "status": "Ongoing",
+    "youtubeUrl": "https://youtu.be/xvT1jH8B9AM?si=Cbgw9aThS-jj5S2r",
+    "description": "Viewed app.js:1791-1818\nRan command: `Select-String -Path src\\admin\\js\\app.js, public\\js\\app.js -Pattern \"Job Description\" -Context 3,5`\nViewed app.js:2080-2120\nEdited app.js\nViewed app.js:2088-2105\nEdited app.js\nEdited app.js\nEdited app.js\n\nI've successfully made all three changes to the \"Add Job Vacancy\" modal!\n\nHere’s a quick summary of what was updated:\n1. **Experience Dropdown**: Replaced the basic text input with a predefined dropdown featuring ranges like `Fresher`, `1-2 Years`, `2-3 Years`, etc. I also integrated the \"Other\" option—when selected, it seamlessly reveals a custom text box to let you manually enter any range, just like in the Project Category dropdown.\n2. **Salary Range**: Appended \"(in LPA)\" to the Salary Range label to clarify the expected unit for the user.\n3. **Job Description Counter**: Enabled the `(0/5000)` counter next to the \"Job Description\" label which updates dynamically as you type, and strictly enforced a `5000` character limit on the text area. \n\nThese updates are live across both the Admin and Public components (`src/admin/js/app.js` and `public/js/app.js`), keeping your application fully synchronized. You can test them out directly by opening the Add Job modal!",
+    "category": "Manufacturing Units",
+    "id": "proj_1783158624559",
+    "images": [
+      "/uploads/optimized/isko/isko-manufacturing-units-karjan-1783158622009-743.webp",
+      "/uploads/optimized/isko/isko-manufacturing-units-karjan-1783158623133-447.webp",
+      "/uploads/optimized/isko/isko-manufacturing-units-karjan-1783158623884-798.webp"
+    ],
+    "image": "/uploads/optimized/isko/isko-manufacturing-units-karjan-1783158622009-743.webp",
+    "updatedAt": "2026-07-04T09:50:24.559Z",
+    "createdAt": "2026-07-04T09:50:24.559Z"
+  }
+]

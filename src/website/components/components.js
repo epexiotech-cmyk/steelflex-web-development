@@ -15,20 +15,20 @@ document.addEventListener('DOMContentLoaded', () => {
 <header class="main-header">
     <div class="container nav-container">
         <div class="logo">
-            <a href="/">
+            <a href="index.html">
                 <img loading="lazy" src="/assets/Logo/Steelflex Logo.png" alt="SteelFlex" class="logo-img">
             </a>
         </div>
         <button class="mobile-menu-btn" aria-label="Toggle Menu">☰</button>
         <nav class="main-nav">
             <ul>
-                <li><a href="/about-us">About Us</a></li>
-                <li><a href="/products-structures">Products & Structures</a></li>
-                <li><a href="/capabilities">Capabilities</a></li>
-                <li><a href="/machineries">Machineries</a></li>
-                <li><a href="/projects">Projects</a></li>
-                <li><a href="/careers">Careers</a></li>
-                <li><a href="/contact-us">Contact</a></li>
+                <li><a href="about-us.html">About Us</a></li>
+                <li><a href="products-structures.html">Products & Structures</a></li>
+                <li><a href="capabilities.html">Capabilities</a></li>
+                <li><a href="machineries.html">Machineries</a></li>
+                <li><a href="projects.html">Projects</a></li>
+                <li><a href="careers.html">Careers</a></li>
+                <li><a href="contact-us.html">Contact</a></li>
                 <li>
                     <a href="/brochure/SSIPL_Brochure.pdf" download target="_blank" rel="noopener noreferrer" class="nav-brochure-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="footer-grid-modern">
                 <div class="footer-col">
                     <span class="footer-brand-title">
-                        <a href="/">
+                        <a href="index.html">
                             <img loading="lazy" src="/assets/Logo/Steelflex Logo.png" alt="SteelFlex" style="height: 50px;">
                         </a>
                     </span>
@@ -68,14 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="footer-col">
                     <h4 class="footer-col-title">Quick Links</h4>
                     <ul class="footer-links-list">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/about-us">About Us</a></li>
-                        <li><a href="/products-structures">Products</a></li>
-                        <li><a href="/capabilities">Capabilities</a></li>
-                        <li><a href="/machineries">Machineries</a></li>
-                        <li><a href="/projects">Projects</a></li>
-                        <li><a href="/careers">Careers</a></li>
-                        <li><a href="/contact-us">Contact Us</a></li>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about-us.html">About Us</a></li>
+                        <li><a href="products-structures.html">Products</a></li>
+                        <li><a href="capabilities.html">Capabilities</a></li>
+                        <li><a href="machineries.html">Machineries</a></li>
+                        <li><a href="projects.html">Projects</a></li>
+                        <li><a href="careers.html">Careers</a></li>
+                        <li><a href="contact-us.html">Contact Us</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span>📍 Location</span>
                         <a href="https://maps.app.goo.gl/bfLVMmJv6tCNb2xcA" target="_blank" style="color: inherit; text-decoration: none;">Por, Vadodara, Gujarat</a>
                     </div>
-                    <a href="/review" class="btn-footer-review">Add Review</a>
+                    <a href="review.html" class="btn-footer-review">Add Review</a>
                     <a href="/brochure/SSIPL_Brochure.pdf" download target="_blank" rel="noopener noreferrer" class="footer-brochure-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                         Download Brochure

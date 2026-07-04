@@ -16,17 +16,25 @@ const DATA_MAP = {
 };
 
 const PROJECT_CATEGORIES = [
-    "Industrial Sheds & Manufacturing Units",
-    "Warehouses & Logistics Parks",
-    "Commercial Complexes & Showrooms",
-    "Institutional Buildings & Schools",
-    "Agricultural Buildings & Storage Yards",
-    "Automobile Workshop & Service Center",
-    "Poultry Sheds & Dairy Farms",
-    "Exhibition Halls & Recreational Facilities"
+    "Industrial Sheds",
+    "Manufacturing Units",
+    "Warehouses",
+    "Logistics Parks",
+    "Commercial Complexes",
+    "Showrooms",
+    "Institutional Buildings",
+    "Schools",
+    "Agricultural Buildings",
+    "Storage Yards",
+    "Automobile Workshop",
+    "Service Center",
+    "Poultry Sheds",
+    "Dairy Farms",
+    "Exhibition Halls",
+    "Recreational Facilities"
 ];
 
-window.toggleCategory = function() {
+window.toggleCategory = function () {
     const select = document.getElementById('category_select');
     const customGroup = document.getElementById('custom_category_group');
     const customInput = document.getElementById('custom_category');
@@ -85,7 +93,14 @@ function showToast(message, type = 'success') {
     toast.className = `toast ${type}`;
     toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> <span>${message}</span>`;
     container.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+    
+    if (type === 'success') {
+        setTimeout(() => {
+            window.location.reload();
+        }, 1200);
+    } else {
+        setTimeout(() => toast.remove(), 3000);
+    }
 }
 
 // --- Auth ---
@@ -188,7 +203,8 @@ function renderDashboard() {
     }
 
     renderSidebar();
-    loadModule('dashboard'); // Default view
+    const savedModule = localStorage.getItem('steelflex_current_module') || 'dashboard';
+    loadModule(savedModule);
 }
 
 // Sidebar Toggles
@@ -258,14 +274,14 @@ async function updateSidebarBackupStatus() {
     try {
         const response = await fetch('/api/admin/backup/status');
         const result = await response.json();
-        
+
         if (result.success && result.status) {
             const status = result.status;
             const isFail = status.status === 'fail';
             const color = isFail ? '#ef4444' : '#22c55e';
             const icon = isFail ? 'exclamation-triangle' : 'check-circle';
             const label = isFail ? 'Backup Failed' : 'Backup Healthy';
-            
+
             container.innerHTML = `
                 <div class="sidebar-status-item" title="Click to sync now" onclick="syncToCloud()" style="cursor: pointer;">
                     <i class="fas fa-${icon}" style="color: ${color};"></i>
@@ -293,6 +309,7 @@ async function updateSidebarBackupStatus() {
 
 // --- Modules ---
 async function loadModule(moduleId) {
+    localStorage.setItem('steelflex_current_module', moduleId);
     const content = document.getElementById('content-area');
     const title = document.getElementById('page-title');
     content.innerHTML = '<p>Loading...</p>';
@@ -326,7 +343,7 @@ async function loadModule(moduleId) {
                 let backupCardStatus = 'Unknown';
                 let backupCardColor = 'var(--secondary)';
                 let backupCardIcon = 'cloud';
-                
+
                 if (backupStatus.status) {
                     const isFail = backupStatus.status.status === 'fail';
                     backupCardStatus = isFail ? 'Failed' : 'Success';
@@ -505,6 +522,7 @@ async function loadCareers(container) {
         ]);
 
         cachedCareers = applications; // Update cache
+        cachedVacancies = vacancies; // Ensure vacancies are cached for the view/edit modal
 
         container.innerHTML = `
             <!-- VACANCIES SECTION -->
@@ -528,8 +546,11 @@ async function loadCareers(container) {
                                         </span>
                                     </td>
                                     <td>
+                                        <button class="btn-sm btn-edit" onclick="openEditVacancy('${v.id}')" title="View / Edit">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                         <button class="btn-sm btn-secondary" onclick="toggleVacancyStatus('${v.id}')" title="Toggle Status">
-                                            <i class="fas fa-sync-alt"></i>
+                                            <i class="fas ${v.status === 'Open' ? 'fa-toggle-on' : 'fa-toggle-off'}"></i>
                                         </button>
                                         <button class="btn-sm btn-delete js-delete-btn" title="Delete" data-id="${v.id}" data-type="vacancies"><i class="fas fa-trash"></i></button>
                                     </td>
@@ -625,7 +646,7 @@ window.showVacancyModal = () => {
 window.toggleVacancyStatus = async (id) => {
     try {
         const v = await DataManager.getById('vacancies', id);
- await DataManager.update('vacancies', id, { status: v.status === 'Open' ? 'Closed' : 'Open' });
+        await DataManager.update('vacancies', id, { status: v.status === 'Open' ? 'Closed' : 'Open' });
         loadModule('careers'); // Changed from 'vacancies'
         showToast('Vacancy status updated');
     } catch (e) {
@@ -645,16 +666,17 @@ function renderCareerRow(app) {
         <tr>
             <td>${statusBadge}</td>
             <td><strong>${app.name}</strong></td>
-            <td>${app.appliedRole}</td>
+            <td>${app.appliedRole || app.position || 'N/A'}</td>
             <td>
                 <div>${app.email}</div>
-                <div style="font-size: 0.85rem; color: #666;">${app.phone}</div>
+                <div style="font-size: 0.85rem; color: #666;">${app.mobile || app.phone || 'N/A'}</div>
             </td>
-            <td>${new Date(app.submittedAt).toLocaleDateString()}</td>
+            <td>${new Date(app.submittedAt || app.date || Date.now()).toLocaleDateString()}</td>
             <td>
                 ${app.cvData ? `<button onclick="downloadCV('${app.id}')" class="btn-sm btn-edit" title="Download CV" style="border:none; cursor:pointer;"><i class="fas fa-download"></i> CV</button>` : '-'}
             </td>
-            <td>
+            <td style="display: flex; gap: 5px; align-items: center;">
+                <button class="btn-sm btn-edit" onclick="viewApplicationDetails('${app.id}')" title="View Details" style="margin: 0;"><i class="fas fa-eye"></i></button>
                 <div class="dropdown" style="display:inline-block;">
                     <button class="btn-sm btn-secondary dropdown-toggle" type="button" onclick="toggleDropdown('${app.id}')">
                         <i class="fas fa-ellipsis-v"></i>
@@ -707,11 +729,11 @@ window.downloadCV = async (id) => {
         const a = document.createElement('a');
         a.href = url;
         a.download = app.cvName || 'Resume.pdf';
-        
+
         // Ensure standard DOM execution for the programmatic click
         document.body.appendChild(a);
         a.click();
-        
+
         // Cleanup
         setTimeout(() => {
             document.body.removeChild(a);
@@ -757,95 +779,33 @@ window.updateCareerStatus = async (id, status) => {
 };
 
 async function syncToCloud() {
-    showModal(`
-        <div style="text-align: center; padding: 1rem;">
-            <div style="color: var(--primary); font-size: 3rem; margin-bottom: 1rem;">
-                <i class="fas fa-cloud-upload-alt fa-beat"></i>
-            </div>
-            <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: #1f2937;">Cloud Sync in Progress</h3>
-            <p id="cloud-sync-status" style="color: #4b5563; line-height: 1.6; margin-bottom: 2rem;">
-                Preparing your data and assets for cloud backup...
-            </p>
-            
-            <div style="height: 10px; width: 100%; background: #e5e7eb; border-radius: 5px; overflow: hidden; margin-bottom: 2rem;">
-                <div id="cloud-sync-bar" style="height: 100%; width: 30%; background: var(--primary); transition: width 0.5s; animation: pulse 2s infinite;"></div>
-            </div>
+    try {
+        showLoader({
+            title: "Uploading Backup",
+            message: "Preparing backup and uploading to cloud..."
+        });
 
-            <button id="cloud-sync-close" class="btn btn-secondary" disabled style="opacity: 0.5; width: 100%;">
-                Please wait...
-            </button>
-        </div>
-    `, async () => {
-        const statusText = document.getElementById('cloud-sync-status');
-        const progressBar = document.getElementById('cloud-sync-bar');
-        const closeBtn = document.getElementById('cloud-sync-close');
-
-        try {
-            // Step 1: Initializing
-            setTimeout(() => { 
-                if (progressBar) {
-                    progressBar.style.width = '60%';
-                    statusText.textContent = 'Uploading backup to Google Drive...';
-                }
-            }, 2000);
-
-            const response = await fetch('/api/admin/backup/cloud', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${state.token}`
-                }
-            });
-            const result = await response.json();
-
-            if (response.ok && result.success) {
-                progressBar.style.width = '100%';
-                progressBar.style.background = '#10b981';
-                progressBar.style.animation = 'none';
-                statusText.innerHTML = `<span style="color: #10b981; font-weight: 600;">Success!</span><br>Backup uploaded to Google Drive successfully.`;
-                
-                const modalContent = document.querySelector('.modal-content');
-                modalContent.innerHTML = `
-                    <div style="text-align: center; padding: 1rem;">
-                        <div style="color: #10b981; font-size: 4rem; margin-bottom: 1.5rem;">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <h3 style="font-size: 1.8rem; margin-bottom: 1rem; color: #111827;">Sync Successful</h3>
-                        <p style="color: #4b5563; margin-bottom: 2rem;">Your backup is now safely stored on Google Drive.</p>
-                        
-                        <div style="text-align: left; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1rem; margin-bottom: 2rem; font-family: monospace; font-size: 0.85rem; color: #15803d;">
-                            File: ${result.fileName}
-                        </div>
-
-                        <button class="btn btn-primary" onclick="closeModal(); updateSidebarBackupStatus();" style="width: 100%;">
-                            Close
-                        </button>
-                    </div>
-                `;
-            } else {
-                throw new Error(result.message || 'Cloud sync failed');
+        const response = await fetch('/api/admin/backup/cloud', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${state.token}`
             }
-        } catch (err) {
-            console.error('Cloud Sync Error:', err);
-            const modalContent = document.querySelector('.modal-content');
-            modalContent.innerHTML = `
-                <div style="text-align: center; padding: 1rem;">
-                    <div style="color: #ef4444; font-size: 4rem; margin-bottom: 1.5rem;">
-                        <i class="fas fa-times-circle"></i>
-                    </div>
-                    <h3 style="font-size: 1.8rem; margin-bottom: 1rem; color: #111827;">Sync Failed</h3>
-                    <p style="color: #4b5563; margin-bottom: 2rem;">An error occurred while uploading to Google Drive.</p>
-                    
-                    <div style="text-align: left; background: #fef2f2; border: 1px solid #fee2e2; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem;">
-                        <p style="color: #991b1b; font-family: monospace; font-size: 0.9rem;">${err.message}</p>
-                    </div>
+        });
+        const result = await response.json();
 
-                    <button class="btn btn-secondary" onclick="closeModal(); updateSidebarBackupStatus();" style="width: 100%;">
-                        Close
-                    </button>
-                </div>
-            `;
+        if (response.ok && result.success) {
+            showToast('Backup uploaded to Google Drive successfully.');
+            updateSidebarBackupStatus();
+        } else {
+            throw new Error(result.error || 'Unknown error occurred');
         }
-    });
+    } catch (err) {
+        console.error('Cloud Sync Error:', err);
+        showToast('Sync Failed: ' + (err.message || 'Unknown error'), 'error');
+        updateSidebarBackupStatus();
+    } finally {
+        hideLoader();
+    }
 }
 
 async function restoreBackup() {
@@ -951,7 +911,7 @@ async function restoreBackup() {
         const statusArea = document.getElementById('restore-status-area');
         const errorBox = document.getElementById('restore-error-box');
         const errorText = document.getElementById('restore-error-text');
-        
+
         // Tab switching logic
         const tabs = document.querySelectorAll('.tab-btn');
         tabs.forEach(btn => {
@@ -964,11 +924,11 @@ async function restoreBackup() {
                 btn.classList.add('active');
                 btn.style.color = 'var(--primary)';
                 btn.style.borderBottom = '2px solid var(--primary)';
-                
+
                 document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
                 const target = document.getElementById(`tab-${btn.dataset.tab}`);
                 target.style.display = 'block';
-                
+
                 if (btn.dataset.tab === 'cloud') {
                     fetchCloudBackups();
                 }
@@ -989,7 +949,7 @@ async function restoreBackup() {
                     headers: { 'Authorization': `Bearer ${state.token}` }
                 });
                 const result = await response.json();
-                
+
                 if (result.success && result.backups.length > 0) {
                     listContainer.innerHTML = result.backups.map(file => `
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid #f3f4f6; transition: background 0.2s;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='transparent'">
@@ -1005,7 +965,7 @@ async function restoreBackup() {
                             </button>
                         </div>
                     `).join('');
-                    
+
                     document.querySelectorAll('.restore-cloud-btn').forEach(btn => {
                         btn.onclick = () => confirmCloudRestore(btn.dataset.id, btn.dataset.name);
                     });
@@ -1047,7 +1007,7 @@ async function restoreBackup() {
         async function confirmCloudRestore(fileId, fileName) {
             window.customConfirm(`Are you sure you want to restore "${fileName}" from Cloud? All current website data will be overwritten.`, async (confirmed) => {
                 if (!confirmed) return;
-                
+
                 // Hide selection and show status
                 selectionView.style.display = 'none';
                 statusArea.style.display = 'block';
@@ -1057,12 +1017,16 @@ async function restoreBackup() {
                 progressText.textContent = `Downloading ${fileName}...`;
 
                 try {
+                    showLoader({
+                        title: "Restoring Backup",
+                        message: "Restoring your selected backup. Please wait..."
+                    });
                     const response = await fetch(`/api/admin/backup/cloud/restore/${fileId}`, {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${state.token}` }
                     });
                     const result = await response.json();
-                    
+
                     if (result.success) {
                         progressBar.style.width = '80%';
                         progressPercent.textContent = '80%';
@@ -1078,16 +1042,19 @@ async function restoreBackup() {
                     errorBox.style.display = 'block';
                     errorText.textContent = err.message;
                     progressText.textContent = 'Restoration Failed';
+                } finally {
+                    hideLoader();
                 }
             });
         }
 
         function handleRestoreResponse(result) {
+            hideLoader();
             if (result.success) {
                 progressBar.style.width = '100%';
                 progressPercent.textContent = '100%';
                 progressText.textContent = 'Restoration Complete!';
-                
+
                 const modalContent = document.querySelector('.modal-content');
                 modalContent.innerHTML = `
                     <div style="text-align: center; padding: 1rem;">
@@ -1115,13 +1082,14 @@ async function restoreBackup() {
         }
 
         function handleRestoreError(err) {
+            hideLoader();
             console.error('Restore Error:', err);
             progressBar.style.width = '0%';
             progressPercent.textContent = 'Error';
             errorBox.style.display = 'block';
             errorText.textContent = err.message;
             progressText.textContent = 'Restoration Failed';
-            
+
             // Re-enable buttons if failed
             startBtn.disabled = false;
             startBtn.style.opacity = '1';
@@ -1146,7 +1114,7 @@ async function restoreBackup() {
 
         startBtn.onclick = () => {
             if (!fileInput.files.length) return;
-            
+
             window.customConfirm(`Are you sure you want to restore from "${fileInput.files[0].name}"? This will overwrite all current website data.`, async (confirmed) => {
                 if (!confirmed) return;
 
@@ -1154,7 +1122,7 @@ async function restoreBackup() {
                 selectionView.style.display = 'none';
                 statusArea.style.display = 'block';
                 errorBox.style.display = 'none';
-                
+
                 const formData = new FormData();
                 formData.append('backup', fileInput.files[0]);
 
@@ -1186,8 +1154,17 @@ async function restoreBackup() {
                         handleRestoreError(err);
                     }
                 };
-                
+
                 xhr.onerror = () => handleRestoreError(new Error('Network error during upload'));
+
+                xhr.onabort = () => {
+                    hideLoader();
+                    showToast('Restore cancelled.', 'error');
+                };
+                showLoader({
+                    title: "Restoring Backup",
+                    message: "Restoring your selected backup. Please wait..."
+                });
                 xhr.send(formData);
             });
         };
@@ -1294,12 +1271,12 @@ window.showEditUserModal = async (id) => {
         `, () => {
             const form = document.getElementById('edit-user-form');
             if (!form) return;
-            
+
             form.onsubmit = async (e) => {
                 e.preventDefault();
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
-                
+
                 if (!data.password) {
                     delete data.password;
                 }
@@ -1360,24 +1337,24 @@ window.showUserModal = () => {
             </form>
         </div>
         `, () => {
-            const form = document.getElementById('add-user-form');
-            if (!form) return;
+        const form = document.getElementById('add-user-form');
+        if (!form) return;
 
-            form.onsubmit = async (e) => {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
-                data.role = 'ADMIN'; // Default
-                try {
-                    await DataManager.add('users', data);
-                    closeModal();
-                    showToast('User created successfully');
-                    loadModule('users');
-                } catch (err) {
-                    alert('Error creating user: ' + err.message);
-                }
-            };
-        });
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            data.role = 'ADMIN'; // Default
+            try {
+                await DataManager.add('users', data);
+                closeModal();
+                showToast('User created successfully');
+                loadModule('users');
+            } catch (err) {
+                alert('Error creating user: ' + err.message);
+            }
+        };
+    });
 };
 
 // deleteUser removed, using event delegation
@@ -1537,6 +1514,8 @@ window.viewReviewDetails = (id) => {
 };
 
 window.updateReviewStatus = async (id, status) => {
+    const btnText = status === 'approved' ? 'Yes, Approve' : 'Yes, Reject';
+    const btnClass = status === 'approved' ? 'btn-success' : 'btn-danger';
     window.customConfirm(`Are you sure you want to mark this review as ${status}?`, async (confirmed) => {
         if (!confirmed) return;
         try {
@@ -1548,7 +1527,7 @@ window.updateReviewStatus = async (id, status) => {
         } catch (err) {
             alert('Error updating status: ' + (err.message || 'Unknown error'));
         }
-    });
+    }, btnText, btnClass);
 };
 
 window.showReviewModal = () => {
@@ -1838,15 +1817,21 @@ window.showProjectModal = (project = null) => {
     let existingImages = project ? (project.images || (project.image ? [project.image] : [])) : [];
     let newFiles = [];
     const MAX_IMAGES = 27;
+    const MAX_SIZE_MB = 50;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
     const renderPreviews = () => {
         const container = document.getElementById('preview-container');
         const countSpan = document.getElementById('image-count');
         const uploadBtn = document.getElementById('upload-trigger-btn');
 
+        let totalSize = 0;
+        newFiles.forEach(f => totalSize += f.size);
+        const sizeMB = (totalSize / (1024 * 1024)).toFixed(1);
+
         const total = existingImages.length + newFiles.length;
-        countSpan.textContent = `${total} / ${MAX_IMAGES}`;
-        uploadBtn.disabled = total >= MAX_IMAGES;
+        countSpan.textContent = `${total} / ${MAX_IMAGES}) (${sizeMB}MB / ${MAX_SIZE_MB}MB`;
+        uploadBtn.disabled = total >= MAX_IMAGES || totalSize > MAX_SIZE_BYTES;
 
         container.innerHTML = '';
 
@@ -1890,12 +1875,20 @@ window.showProjectModal = (project = null) => {
             return;
         }
 
+        let currentSize = 0;
+        newFiles.forEach(f => currentSize += f.size);
+
         for (let f of files) {
             // Validate type
             if (!['image/jpeg', 'image/png', 'image/webp', 'image/jpg'].includes(f.type)) {
                 alert('Invalid format: ' + f.name);
                 continue;
             }
+            if (currentSize + f.size > MAX_SIZE_BYTES) {
+                alert(`Size limit exceeded. Max ${MAX_SIZE_MB}MB allowed.`);
+                continue;
+            }
+            currentSize += f.size;
             newFiles.push(f);
         }
         renderPreviews();
@@ -1905,14 +1898,14 @@ window.showProjectModal = (project = null) => {
     const catValue = project ? (project.category || '') : '';
     const isPredefined = PROJECT_CATEGORIES.includes(catValue);
     const isOther = catValue && !isPredefined;
-    const categoryOptions = PROJECT_CATEGORIES.map(c => 
+    const categoryOptions = PROJECT_CATEGORIES.map(c =>
         `<option value="${c}" ${project && c === catValue ? 'selected' : ''}>${c}</option>`
     ).join('') + `<option value="Other" ${isOther ? 'selected' : ''}>Other</option>`;
 
     showModal(`
         <h3>${project ? 'Edit Project' : 'Add Project'}</h3>
         <form id="project-form">
-            <div class="form-group"><label>Title</label><input type="text" name="title" class="form-control" value="${project ? project.title : ''}" required></div>
+            <div class="form-group"><label>Title</label><input type="text" name="title" class="form-control" value="${project ? project.title : ''}" oninput="this.value = this.value.toUpperCase()" style="text-transform: uppercase;" required></div>
             <div class="form-group"><label>Category</label>
                 <select id="category_select" class="form-control" onchange="toggleCategory()" required>
                     <option value="" disabled ${!project ? 'selected' : ''}>Select Dropdown</option>
@@ -1960,7 +1953,7 @@ window.showProjectModal = (project = null) => {
 
             const rawFormData = new FormData(e.target);
             const projectData = Object.fromEntries(rawFormData.entries());
-            
+
             // Handle Category logic
             const catSelect = document.getElementById('category_select');
             const catCustom = document.getElementById('custom_category');
@@ -1973,7 +1966,7 @@ window.showProjectModal = (project = null) => {
                 }
             }
             projectData.category = finalCategory;
-            
+
             showToast('Uploading and optimizing images...', 'info');
 
             try {
@@ -1991,10 +1984,10 @@ window.showProjectModal = (project = null) => {
                         method: 'POST',
                         body: uploadFormData
                     });
-                    
+
                     if (!response.ok) throw new Error('Failed to upload image');
                     const uploadResult = await response.json();
-                    uploadedUrls.push(uploadResult.optimizedUrl);
+                    uploadedUrls.push(uploadResult.url);
                 }
 
                 // 2. Finalize project object
@@ -2012,7 +2005,7 @@ window.showProjectModal = (project = null) => {
                 } else {
                     await DataManager.add('projects', finalProject);
                 }
-                
+
                 closeModal();
                 showToast(project ? 'Project updated' : 'Project saved');
                 loadModule('projects');
@@ -2026,23 +2019,6 @@ window.showProjectModal = (project = null) => {
 
 // deleteProject removed, using event delegation
 
-// 5. Careers (Vacancies + Applications)
-async function loadCareers(container) {
-    container.innerHTML = `
-        <div id="vacancies-section">
-            <h3 style="margin-bottom: 1rem; color: var(--text-main);">Job Vacancies</h3>
-            <div id="vacancies-container"></div>
-        </div>
-        <div id="applications-section" style="margin-top: 3rem;">
-            <h3 style="margin-bottom: 1rem; color: var(--text-main);">Job Applications</h3>
-            <div id="applications-container"></div>
-        </div>
-    `;
-
-    // Load both sections
-    await renderVacancies(document.getElementById('vacancies-container'));
-    await renderApplications(document.getElementById('applications-container'));
-}
 
 // Remove switchCareerTab as it's no longer needed
 
@@ -2130,6 +2106,27 @@ function renderVacancyTable(vacancies) {
 }
 
 window.showVacancyModal = (vacancy = null) => {
+    const expValue = vacancy ? (vacancy.experience || '') : '';
+    const predefinedExp = ['Fresher', '1-2 Years', '2-3 Years', '3-4 Years', '4-5 Years', '5-6 Years', '6-7 Years', '7-8 Years', '8-10 Years', '10-12 Years', '12-15 Years', '15-20 Years', '20+ Years', '30+ Years'];
+    const isPreExp = predefinedExp.includes(expValue);
+    const isOtherExp = expValue && !isPreExp;
+
+    window.toggleExperience = function() {
+        const sel = document.getElementById('experience-select');
+        const input = document.getElementById('experience-custom');
+        if (sel.value === 'Other') {
+            input.style.display = 'block';
+            input.required = true;
+            input.name = 'experience';
+            sel.name = 'experience_temp';
+        } else {
+            input.style.display = 'none';
+            input.required = false;
+            input.name = 'experience_custom';
+            sel.name = 'experience';
+        }
+    };
+
     showModal(`
         <h3>${vacancy ? 'Edit Vacancy' : 'Create Job Vacancy'}</h3>
         <form id="vacancy-form">
@@ -2148,10 +2145,20 @@ window.showVacancyModal = (vacancy = null) => {
                         </select>
                     </div>
                 </div>
-                <div class="col"><div class="form-group"><label>Experience</label><input type="text" name="experience" class="form-control" value="${vacancy ? vacancy.experience || '' : ''}" placeholder="e.g. 2-5 years"></div></div>
+                <div class="col">
+                    <div class="form-group">
+                        <label>Experience</label>
+                        <select id="experience-select" name="${isOtherExp ? 'experience_temp' : 'experience'}" class="form-control" onchange="toggleExperience()">
+                            <option value="">Select Experience</option>
+                            ${predefinedExp.map(e => `<option value="${e}" ${e === expValue ? 'selected' : ''}>${e}</option>`).join('')}
+                            <option value="Other" ${isOtherExp ? 'selected' : ''}>Other</option>
+                        </select>
+                        <input type="text" id="experience-custom" name="${isOtherExp ? 'experience' : 'experience_custom'}" class="form-control" style="margin-top: 10px; display: ${isOtherExp ? 'block' : 'none'};" value="${isOtherExp ? expValue : ''}" placeholder="Enter custom experience">
+                    </div>
+                </div>
             </div>
-            <div class="form-group"><label>Salary Range</label><input type="text" name="salary" class="form-control" value="${vacancy ? vacancy.salary || '' : ''}" placeholder="Optional"></div>
-            <div class="form-group"><label>Job Description</label><textarea name="description" class="form-control" style="height: 120px;">${vacancy ? vacancy.description || '' : ''}</textarea></div>
+            <div class="form-group"><label>Salary Range (in LPA)</label><input type="text" name="salary" class="form-control" value="${vacancy ? vacancy.salary || '' : ''}" placeholder="Optional"></div>
+            <div class="form-group"><label>Job Description <span id="job-desc-counter" style="font-size: 0.85em; color: #666; font-weight: normal;">(${vacancy && vacancy.description ? vacancy.description.length : 0}/5000)</span></label><textarea name="description" class="form-control" style="height: 120px;" maxlength="5000" oninput="document.getElementById('job-desc-counter').innerText = '(' + this.value.length + '/5000)'">${vacancy ? vacancy.description || '' : ''}</textarea></div>
             <div class="form-group"><label>Status</label>
                 <select name="status" class="form-control">
                     <option value="Open" ${vacancy && vacancy.status === 'Open' ? 'selected' : ''}>Open</option>
@@ -2226,13 +2233,13 @@ async function renderApplications(container) {
                     <thead><tr><th>Name</th><th>Role</th><th>Email</th><th>CV</th><th>Submitted</th><th style="width: 120px;">Status</th><th style="width: 100px;">Actions</th></tr></thead>
                     <tbody>
                         ${apps.map(a => {
-                            const status = a.status || 'New';
-                            let dotColor = '#3b82f6'; // Blue for New
-                            if (status === 'Reviewed') dotColor = '#22c55e'; // Green
-                            if (status === 'Interview') dotColor = '#f59e0b'; // Orange
-                            if (status === 'Rejected') dotColor = '#ef4444'; // Red
+            const status = a.status || 'New';
+            let dotColor = '#3b82f6'; // Blue for New
+            if (status === 'Reviewed') dotColor = '#22c55e'; // Green
+            if (status === 'Interview') dotColor = '#f59e0b'; // Orange
+            if (status === 'Rejected') dotColor = '#ef4444'; // Red
 
-                            return `
+            return `
                                 <tr>
                                     <td><strong>${a.name}</strong></td>
                                     <td>${a.position || a.appliedRole || 'N/A'}</td>
@@ -2253,7 +2260,7 @@ async function renderApplications(container) {
                                     </td>
                                 </tr>
                             `;
-                        }).join('') || '<tr><td colspan="7" style="text-align:center;">No applications found.</td></tr>'}
+        }).join('') || '<tr><td colspan="7" style="text-align:center;">No applications found.</td></tr>'}
                     </tbody>
                 </table>
             </div>
@@ -2363,14 +2370,14 @@ document.addEventListener('keydown', (e) => {
 
 // Start
 
-window.customConfirm = (msg, callback) => {
+window.customConfirm = (msg, callback, btnText = 'Yes, Delete', btnClass = 'btn-danger') => {
     const div = document.createElement('div');
     div.style = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
     div.innerHTML = `
         <div style="background:white;padding:2rem;border-radius:8px;text-align:center;box-shadow:0 4px 6px rgba(0,0,0,0.1);max-width:400px;width:90%;">
             <p style="margin-bottom:1.5rem;font-size:1.1rem;color:#333;">${msg}</p>
             <div style="display:flex;gap:10px;justify-content:center;">
-                <button id="custom-confirm-yes" class="btn btn-danger">Yes, Delete</button>
+                <button id="custom-confirm-yes" class="btn ${btnClass}">${btnText}</button>
                 <button id="custom-confirm-no" class="btn btn-secondary">Cancel</button>
             </div>
         </div>
@@ -2500,7 +2507,7 @@ async function handleClearData() {
     }
 
     const message = `Are you ABSOLUTELY sure you want to clear: ${checked.join(', ')}? This cannot be undone!`;
-    
+
     window.customConfirm(message, async (confirmed) => {
         if (!confirmed) return;
 
@@ -2518,50 +2525,56 @@ async function handleClearData() {
         let completed = 0;
         const total = checked.length;
 
-        for (const type of checked) {
-            taskText.textContent = `Clearing ${type.charAt(0).toUpperCase() + type.slice(1)}...`;
-            try {
-                const response = await fetch('/api/admin/maintenance/clear', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${state.token}`
-                    },
-                    body: JSON.stringify({ types: [type] })
-                });
+        try {
+            for (const type of checked) {
+                taskText.textContent = `Clearing ${type.charAt(0).toUpperCase() + type.slice(1)}...`;
+                try {
+                    const response = await fetch('/api/admin/maintenance/clear', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${state.token}`
+                        },
+                        body: JSON.stringify({ types: [type] })
+                    });
 
-                const result = await response.json();
-                if (response.ok) {
-                    resultsDiv.innerHTML += `<div style="color: #059669; margin-bottom: 8px;"><i class="fas fa-check-circle"></i> ${type}: ${result.results[type]}</div>`;
-                } else {
-                    resultsDiv.innerHTML += `<div style="color: #dc2626; margin-bottom: 8px;"><i class="fas fa-times-circle"></i> ${type}: ${result.error}</div>`;
+                    const result = await response.json();
+                    if (response.ok) {
+                        resultsDiv.innerHTML += `<div style="color: #059669; margin-bottom: 8px;"><i class="fas fa-check-circle"></i> ${type}: ${result.results[type]}</div>`;
+                    } else {
+                        resultsDiv.innerHTML += `<div style="color: #dc2626; margin-bottom: 8px;"><i class="fas fa-times-circle"></i> ${type}: ${result.error || 'Failed'}</div>`;
+                    }
+                } catch (err) {
+                    resultsDiv.innerHTML += `<div style="color: #dc2626; margin-bottom: 8px;"><i class="fas fa-exclamation-triangle"></i> ${type}: Network Error</div>`;
                 }
-            } catch (err) {
-                resultsDiv.innerHTML += `<div style="color: #dc2626; margin-bottom: 8px;"><i class="fas fa-exclamation-triangle"></i> ${type}: Network Error</div>`;
+
+                completed++;
+                const percent = Math.round((completed / total) * 100);
+                percentText.textContent = `${percent}%`;
+                bar.style.width = `${percent}%`;
+
+                // Small delay for visual effect
+                await new Promise(r => setTimeout(r, 300));
             }
 
-            completed++;
-            const percent = Math.round((completed / total) * 100);
-            percentText.textContent = `${percent}%`;
-            bar.style.width = `${percent}%`;
-            
-            // Small delay for visual effect
-            await new Promise(r => setTimeout(r, 300));
+            taskText.textContent = 'Maintenance Complete';
+            showToast('Maintenance task finished');
+        } catch (err) {
+            console.error('Maintenance execution failed:', err);
+            taskText.textContent = 'Maintenance Aborted';
+            resultsDiv.innerHTML += `<div style="color: #991b1b; margin-top: 15px; padding: 10px; background: #fef2f2; border-radius: 5px;"><i class="fas fa-exclamation-circle"></i> Fatal error: ${err.message}</div>`;
+        } finally {
+            // Add a "Done" button to refresh the view
+            const doneBtn = document.createElement('button');
+            doneBtn.className = 'btn btn-primary';
+            doneBtn.style.width = '100%';
+            doneBtn.style.marginTop = '1.5rem';
+            doneBtn.style.padding = '12px';
+            doneBtn.style.fontWeight = '600';
+            doneBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Finish & Reload';
+            doneBtn.onclick = () => loadModule('maintenance');
+            progressContainer.appendChild(doneBtn);
         }
-
-        taskText.textContent = 'Maintenance Complete';
-        showToast('Maintenance task finished');
-        
-        // Add a "Done" button to refresh the view
-        const doneBtn = document.createElement('button');
-        doneBtn.className = 'btn btn-primary';
-        doneBtn.style.width = '100%';
-        doneBtn.style.marginTop = '1.5rem';
-        doneBtn.style.padding = '12px';
-        doneBtn.style.fontWeight = '600';
-        doneBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Finish & Reload';
-        doneBtn.onclick = () => loadModule('maintenance');
-        progressContainer.appendChild(doneBtn);
     });
 }
 
@@ -2569,23 +2582,23 @@ async function handleClearData() {
 document.addEventListener('click', async (e) => {
     const btn = e.target.closest('.js-delete-btn');
     if (!btn) return;
-    
+
     const id = btn.getAttribute('data-id');
     const type = btn.getAttribute('data-type');
-    
+
     window.customConfirm(`Are you sure you want to delete this ${type}?`, async (confirmed) => {
         if (!confirmed) return;
         try {
             await DataManager.delete(type, id);
             showToast(`${type} deleted successfully`);
-            
+
             // Re-render module immediately
             if (type === 'reviews') loadModule('reviews');
             else if (type === 'contact') loadModule('queries');
             else if (type === 'projects') loadModule('projects');
             else if (type === 'vacancies' || type === 'careers') loadModule('careers');
             else if (type === 'users') loadModule('users');
-            
+
             // closeModal just in case we are inside a modal
             closeModal();
         } catch (err) {
@@ -2595,3 +2608,69 @@ document.addEventListener('click', async (e) => {
 });
 
 init();
+
+// Expose functions to window for inline onclick handlers
+window.loadModule = loadModule;
+window.syncToCloud = syncToCloud;
+window.restoreBackup = restoreBackup;
+window.downloadBackup = downloadBackup;
+window.handleClearData = handleClearData;
+window.showModal = showModal;
+window.updateSidebarBackupStatus = updateSidebarBackupStatus;
+// --- Global Loader System ---
+(function initGlobalLoader() {
+    if (document.getElementById('global-loader-container')) return;
+
+    const loaderHTML = `
+        <div id="global-loader-container">
+            <div class="global-loader-card">
+                <div id="global-loader-lottie" class="global-loader-lottie"></div>
+                <h3 id="global-loader-title" class="global-loader-title">Loading</h3>
+                <p id="global-loader-message" class="global-loader-message">Please wait...</p>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', loaderHTML);
+
+    const script = document.createElement('script');
+    script.src = "https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js";
+    script.onload = () => console.log('Lottie loaded for global loader');
+    document.head.appendChild(script);
+
+    let loaderCount = 0;
+    let lottieInstance = null;
+
+    window.showLoader = function (options = {}) {
+        const titleEl = document.getElementById('global-loader-title');
+        const msgEl = document.getElementById('global-loader-message');
+
+        if (titleEl) titleEl.textContent = options.title || 'Loading';
+        if (msgEl) msgEl.textContent = options.message || 'Please wait...';
+
+        if (loaderCount === 0) {
+            document.getElementById('global-loader-container').classList.add('active');
+
+            if (window.lottie && !lottieInstance) {
+                lottieInstance = lottie.loadAnimation({
+                    container: document.getElementById('global-loader-lottie'),
+                    renderer: 'svg',
+                    loop: true,
+                    autoplay: true,
+                    path: '/assets/animations/Loading Wrench A.json'
+                });
+            } else if (lottieInstance) {
+                lottieInstance.play();
+            }
+        }
+        loaderCount++;
+    };
+
+    window.hideLoader = function () {
+        if (loaderCount > 0) loaderCount--;
+        if (loaderCount === 0) {
+            const container = document.getElementById('global-loader-container');
+            if (container) container.classList.remove('active');
+            if (lottieInstance) lottieInstance.stop();
+        }
+    };
+})();

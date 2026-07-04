@@ -433,8 +433,18 @@ const initFormsAndVacancies = () => {
 
                     card.innerHTML = `
                         <h3 class="job-role">${vacancy.title}</h3>
-                        <div class="job-location">📍 ${vacancy.location}</div>
-                        <p class="job-desc">${shortDesc}</p>
+                        <div class="job-meta-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 15px 0; font-size: 0.9rem; color: #555;">
+                            <div>🏢 <strong>Dept:</strong> ${vacancy.department || 'N/A'}</div>
+                            <div>📍 <strong>Location:</strong> ${vacancy.location || 'N/A'}</div>
+                            <div>⏱️ <strong>Type:</strong> ${vacancy.employmentType || 'N/A'}</div>
+                            <div>🎓 <strong>Exp:</strong> ${vacancy.experience || 'N/A'}</div>
+                            <div style="grid-column: 1/-1;">💰 <strong>Package:</strong> ${vacancy.salary ? (vacancy.salary.toLowerCase().includes('lpa') ? vacancy.salary : vacancy.salary + ' LPA') : 'Not Disclosed'}</div>
+                        </div>
+                        <div class="job-desc-container" style="margin-bottom: 20px;">
+                            <p class="job-desc short-desc" style="display: block; margin-bottom: 5px;">${shortDesc}</p>
+                            <p class="job-desc full-desc" style="display: none; margin-bottom: 5px; white-space: pre-line;">${vacancy.description}</p>
+                            ${vacancy.description.length > 150 ? `<a href="javascript:void(0)" class="view-more-link" style="color: var(--primary-color, #0056b3); font-weight: 600; font-size: 0.9rem; text-decoration: none;">View More</a>` : ''}
+                        </div>
                         <button class="apply-now-btn" data-role="${vacancy.title}">Apply Now</button>
                     `;
                     vacancyContainer.appendChild(card);
@@ -445,6 +455,23 @@ const initFormsAndVacancies = () => {
                     btn.addEventListener('click', function () {
                         const role = this.getAttribute('data-role');
                         applyForRole(role);
+                    });
+                });
+
+                document.querySelectorAll('.view-more-link').forEach(link => {
+                    link.addEventListener('click', function() {
+                        const container = this.closest('.job-desc-container');
+                        const shortDesc = container.querySelector('.short-desc');
+                        const fullDesc = container.querySelector('.full-desc');
+                        if (shortDesc.style.display === 'none') {
+                            shortDesc.style.display = 'block';
+                            fullDesc.style.display = 'none';
+                            this.innerText = 'View More';
+                        } else {
+                            shortDesc.style.display = 'none';
+                            fullDesc.style.display = 'block';
+                            this.innerText = 'View Less';
+                        }
                     });
                 });
             })
@@ -1246,9 +1273,27 @@ window.openModal = function (id) {
     if (!project) return;
     document.getElementById('project-modal').style.display = 'flex';
     document.getElementById('modal-title').textContent = project.title;
+    
+    const ytLink = document.getElementById('modal-youtube-link');
+    if (ytLink) {
+        if (project.youtubeUrl) {
+            ytLink.href = project.youtubeUrl;
+            ytLink.style.display = 'inline-block';
+        } else {
+            ytLink.style.display = 'none';
+            ytLink.href = '#';
+        }
+    }
+    
+    const formatNumber = (val) => {
+        if (!val) return val;
+        const num = Number(String(val).replace(/,/g, ''));
+        return isNaN(num) ? val : num.toLocaleString('en-IN');
+    };
+    
     document.getElementById('modal-location').textContent = project.location || '-';
-    document.getElementById('modal-area').textContent = project.area || '-';
-    document.getElementById('modal-weight').textContent = project.weight || '-';
+    document.getElementById('modal-area').textContent = project.area ? `${formatNumber(project.area)} Sqft` : '-';
+    document.getElementById('modal-weight').textContent = project.weight ? `${formatNumber(project.weight)} MT` : '-';
     document.getElementById('modal-desc').textContent = project.description || 'No description available.';
     window.currentImages = project.images && project.images.length > 0 ? project.images : [];
     if (window.currentImages.length === 0 && project.image) window.currentImages.push(project.image);
@@ -1268,9 +1313,29 @@ window.moveSlide = function (dir) {
     window.updateSlide();
 };
 
+window.setSlide = function(index) {
+    window.currentSlide = index;
+    window.updateSlide();
+};
+
 window.updateSlide = function () {
     const modalImg = document.getElementById('modal-img');
-    if (modalImg) modalImg.src = window.currentImages[window.currentSlide];
+    if (modalImg && window.currentImages[window.currentSlide]) {
+        modalImg.src = window.currentImages[window.currentSlide];
+    }
+    
+    const thumbsContainer = document.getElementById('modal-thumbnails');
+    if (thumbsContainer) {
+        if (window.currentImages.length > 1) {
+            thumbsContainer.style.display = 'flex';
+            thumbsContainer.innerHTML = window.currentImages.map((img, i) => `
+                <img src="${img}" class="modal-thumb ${i === window.currentSlide ? 'active' : ''}" onclick="window.setSlide(${i})">
+            `).join('');
+        } else {
+            thumbsContainer.style.display = 'none';
+            thumbsContainer.innerHTML = '';
+        }
+    }
 };
 
 window.loadProjects = async function (status, containerId, limit = null) {
@@ -1310,6 +1375,12 @@ window.loadProjects = async function (status, containerId, limit = null) {
                 ? `<span class="project-tag" style="background: #fff; color: #333; display: inline-block; padding: 2px 8px; border-radius: 4px; font-size:0.8rem; margin-top: 5px;">Completed</span>`
                 : '';
 
+            const formatNumber = (val) => {
+                if (!val) return val;
+                const num = Number(String(val).replace(/,/g, ''));
+                return isNaN(num) ? val : num.toLocaleString('en-IN');
+            };
+
             card.innerHTML = `
                 <div class="card-image-wrapper">
                     <img src="${displayImage}" alt="${p.title}" class="project-card-image">
@@ -1317,8 +1388,8 @@ window.loadProjects = async function (status, containerId, limit = null) {
                         <h3 class="project-title">${p.title}</h3>
                         <div class="card-hidden-details">
                             <p class="project-meta"><strong>Location:</strong> ${p.location}</p>
-                            ${p.area ? `<p class="project-meta"><strong>Area:</strong> ${p.area} Sqft</p>` : ''}
-                            ${p.weight ? `<p class="project-meta"><strong>Weight:</strong> ${p.weight} Tons</p>` : ''}
+                            ${p.area ? `<p class="project-meta"><strong>Area:</strong> ${formatNumber(p.area)} Sqft</p>` : ''}
+                            ${p.weight ? `<p class="project-meta"><strong>Weight:</strong> ${formatNumber(p.weight)} MT</p>` : ''}
                             ${completedTag}
                             <button class="btn-more-details">Click for Details</button>
                         </div>

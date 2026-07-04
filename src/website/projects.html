@@ -207,18 +207,30 @@
             <button class="close-modal" onclick="closeModal(event)">×</button>
 
             <div class="modal-body-grid">
-                <!-- Carousel -->
-                <div class="modal-carousel">
-                    <button class="carousel-btn prev" onclick="moveSlide(-1)">❮</button>
-                    <div class="carousel-track-container">
-                        <img loading="lazy" id="modal-img" src="" alt="Project Detail" class="modal-main-image">
+                <!-- Left Column (Image & Thumbnails) -->
+                <div class="modal-left-column" style="display: flex; flex-direction: column; background: #f8f9fa;">
+                    <!-- Carousel -->
+                    <div class="modal-carousel">
+                        <button class="carousel-btn prev" onclick="moveSlide(-1)">❮</button>
+                        <div class="carousel-track-container">
+                            <img loading="lazy" id="modal-img" src="" alt="Project Detail" class="modal-main-image">
+                        </div>
+                        <button class="carousel-btn next" onclick="moveSlide(1)">❯</button>
                     </div>
-                    <button class="carousel-btn next" onclick="moveSlide(1)">❯</button>
+                    <!-- Thumbnails Strip -->
+                    <div id="modal-thumbnails" class="modal-thumbnails-strip" style="display: flex; justify-content: center; gap: 10px; margin-top: 5px; overflow-x: auto; padding: 10px; height: 100px; background: #f0f0f0;"></div>
                 </div>
 
                 <!-- Details -->
                 <div class="modal-details">
-                    <h2 id="modal-title" style="color: var(--primary-color); margin-bottom: 20px;">Project Title</h2>
+                    <h2 style="color: var(--primary-color); margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                        <span id="modal-title">Project Title</span>
+                        <a id="modal-youtube-link" href="#" target="_blank" style="display: none; color: #ff0000; font-size: 1.8rem; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.052-.074 1.972l-.008.106-.022.26-.01.104c-.048.519-.119 1.023-.22 1.402a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31.4 31.4 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A99.788 99.788 0 0 1 7.858 2h.193zM6.4 5.209v4.818l4.157-2.408L6.4 5.209z"/>
+                            </svg>
+                        </a>
+                    </h2>
                     <div class="modal-info-grid">
                         <div class="info-item">
                             <span class="label">Location</span>
@@ -309,7 +321,7 @@
 
         .project-card:hover .card-overlay {
             transform: translateY(0);
-            background: rgba(0, 0, 0, 0.85);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 60%, transparent 100%);
             /* Darker full overlay on hover */
         }
 
@@ -395,8 +407,7 @@
 
         .modal-carousel {
             position: relative;
-            background: #000;
-            height: 550px;
+            background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -404,8 +415,9 @@
 
         .modal-main-image {
             max-width: 100%;
-            max-height: 100%;
+            max-height: 60vh;
             object-fit: contain;
+            display: block;
         }
 
         .carousel-btn {
@@ -455,15 +467,40 @@
                 grid-template-columns: 1fr;
             }
 
-            .modal-carousel {
-                height: 250px;
-            }
+
 
             .close-modal {
                 color: #333;
                 top: 5px;
                 right: 10px;
             }
+        }
+
+
+        .modal-thumbnails-strip::-webkit-scrollbar {
+            height: 6px;
+        }
+        .modal-thumbnails-strip::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+        .modal-thumb {
+            height: 100%;
+            width: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            opacity: 0.6;
+        }
+        .modal-thumb:hover {
+            opacity: 0.9;
+        }
+        .modal-thumb.active {
+            opacity: 1;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(0,0,0,0.3);
         }
     </style>
 
