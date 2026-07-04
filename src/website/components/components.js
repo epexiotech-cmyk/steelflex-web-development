@@ -3,7 +3,7 @@
  * Loads navbar and footer into placeholders and initializes interactions.
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+function loadComponents() {
     console.log("COMPONENTS LOADED");
     
     const navbar = document.getElementById("navbar");
@@ -113,7 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log("Footer error:", e);
         }
     }
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadComponents);
+} else {
+    loadComponents();
+}
 
 function initNavbar() {
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
